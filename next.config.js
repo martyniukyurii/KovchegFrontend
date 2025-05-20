@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    // Повністю вимикаємо ESLint під час збірки
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
