@@ -12,7 +12,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Image src="/logo.png" alt={t('common.companyName')} width={32} height={32} />
+              <Image src="/logo.png" alt={t('common.companyName')} height={32} width={32} />
               <h3 className="text-xl font-bold">{t('common.companyName')}</h3>
             </div>
             <p className="text-white/80">
@@ -23,10 +23,10 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">{t('footer.navigation')}</h4>
             <ul className="space-y-2">
-              <li><Link href="/buy" className="text-white/80 hover:text-white transition-colors">{t('nav.buy')}</Link></li>
-              <li><Link href="/sell" className="text-white/80 hover:text-white transition-colors">{t('nav.sell')}</Link></li>
-              <li><Link href="/rent" className="text-white/80 hover:text-white transition-colors">{t('nav.rent')}</Link></li>
-              <li><Link href="/about" className="text-white/80 hover:text-white transition-colors">{t('nav.about')}</Link></li>
+              <li><Link className="text-white/80 hover:text-white transition-colors" href="/buy">{t('nav.buy')}</Link></li>
+              <li><Link className="text-white/80 hover:text-white transition-colors" href="/sell">{t('nav.sell')}</Link></li>
+              <li><Link className="text-white/80 hover:text-white transition-colors" href="/rent">{t('nav.rent')}</Link></li>
+              <li><Link className="text-white/80 hover:text-white transition-colors" href="/about">{t('nav.about')}</Link></li>
             </ul>
           </div>
 
@@ -51,12 +51,22 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">{t('footer.socialMedia')}</h4>
             <div className="flex space-x-4">
-              <a href="#" className="text-white/80 hover:text-white transition-colors">
+              <Link 
+                className="text-white/80 hover:text-white transition-colors"
+                href="https://facebook.com" 
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 <Facebook className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-white/80 hover:text-white transition-colors">
+              </Link>
+              <Link 
+                className="text-white/80 hover:text-white transition-colors"
+                href="https://instagram.com"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 <Instagram className="w-6 h-6" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
