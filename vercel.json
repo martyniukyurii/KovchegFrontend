@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["fra1"],
+  "headers": [
+    {
+      "source": "/locales/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/locales/:path*",
+      "destination": "/public/locales/:path*"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_LOCALE_DEFAULT": "uk"
+  }
+} 

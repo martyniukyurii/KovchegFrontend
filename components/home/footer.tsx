@@ -1,0 +1,70 @@
+import Link from "next/link";
+import { Facebook, Instagram, Phone, Mail, MapPin } from "lucide-react";
+import Image from "next/image";
+import { useTranslation } from "@/hooks/useTranslation";
+
+export function Footer() {
+  const { t } = useTranslation();
+  
+  return (
+    <footer className="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-12 w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Image src="/logo.png" alt={t('common.companyName')} width={32} height={32} />
+              <h3 className="text-xl font-bold">{t('common.companyName')}</h3>
+            </div>
+            <p className="text-white/80">
+              {t('footer.tagline')}
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-semibold mb-4">{t('footer.navigation')}</h4>
+            <ul className="space-y-2">
+              <li><Link href="/buy" className="text-white/80 hover:text-white transition-colors">{t('nav.buy')}</Link></li>
+              <li><Link href="/sell" className="text-white/80 hover:text-white transition-colors">{t('nav.sell')}</Link></li>
+              <li><Link href="/rent" className="text-white/80 hover:text-white transition-colors">{t('nav.rent')}</Link></li>
+              <li><Link href="/about" className="text-white/80 hover:text-white transition-colors">{t('nav.about')}</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold mb-4">{t('footer.contacts')}</h4>
+            <ul className="space-y-2">
+              <li className="flex items-center text-white/80">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>{t('footer.phone')}</span>
+              </li>
+              <li className="flex items-center text-white/80">
+                <Mail className="w-4 h-4 mr-2" />
+                <span>{t('footer.email')}</span>
+              </li>
+              <li className="flex items-center text-white/80">
+                <MapPin className="w-4 h-4 mr-2" />
+                <span>{t('footer.address')}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold mb-4">{t('footer.socialMedia')}</h4>
+            <div className="flex space-x-4">
+              <a href="#" className="text-white/80 hover:text-white transition-colors">
+                <Facebook className="w-6 h-6" />
+              </a>
+              <a href="#" className="text-white/80 hover:text-white transition-colors">
+                <Instagram className="w-6 h-6" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/80">
+          <p>&copy; {new Date().getFullYear()} {t('common.companyName')}. {t('footer.copyright')}</p>
+        </div>
+      </div>
+    </footer>
+  );
+} 
