@@ -15,11 +15,7 @@ export const Head = () => {
         content="viewport-fit=cover, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         name="viewport"
       />
-      <link 
-        rel="shortcut icon" 
-        href="/favicon.ico"
-        type="image/x-icon"
-      />
+      <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     </NextHead>
   );
 };

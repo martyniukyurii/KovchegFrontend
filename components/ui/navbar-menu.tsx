@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const transition = {
-  type: "spring",
+  type: "spring" as const,
   mass: 0.5,
   damping: 11.5,
   stiffness: 100,
@@ -26,33 +26,59 @@ export const MenuItem = ({
 }) => {
   const menuRef = React.useRef<HTMLDivElement>(null);
   const [menuStyle, setMenuStyle] = React.useState<React.CSSProperties>({});
+  const [isClicked, setIsClicked] = React.useState(false);
 
   React.useEffect(() => {
     if (menuRef.current && active === item) {
       const rect = menuRef.current.getBoundingClientRect();
+
       setMenuStyle({
-        position: 'fixed',
-        left: rect.left + (rect.width / 2) - 350, // 700px (ширина меню) / 2 = 350px
+        position: "fixed",
+        left: rect.left + rect.width / 2 - 350, // 700px (ширина меню) / 2 = 350px
         top: rect.bottom,
-        transform: 'none'
+        transform: "none",
       });
     }
   }, [active, item]);
 
+  const handleClick = () => {
+    if (active === item && isClicked) {
+      setActive(null);
+      setIsClicked(false);
+    } else {
+      setActive(item);
+      setIsClicked(true);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (!isClicked) {
+      setActive(item);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isClicked) {
+      setActive(null);
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
-      <div 
+      <div
         className={`px-4 py-2 cursor-pointer ${
-          active === item 
-            ? "text-primary-500 font-semibold border-b-2 border-primary-500" 
+          active === item
+            ? "text-primary-500 font-semibold border-b-2 border-primary-500"
             : "text-foreground hover:text-primary-500 hover:border-b-2 hover:border-primary-500"
         } transition-all duration-200`}
-        onMouseEnter={() => setActive(item)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
       >
         {item}
       </div>
       {active === item && (
-        <div 
+        <div
           className="fixed z-50"
           style={menuStyle}
           onMouseEnter={() => setActive(item)}
@@ -63,14 +89,14 @@ export const MenuItem = ({
             transition={transition}
             className="bg-background border-small border-default-200 shadow-medium rounded-medium overflow-hidden"
           >
-            <div 
+            <div
               className="w-[700px] p-4"
               style={{
-                marginTop: '8px',
-                position: 'relative'
+                marginTop: "8px",
+                position: "relative",
               }}
             >
-              <div 
+              <div
                 className="absolute top-[-20px] left-0 w-full h-[20px] bg-transparent"
                 onMouseEnter={() => setActive(item)}
               />
@@ -90,10 +116,30 @@ export const Menu = ({
   setActive: (item: string | null) => void;
   children: React.ReactNode;
 }) => {
+  const handleClickOutside = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('nav')) {
+      setActive(null);
+    }
+  };
+
+  React.useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   return (
-    <nav 
+    <nav
       className="relative flex bg-transparent"
-      onMouseLeave={() => setActive(null)}
+      onMouseLeave={() => {
+        // Тільки закриваємо при hover, не при кліку
+        setTimeout(() => {
+          const clickedItem = document.querySelector('[data-clicked="true"]');
+          if (!clickedItem) {
+            setActive(null);
+          }
+        }, 100);
+      }}
     >
       {children}
     </nav>

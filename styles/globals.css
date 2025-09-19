@@ -1,3 +1,6 @@
+/* Leaflet стилі для OpenStreetMap */
+@import 'leaflet/dist/leaflet.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,30 +34,31 @@
     --radius: 0.5rem
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Варіант 8 - градієнт від синього до фіолетового */
+    --background: 220 25% 16%;
+    --foreground: 220 20% 98%;
+    --card: 240 20% 16%;
+    --card-foreground: 240 20% 98%;
+    --popover: 240 20% 16%;
+    --popover-foreground: 240 20% 98%;
+    --primary: 220 25% 98%;
+    --primary-foreground: 220 25% 16%;
+    --secondary: 240 20% 22%;
+    --secondary-foreground: 240 20% 98%;
+    --muted: 240 20% 22%;
+    --muted-foreground: 240 20% 70%;
+    --accent: 260 15% 22%;
+    --accent-foreground: 260 15% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --destructive-foreground: 220 25% 98%;
+    --border: 240 20% 22%;
+    --input: 240 20% 22%;
+    --ring: 220 25% 83.1%;
+    --chart-1: 220 75% 60%;
+    --chart-2: 240 65% 55%;
+    --chart-3: 260 60% 65%;
+    --chart-4: 200 60% 60%;
+    --chart-5: 290 60% 65%
   }
 }
 
@@ -64,6 +68,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .dark body {
+    @apply dark-gradient-8;
   }
 }
 
@@ -84,5 +91,56 @@
     100% {
       background-position: 0% 50%;
     }
+  }
+
+  .dark-gradient-1 {
+    background-color: hsl(215 20% 17%);
+    background-image: linear-gradient(135deg, hsl(215 20% 15%) 0%, hsl(220 20% 20%) 100%);
+  }
+
+  .dark-gradient-2 {
+    background-color: hsl(220, 20%, 15%);
+    background-image: radial-gradient(circle at top right, hsl(210, 30%, 20%) 0%, hsl(220, 20%, 12%) 100%);
+  }
+
+  .dark-gradient-3 {
+    background-color: hsl(225, 18%, 16%);
+    background-image: linear-gradient(180deg, hsl(225, 18%, 18%) 0%, hsl(225, 18%, 14%) 100%);
+  }
+
+  .dark-gradient-4 {
+    background-color: hsl(210, 25%, 16%);
+    background-image: linear-gradient(120deg, hsl(210, 25%, 16%) 0%, hsl(230, 25%, 18%) 50%, hsl(250, 20%, 20%) 100%);
+    opacity: 0.98;
+  }
+
+  .dark-gradient-5 {
+    background-color: hsl(215, 20%, 16%);
+    background-image: linear-gradient(to bottom, hsl(215, 20%, 16%) 0%, hsl(215, 20%, 14%) 100%);
+  }
+  
+  .dark-gradient-6 {
+    background-color: hsl(218, 25%, 17%);
+    background-image: linear-gradient(to right, hsl(218, 25%, 15%) 0%, hsl(210, 20%, 19%) 100%);
+  }
+  
+  .dark-gradient-7 {
+    background-color: hsl(222, 22%, 16%);
+    background-image: radial-gradient(ellipse at bottom, hsl(222, 22%, 18%) 0%, hsl(222, 22%, 14%) 80%);
+  }
+  
+  .dark-gradient-8 {
+    background-color: hsl(220, 25%, 16%);
+    background-image: linear-gradient(145deg, hsl(220, 25%, 15%) 0%, hsl(240, 20%, 18%) 50%, hsl(260, 15%, 20%) 100%);
+  }
+  
+  .dark-gradient-9 {
+    background-color: hsl(230, 20%, 16%);
+    background-image: radial-gradient(circle at top left, hsl(210, 30%, 20%) 0%, hsl(230, 25%, 14%) 100%);
+  }
+  
+  .dark-gradient-10 {
+    background-color: hsl(225, 20%, 15%);
+    background-image: linear-gradient(to right bottom, hsl(225, 20%, 15%) 0%, hsl(235, 20%, 18%) 50%, hsl(215, 20%, 15%) 100%);
   }
 }

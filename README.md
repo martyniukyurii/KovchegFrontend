@@ -1,55 +1,70 @@
-# Next.js & HeroUI Template
+# Ваш Ковчег - агентство нерухомості
 
-This is a template for creating applications using Next.js 14 (pages directory) and HeroUI (v2).
+Сучасний веб-сайт для агентства нерухомості з багатомовною підтримкою, розроблений на Next.js з використанням HeroUI.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/next-pages-template)
+## Особливості
 
-> Note: Since Next.js 14, the pages router is recommend migrating to the [new App Router](https://nextjs.org/docs/app) to leverage React's latest features
->
-> Read more: [Pages Router](https://nextjs.org/docs/pages)
+- Адаптивний дизайн для всіх пристроїв
+- Багатомовність (українська, англійська, російська)
+- Інтерактивні слайдери та карусель пропозицій
+- Світла/темна тема
+- Аутентифікація через OAuth (Google, Apple)
 
-## Technologies Used
+## Технічний стек
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI](https://heroui.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+- Next.js 15
+- React 18
+- TypeScript
+- Tailwind CSS
+- HeroUI
+- i18n для локалізації
 
-## How to Use
+## Локальна розробка
 
-To create a new project based on this template using `create-next-app`, run the following command:
-
+1. Клонуйте репозиторій:
 ```bash
-npx create-next-app -e https://github.com/heroui-inc/next-pages-template
+git clone [URL репозиторію]
+cd kovchegfrontend
 ```
 
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
+2. Встановіть залежності:
 ```bash
 npm install
 ```
 
-### Run the development server
+3. Створіть файл `.env.local` на основі `.env.local.example`:
+```bash
+cp .env.local.example .env.local
+```
 
+4. Запустіть проект:
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+Застосунок буде доступний за адресою [http://localhost:3000](http://localhost:3000).
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## Деплой на Vercel
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
+Для деплою проекту на Vercel виконайте наступні кроки:
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+1. **Підготовка проекту**: Переконайтесь, що у вас є файл `vercel.json` з необхідними налаштуваннями.
 
-## License
+2. **Використання Vercel CLI**:
+   ```bash
+   npx vercel login
+   npx vercel
+   ```
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-pages-template/blob/main/LICENSE).
+3. **Альтернативний спосіб через GitHub**:
+   - Завантажте проект на GitHub
+   - Підключіть ваш GitHub-акаунт до Vercel
+   - Виберіть репозиторій для розгортання
+   - Vercel автоматично налаштує все для правильного запуску проекту
+
+4. **Налаштування змінних оточення**:
+   - Додайте необхідні змінні оточення в налаштуваннях проекту на Vercel
+
+## Ліцензія
+
+[MIT](LICENSE)

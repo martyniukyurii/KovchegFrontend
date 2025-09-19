@@ -5,6 +5,9 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
 
 import { fontSans, fontMono } from "@/config/fonts";
+import { TranslationProvider } from "@/hooks/useTranslation";
+import { TranslationWrapper } from "@/components/translation-wrapper";
+
 import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -13,7 +16,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider attribute="class" defaultTheme="system">
-        <Component {...pageProps} />
+        <TranslationProvider>
+          <TranslationWrapper>
+            <Component {...pageProps} />
+          </TranslationWrapper>
+        </TranslationProvider>
       </NextThemesProvider>
     </HeroUIProvider>
   );

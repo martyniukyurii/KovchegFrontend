@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ImagesSlider } from "../ui/images-slider";
-import { PlaceholdersAndVanishInput } from "../ui/placeholders-and-vanish-input";
-import { useTranslation } from "@/hooks/useTranslation";
-import { TextGenerateEffect } from "../ui/text-generate-effect";
 import { motion, AnimatePresence } from "framer-motion";
 
-type Locale = 'uk' | 'en' | 'ru';
+import { ImagesSlider } from "../ui/images-slider";
+import { PlaceholdersAndVanishInput } from "../ui/placeholders-and-vanish-input";
+import { TextGenerateEffect } from "../ui/text-generate-effect";
+
+import { useTranslation } from "@/hooks/useTranslation";
+
+type Locale = "uk" | "en" | "ru";
 
 type GradientWords = {
   [key in Locale]: string[];
@@ -18,32 +20,34 @@ export function ImagesSliderDemo() {
   const { t, locale } = useTranslation();
 
   const placeholders = [
-    t('search.placeholders.apartments'),
-    t('search.placeholders.house'),
-    t('search.placeholders.commercial'),
-    t('search.placeholders.rent'),
-    t('search.placeholders.premium')
+    t("search.placeholders.apartments"),
+    t("search.placeholders.house"),
+    t("search.placeholders.commercial"),
+    t("search.placeholders.rent"),
+    t("search.placeholders.premium"),
   ];
 
-  const heroText = t('hero.text');
+  const heroText = t("hero.text");
   const gradientWords: GradientWords = {
     uk: ["нова", "квартира"],
     en: ["new", "apartment"],
-    ru: ["новая", "квартира"]
+    ru: ["новая", "квартира"],
   };
 
   useEffect(() => {
     // Завантажуємо список фотографій через API
     const fetchImages = async () => {
       try {
-        const res = await fetch('/api/slider-images');
+        const res = await fetch("/api/slider-images");
+
         if (!res.ok) {
-          throw new Error('Failed to fetch images');
+          throw new Error("Failed to fetch images");
         }
         const data = await res.json();
+
         setImages(data.images || []);
       } catch (error) {
-        console.error('Error fetching slider images:', error);
+        console.error("Error fetching slider images:", error);
         setImages([]);
       }
     };
@@ -54,11 +58,13 @@ export function ImagesSliderDemo() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
+
       setShowArrow(scrollPosition < 100);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,29 +80,27 @@ export function ImagesSliderDemo() {
   if (images.length === 0) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
-        <p className="text-white">{t('loading')}</p>
+        <p className="text-white">{t("loading")}</p>
       </div>
     );
   }
 
   return (
-    <ImagesSlider 
-      className="absolute inset-0" 
-      images={images}
-      overlay={true}
-    >
-      <div className="z-50 flex flex-col justify-center items-center w-full mx-auto px-4 gap-8">
-        <div className="text-4xl md:text-[2.75rem] font-bold tracking-tight text-center w-full">
-          <TextGenerateEffect 
-            words={heroText} 
-            gradientWords={gradientWords[locale]} 
+    <ImagesSlider className="absolute inset-0" images={images} overlay={true}>
+      <div className="z-50 flex flex-col justify-center items-center w-full mx-auto px-6 sm:px-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="text-base sm:text-xl md:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-center w-full max-w-sm sm:max-w-none leading-tight sm:leading-normal">
+          <TextGenerateEffect
+            words={heroText}
+            gradientWords={gradientWords[locale]}
           />
         </div>
-        <PlaceholdersAndVanishInput
-          placeholders={placeholders}
-          onChange={handleChange}
-          onSubmit={onSubmit}
-        />
+        <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl scale-85 sm:scale-90 md:scale-100">
+          <PlaceholdersAndVanishInput
+            placeholders={placeholders}
+            onChange={handleChange}
+            onSubmit={onSubmit}
+          />
+        </div>
       </div>
       <AnimatePresence mode="wait">
         {showArrow && (
@@ -106,22 +110,23 @@ export function ImagesSliderDemo() {
             exit={{ opacity: 0, y: 20 }}
             animate={{
               y: [0, 10, 0],
-              opacity: 1
+              opacity: 1,
             }}
             transition={{
               y: {
                 duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: "easeInOut",
               },
               opacity: {
-                duration: 0.3
-              }
+                duration: 0.3,
+              },
             }}
             onClick={() => {
-              const topOffersSection = document.querySelector('#top-offers');
+              const topOffersSection = document.querySelector("#top-offers");
+
               if (topOffersSection) {
-                topOffersSection.scrollIntoView({ behavior: 'smooth' });
+                topOffersSection.scrollIntoView({ behavior: "smooth" });
               }
             }}
           >
@@ -145,4 +150,4 @@ export function ImagesSliderDemo() {
       </AnimatePresence>
     </ImagesSlider>
   );
-} 
+}

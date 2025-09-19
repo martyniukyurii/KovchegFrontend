@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 export const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement>,
-  callback: Function
+  callback: Function,
 ) => {
   useEffect(() => {
     const listener = (event: any) => {
@@ -20,4 +20,4 @@ export const useOutsideClick = (
       document.removeEventListener("touchstart", listener);
     };
   }, [ref, callback]);
-}; 
+};

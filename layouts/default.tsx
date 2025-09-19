@@ -1,5 +1,4 @@
-import { FC, PropsWithChildren, ReactNode } from "react";
-import { Link } from "@heroui/link";
+import { FC, ReactNode } from "react";
 
 import { Head } from "./head";
 
@@ -12,9 +11,7 @@ interface DefaultLayoutProps {
   children: ReactNode;
 }
 
-export const DefaultLayout: FC<DefaultLayoutProps> = ({
-  children,
-}) => {
+export const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
   const { translations } = useTranslation();
   const translationsLoaded = Object.keys(translations).length > 0;
 
@@ -26,9 +23,7 @@ export const DefaultLayout: FC<DefaultLayoutProps> = ({
         {!translationsLoaded ? (
           <LoadingSpinner />
         ) : (
-          <div className="container mx-auto max-w-7xl px-6">
-            {children}
-          </div>
+          <div className="container mx-auto max-w-7xl px-6">{children}</div>
         )}
       </main>
       <Footer />

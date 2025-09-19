@@ -2,7 +2,8 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Ваш Ковчег - агентство нерухомості",
-  description: "Агентство нерухомості Ваш Ковчег - ваш надійний партнер у світі нерухомості",
+  description:
+    "Агентство нерухомості Ваш Ковчег - ваш надійний партнер у світі нерухомості",
   navItems: [
     {
       label: "Buy",
@@ -23,7 +24,7 @@ export const siteConfig = {
     {
       label: "About",
       href: "/about",
-    }
+    },
   ],
   navMenuItems: [
     {
@@ -45,9 +46,9 @@ export const siteConfig = {
     {
       label: "Logout",
       href: "/logout",
-    }
+    },
   ],
   links: {
-    website: "https://vashkovcheg.com"
-  }
+    website: "https://vashkovcheg.com",
+  },
 };

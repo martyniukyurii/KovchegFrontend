@@ -33,17 +33,43 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">{t('footer.contacts')}</h4>
             <ul className="space-y-2">
-              <li className="flex items-center text-white/80">
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
                 <Phone className="w-4 h-4 mr-2" />
-                <span>{t('footer.phone')}</span>
+                <a 
+                  href={`tel:${t('footer.phone')}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {t('footer.phone')}
+                </a>
               </li>
-              <li className="flex items-center text-white/80">
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
+                <Phone className="w-4 h-4 mr-2" />
+                <a 
+                  href={`tel:${t('footer.phone2')}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {t('footer.phone2')}
+                </a>
+              </li>
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
                 <Mail className="w-4 h-4 mr-2" />
-                <span>{t('footer.email')}</span>
+                <a 
+                  href={`mailto:${t('footer.email')}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {t('footer.email')}
+                </a>
               </li>
-              <li className="flex items-center text-white/80">
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
                 <MapPin className="w-4 h-4 mr-2" />
-                <span>{t('footer.address')}</span>
+                <a 
+                  href={t('footer.googleMapsUrl')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  {t('footer.address')}
+                </a>
               </li>
             </ul>
           </div>
@@ -53,7 +79,7 @@ export function Footer() {
             <div className="flex space-x-4">
               <Link 
                 className="text-white/80 hover:text-white transition-colors"
-                href="https://facebook.com" 
+                href="https://www.facebook.com/vashkovcheg" 
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -61,7 +87,7 @@ export function Footer() {
               </Link>
               <Link 
                 className="text-white/80 hover:text-white transition-colors"
-                href="https://instagram.com"
+                href="https://instagram.com/vashkovcheg"
                 rel="noopener noreferrer"
                 target="_blank"
               >

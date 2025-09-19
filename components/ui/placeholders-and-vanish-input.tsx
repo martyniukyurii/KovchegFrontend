@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { SearchIcon } from "@/components/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useRef } from "react";
+
+import { SearchIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -41,8 +42,10 @@ export function PlaceholdersAndVanishInput({
   const draw = useCallback(() => {
     if (!inputRef.current) return;
     const canvas = canvasRef.current;
+
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
+
     if (!ctx) return;
 
     canvas.width = 800;
@@ -51,6 +54,7 @@ export function PlaceholdersAndVanishInput({
     const computedStyles = getComputedStyle(inputRef.current);
 
     const fontSize = parseFloat(computedStyles.getPropertyValue("font-size"));
+
     ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
     ctx.fillStyle = "#FFF";
     ctx.fillText(value, 16, 40);
@@ -61,8 +65,10 @@ export function PlaceholdersAndVanishInput({
 
     for (let t = 0; t < 800; t++) {
       let i = 4 * t * 800;
+
       for (let n = 0; n < 800; n++) {
         let e = i + 4 * n;
+
         if (
           pixelData[e] !== 0 &&
           pixelData[e + 1] !== 0 &&
@@ -98,8 +104,10 @@ export function PlaceholdersAndVanishInput({
     const animateFrame = (pos: number = 0) => {
       requestAnimationFrame(() => {
         const newArr = [];
+
         for (let i = 0; i < newDataRef.current.length; i++) {
           const current = newDataRef.current[i];
+
           if (current.x < pos) {
             newArr.push(current);
           } else {
@@ -115,10 +123,12 @@ export function PlaceholdersAndVanishInput({
         }
         newDataRef.current = newArr;
         const ctx = canvasRef.current?.getContext("2d");
+
         if (ctx) {
           ctx.clearRect(pos, 0, 800, 800);
           newDataRef.current.forEach((t) => {
             const { x: n, y: i, r: s, color: color } = t;
+
             if (n > pos) {
               ctx.beginPath();
               ctx.rect(n, i, s, s);
@@ -136,6 +146,7 @@ export function PlaceholdersAndVanishInput({
         }
       });
     };
+
     animateFrame(start);
   };
 
@@ -150,11 +161,13 @@ export function PlaceholdersAndVanishInput({
     draw();
 
     const value = inputRef.current?.value || "";
+
     if (value && inputRef.current) {
       const maxX = newDataRef.current.reduce(
         (prev, current) => (current.x > prev ? current.x : prev),
-        0
+        0,
       );
+
       animate(maxX);
     }
   };
@@ -169,12 +182,12 @@ export function PlaceholdersAndVanishInput({
     <form
       onSubmit={handleSubmit}
       className={cn(
-        "w-[800px] max-w-[90%] relative mx-auto bg-white dark:bg-zinc-800 h-14 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
-        value && "bg-gray-50"
+        "w-[800px] max-w-[90%] relative mx-auto bg-white dark:bg-zinc-800 h-12 sm:h-14 md:h-14 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+        value && "bg-gray-50",
       )}
     >
       <div className="relative flex items-center h-full">
-        <SearchIcon className="absolute left-4 text-xl text-default-400 pointer-events-none flex-shrink-0 top-1/2 -translate-y-1/2" />
+        <SearchIcon className="absolute left-4 sm:left-4 text-sm sm:text-lg md:text-xl text-default-400 pointer-events-none flex-shrink-0 top-1/2 -translate-y-1/2" />
         <input
           type="text"
           onChange={(e) => {
@@ -187,12 +200,12 @@ export function PlaceholdersAndVanishInput({
           ref={inputRef}
           value={value}
           className={cn(
-            "w-full h-full pl-12 pr-14 text-lg rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500",
-            isVisible ? "opacity-100" : "opacity-0"
+            "w-full h-full pl-12 sm:pl-12 pr-12 sm:pr-14 text-xl sm:text-lg md:text-lg rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500",
+            isVisible ? "opacity-100" : "opacity-0",
           )}
         />
 
-        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+        <div className="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2">
           <motion.button
             disabled={!value}
             type="submit"
@@ -204,7 +217,7 @@ export function PlaceholdersAndVanishInput({
             transition={{
               duration: 1.5,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
           >
             <motion.svg
@@ -217,7 +230,7 @@ export function PlaceholdersAndVanishInput({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-neutral-900 dark:text-neutral-100 h-5 w-5"
+              className="text-neutral-900 dark:text-neutral-100 h-4 w-4 sm:h-5 sm:w-5"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <motion.path
@@ -262,7 +275,7 @@ export function PlaceholdersAndVanishInput({
                 duration: 0.3,
                 ease: "linear",
               }}
-              className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-12 text-left w-[calc(100%-2rem)] truncate"
+              className="dark:text-zinc-500 text-lg sm:text-base md:text-base font-normal text-neutral-500 pl-12 sm:pl-12 md:pl-12 text-left w-[calc(100%-2rem)] truncate"
             >
               {placeholders[currentPlaceholder]}
             </motion.p>

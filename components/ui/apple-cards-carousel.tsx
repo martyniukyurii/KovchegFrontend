@@ -11,10 +11,10 @@ import {
   IconArrowNarrowRight,
   IconX,
 } from "@tabler/icons-react";
-import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import Image, { ImageProps } from "next/image";
-import { useOutsideClick } from "@/hooks/use-outside-click";
+
+import { cn } from "@/lib/utils";
 
 interface CarouselProps {
   items: JSX.Element[];
@@ -52,17 +52,20 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   useEffect(() => {
     const checkScreen = () => {
       const width = window.innerWidth;
+
       setIsMobile(width < 768);
       // Розраховуємо кількість видимих карток на екрані
       const cardWidth = width < 768 ? width - 64 : 380;
       const gap = 16;
       const containerWidth = width - (width < 768 ? 32 : 48); // зменшуємо відступи
+
       setVisibleCards(Math.floor((containerWidth + gap) / (cardWidth + gap)));
     };
-    
+
     checkScreen();
-    window.addEventListener('resize', checkScreen);
-    return () => window.removeEventListener('resize', checkScreen);
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
   const totalItems = items.length;
@@ -72,7 +75,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
       // Якщо ми на початку, переходимо в кінець
       setCurrentIndex(totalItems - visibleCards);
     } else {
-      setCurrentIndex(prev => Math.max(0, prev - 1));
+      setCurrentIndex((prev) => Math.max(0, prev - 1));
     }
   };
 
@@ -81,7 +84,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
       // Якщо ми бачимо останні картки, повертаємося на початок
       setCurrentIndex(0);
     } else {
-      setCurrentIndex(prev => Math.min(totalItems - visibleCards, prev + 1));
+      setCurrentIndex((prev) => Math.min(totalItems - visibleCards, prev + 1));
     }
   };
 
@@ -92,6 +95,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   const getTranslateX = () => {
     const gap = 16;
     const cardWidth = isMobile ? window.innerWidth - 64 : 380;
+
     return -(cardWidth + gap) * currentIndex;
   };
 
@@ -104,13 +108,15 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   };
 
   return (
-    <CarouselContext.Provider value={{ 
-      onCardClose: handleCardClose, 
-      currentIndex, 
-      closeAllCards, 
-      openCardIndex,
-      onCardOpen: handleCardOpen 
-    }}>
+    <CarouselContext.Provider
+      value={{
+        onCardClose: handleCardClose,
+        currentIndex,
+        closeAllCards,
+        openCardIndex,
+        onCardOpen: handleCardOpen,
+      }}
+    >
       <div className="relative w-full">
         <div className="absolute left-0 md:left-2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
           <button
@@ -148,17 +154,17 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         </div>
 
         <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: totalItems - visibleCards + 1 }).map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                index === currentIndex
-                  ? "bg-foreground"
-                  : "bg-foreground/20"
-              }`}
-              onClick={() => setCurrentIndex(index)}
-            />
-          ))}
+          {Array.from({ length: totalItems - visibleCards + 1 }).map(
+            (_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === currentIndex ? "bg-foreground" : "bg-foreground/20"
+                }`}
+                onClick={() => setCurrentIndex(index)}
+              />
+            ),
+          )}
         </div>
       </div>
     </CarouselContext.Provider>
@@ -176,7 +182,8 @@ export const Card = ({
 }) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { closeAllCards, openCardIndex, onCardOpen } = useContext(CarouselContext);
+  const { closeAllCards, openCardIndex, onCardOpen } =
+    useContext(CarouselContext);
 
   useEffect(() => {
     if (openCardIndex !== null && openCardIndex !== index) {
@@ -268,12 +275,13 @@ export const BlurImage = ({
   ...rest
 }: ImageProps) => {
   const [isLoading, setLoading] = useState(true);
+
   return (
     <Image
       className={cn(
         "transition duration-300",
         isLoading ? "blur-sm" : "blur-0",
-        className
+        className,
       )}
       onLoad={() => setLoading(false)}
       src={src}

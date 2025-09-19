@@ -1,4 +1,7 @@
 {
+  "common": {
+    "companyName": "Your Kovcheg"
+  },
   "nav": {
     "buy": "Buy",
     "rent": "Rent",
@@ -14,7 +17,7 @@
     "logout": "Logout"
   },
   "auth": {
-    "title": "Authorization",
+    "title": "Join or Sign In",
     "login": "Login",
     "signUp": "Sign Up",
     "email": "Email",
@@ -24,7 +27,125 @@
     "name": "Name",
     "namePlaceholder": "Enter your name",
     "needAccount": "Need an account?",
-    "haveAccount": "Already have an account?"
+    "haveAccount": "Already have an account?",
+    "orLoginWith": "Or login with",
+    "orRegisterWith": "Or register with"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordTitle": "Password Recovery",
+    "loginButton": "Login",
+    "loginLoading": "Logging in...",
+    "backButton": "Back",
+    "sendButton": "Send",
+    "sendLoading": "Sending...",
+    "recoveryEmailInfo": "Enter your email to receive password recovery instructions",
+    "recoveryEmailSent": "Check your email for password recovery instructions.",
+    "returnToLogin": "Return to login",
+    "orLoginWith": "or login with",
+    "or": "or",
+    "telegramLogin": "Login with Telegram",
+    "backToHome": "Back to home",
+    "allRightsReserved": "All rights reserved",
+    "companyName": "Your Kovcheg"
+  },
+  "footer": {
+    "tagline": "Your reliable partner in real estate in Chernivtsi",
+    "navigation": "Navigation",
+    "contacts": "Contacts",
+    "phone": "+38050 150 55 55",
+    "phone2": "+38068 850 55 55",
+    "email": "kovcheg@gmail.com",
+    "address": "vul. Nebesnoyi Sotni 8, Chernivtsi 58005",
+    "googleMapsUrl": "https://maps.google.com/maps?q=vul.+Nebesnoyi+Sotni+8,+Chernivtsi+58005",
+    "socialMedia": "Social Media",
+    "instagram": "instagram.com/vashkovcheg",
+    "facebook": "https://www.facebook.com/vashkovcheg",
+    "copyright": "All rights reserved."
+  },
+  "topOffers": {
+    "title": "TOP offers in Chernivtsi",
+    "description": "Description",
+    "features": "Features",
+    "learnMore": "Learn more",
+    "categories": {
+      "apartments": "Apartments",
+      "houses": "Houses",
+      "commercial": "Commercial"
+    },
+    "properties": {
+      "apartment": {
+        "title": "Central apartment",
+        "location": "1 Holovna St."
+      },
+      "cottage": {
+        "title": "Cottage with pool",
+        "location": "15 Park St."
+      },
+      "penthouse": {
+        "title": "Penthouse",
+        "location": "7 Sky St."
+      },
+      "office": {
+        "title": "Office space",
+        "location": "10 Business St."
+      },
+      "studio": {
+        "title": "Renovated studio",
+        "location": "15 Youth St."
+      },
+      "retail": {
+        "title": "Retail space",
+        "location": "8 Central St."
+      }
+    },
+    "descriptions": {
+      "apartment": "Spacious and bright apartment with modern renovation. Convenient location in the city center, near parks, schools and shops. Individual heating, air conditioning, furniture and appliances included in the price.",
+      "house": "Luxurious cottage with its own pool and well-maintained area. Panoramic windows, terrace for relaxation, garage for 2 cars. High-quality materials and modern life support systems.",
+      "commercial": "Premises with quality renovation and convenient location. High pedestrian traffic, separate entrance, all utilities. Perfect for business of any format."
+    },
+    "offerFeatures": {
+      "apartments": {
+        "bedrooms": "2 bedrooms",
+        "bathroom": "1 bathroom",
+        "area": "Area: 65 sq.m",
+        "floor": "Floor: 4/9"
+      },
+      "houses": {
+        "bedrooms": "4 bedrooms",
+        "bathrooms": "2 bathrooms",
+        "area": "Area: 180 sq.m",
+        "land": "Land: 10 acres"
+      },
+      "commercial": {
+        "area": "Area: 120 sq.m",
+        "floor": "1st floor",
+        "windows": "Showcases",
+        "parking": "Parking"
+      }
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "questions": {
+      "buyingProcess": {
+        "question": "How long does the property buying process usually take?",
+        "answer": "The average time from beginning your search to signing a purchase agreement is 2-3 weeks. We work as efficiently as possible to save your time."
+      },
+      "mortgage": {
+        "question": "What documents are needed to apply for a mortgage?",
+        "answer": "For a mortgage application, you'll need a passport, tax ID, income certificate, and bank statement showing transactions for the last 6 months. Our experts will help you gather all necessary documents."
+      },
+      "commission": {
+        "question": "What commission do you charge for your services?",
+        "answer": "Our commissions depend on the type of operation and complexity of the deal. We offer a transparent pricing system and discuss all details at the beginning of our cooperation."
+      },
+      "onlineRent": {
+        "question": "Is it possible to arrange a rental online?",
+        "answer": "Yes, we provide the option for remote rental arrangements. All documents can be signed electronically, and property viewings can be conducted via video call."
+      }
+    }
   },
   "search": {
     "placeholder": "Search...",
@@ -61,7 +182,7 @@
         "title": "Daily",
         "description": "Short-term rental"
       },
-      "long_term": {
+      "longterm": {
         "title": "Long-term",
         "description": "Long-term rental"
       },
@@ -149,6 +270,207 @@
       "title": "Rental",
       "description": "Quick search for housing for individuals and business premises. We offer a full range of real estate rental services taking into account your needs.",
       "button": "View offers"
+    }
+  },
+  "crm": {
+    "title": "CRM System",
+    "nav": {
+      "analytics": "Analytics",
+      "calendar": "Calendar",
+      "deals": "Deals",
+      "clients": "Clients",
+      "properties": "Properties", 
+      "communications": "Communications",
+      "documents": "Documents",
+      "marketing": "Marketing"
+    },
+    "sections": {
+      "comingSoon": "This section is under development. Coming soon.",
+      "analytics": {
+        "title": "General Analytics"
+      },
+      "calendar": {
+        "title": "Calendar & Tasks"
+      },
+      "deals": {
+        "title": "Deals"
+      },
+      "clients": {
+        "title": "Clients"
+      },
+      "properties": {
+        "title": "Real Estate Objects"
+      },
+      "communications": {
+        "title": "Communications"
+      },
+      "documents": {
+        "title": "Documents"
+      },
+      "marketing": {
+        "title": "Marketing"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "General statistics and performance indicators",
+      "totalSales": "Total Sales",
+      "newClients": "New Clients",
+      "activeProperties": "Active Properties",
+      "conversionRate": "Conversion Rate",
+      "salesChart": "Sales Dynamics",
+      "chartPlaceholder": "Chart will be displayed after data is received",
+      "topDeals": "Top Deals",
+      "dealName": "Deal",
+      "clientName": "Client"
+    },
+    "calendar": {
+      "subtitle": "Task and meeting management",
+      "today": "Today",
+      "noEvents": "No events for this date",
+      "addEvent": "Add event",
+      "details": "Details",
+      "hide": "Hide",
+      "edit": "Edit",
+      "complete": "Complete",
+      "cancel": "Cancel",
+      "restore": "Restore"
+    },
+    "deals": {
+      "subtitle": "Management of real estate deals and transactions",
+      "searchPlaceholder": "Search by name, client, property...",
+      "filters": "Filters",
+      "newDeal": "New Deal",
+      "edit": "Edit",
+      "delete": "Delete",
+      "allStatuses": "All Statuses",
+      "allTypes": "All Types",
+      "filterByStatus": "Filter by Status",
+      "filterByType": "Filter by Type",
+      "sortBy": "Sort by",
+      "noDealsFound": "No deals found",
+      "createFirstDeal": "Create first deal",
+      "editDeal": "Edit deal",
+      "progressStatus": "Progress status",
+      "cancelDeal": "Cancel deal",
+      "reopenDeal": "Reopen deal",
+      "hideDetails": "Hide details",
+      "viewDetails": "View details",
+      "client": "Client",
+      "property": "Property",
+      "responsibleAgent": "Responsible Agent",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "closingDate": "Closing date",
+      "description": "Description",
+      "value": "Value",
+      "statuses": {
+        "new": "New",
+        "negotiation": "Negotiation",
+        "preparation": "Preparation",
+        "pending": "Pending",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      },
+      "types": {
+        "sale": "Sale",
+        "purchase": "Purchase",
+        "rent": "Residential Rent",
+        "lease": "Commercial Lease"
+      }
+    },
+    "documents": {
+      "title": "Documents",
+      "uploadNew": "Upload",
+      "searchPlaceholder": "Search documents...",
+      "filter": "Filter",
+      "allTypes": "All Types",
+      "folders": "Folders",
+      "name": "Name",
+      "size": "Size",
+      "updatedAt": "Updated",
+      "createdBy": "Created By",
+      "actions": "Actions",
+      "noDocuments": "No documents found",
+      "selected": "Selected: {count}",
+      "download": "Download",
+      "delete": "Delete"
+    },
+    "marketing": {
+      "title": "Marketing",
+      "tabCampaigns": "Campaigns",
+      "tabAudience": "Audience",
+      "tabAnalytics": "Analytics",
+      "searchPlaceholder": "Search campaigns...",
+      "filterStatus": "Status",
+      "filterAll": "All",
+      "statusActive": "Active",
+      "statusDraft": "Draft",
+      "statusCompleted": "Completed",
+      "statusScheduled": "Scheduled",
+      "newCampaign": "New Campaign",
+      "campaign": "Campaign",
+      "status": "Status",
+      "type": "Type",
+      "target": "Target Audience",
+      "dates": "Dates",
+      "budget": "Budget",
+      "performance": "Performance", 
+      "actions": "Actions",
+      "noCampaigns": "No campaigns found",
+      "reach": "Reach",
+      "engagement": "Engagement",
+      "conversion": "Conversion"
+    }
+  },
+  "profile": {
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "logout": "Log Out",
+    "darkTheme": "Dark Theme",
+    "lightTheme": "Light Theme"
+  },
+  "loading": "Loading...",
+  "buy": {
+    "searchPlaceholder": "Search properties...",
+    "resultsCount": "found",
+    "properties": "properties",
+    "noPropertiesFound": "No properties found",
+    "tryDifferentFilters": "Try different filters",
+    "featured": "featured",
+    "filters": {
+      "apartment": "Apartment",
+      "house": "House",
+      "commercial": "Commercial",
+      "land": "Land",
+      "rooms": "Number of rooms",
+      "floor": "Floor",
+      "priceFrom": "Price from",
+      "priceTo": "Price to",
+      "currency": "Currency",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "viewModes": {
+      "split": "Split view",
+      "map": "Map only", 
+      "grid": "Grid only"
+    },
+    "details": "Details"
+  },
+  "rent": {
+    "searchPlaceholder": "Search rentals...",
+    "resultsCount": "found",
+    "properties": "properties",
+    "noPropertiesFound": "No rental properties found",
+    "tryDifferentFilters": "Try different filters",
+    "featured": "featured",
+    "details": "Details",
+    "filters": {
+      "daily": "Daily",
+      "longterm": "Long-term",
+      "commercial": "Commercial",
+      "premium": "Premium"
     }
   }
 } 

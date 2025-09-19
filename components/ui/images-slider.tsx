@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 
 export const ImagesSlider = ({
@@ -22,7 +23,7 @@ export const ImagesSlider = ({
     const interval = setInterval(() => {
       setDirection(-1);
       setCurrentIndex((prevIndex) =>
-        prevIndex === 0 ? images.length - 1 : prevIndex - 1
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1,
       );
     }, slideInterval);
 
@@ -32,25 +33,25 @@ export const ImagesSlider = ({
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? -1000 : 1000,
-      opacity: 0
+      opacity: 0,
     }),
     center: {
       zIndex: 1,
       x: 0,
-      opacity: 1
+      opacity: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
       x: direction < 0 ? -1000 : 1000,
-      opacity: 0
-    })
+      opacity: 0,
+    }),
   };
 
   return (
     <div
       className={cn(
         "w-full h-full overflow-hidden relative flex items-center justify-center",
-        className
+        className,
       )}
     >
       <AnimatePresence initial={false} custom={direction}>
@@ -63,7 +64,7 @@ export const ImagesSlider = ({
           exit="exit"
           transition={{
             x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 }
+            opacity: { duration: 0.2 },
           }}
           className="absolute inset-0"
         >
@@ -71,13 +72,11 @@ export const ImagesSlider = ({
             src={images[currentIndex]}
             alt="Чернівці"
             className="w-full h-full object-cover"
-            style={{ objectPosition: 'center center' }}
+            style={{ objectPosition: "center center" }}
           />
         </motion.div>
       </AnimatePresence>
-      {overlay && (
-        <div className="absolute inset-0 bg-black/60 z-10" />
-      )}
+      {overlay && <div className="absolute inset-0 bg-black/60 z-10" />}
       <div className="relative z-20">{children}</div>
     </div>
   );

@@ -1,17 +1,1079 @@
-import { title } from "@/components/primitives";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Pagination } from "@heroui/pagination";
+import { Card, CardBody, CardFooter } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Drawer, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } from "@heroui/drawer";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
+import { useDisclosure } from "@heroui/react";
+import { Tabs, Tab } from "@heroui/tabs";
+import {
+  IconFilter,
+  IconHome,
+  IconSearch,
+  IconMapPin,
+  IconRuler,
+  IconGrid3x3,
+  IconMap,
+  IconLayoutSidebarRightExpand,
+  IconCurrencyDollar,
+  IconCurrencyEuro,
+  IconCurrency
+} from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
 import DefaultLayout from "@/layouts/default";
 import { useTranslation } from "@/hooks/useTranslation";
+import { OpenStreetMap } from "@/components/maps/openstreet-map";
+
+// Типи для нерухомості
+type PropertyType = "apartment" | "house" | "commercial" | "land";
+type PropertyStatus = "active" | "pending" | "sold" | "reserved";
+type ViewMode = "grid" | "map" | "split";
+
+// Інтерфейс для об'єкта нерухомості
+interface Property {
+  id: string;
+  title: string;
+  type: PropertyType;
+  status: PropertyStatus;
+  isFeatured: boolean;
+  price: number;
+  currency: string;
+  address: string;
+  area: number;
+  rooms?: number;
+  floor?: number;
+  totalFloors?: number;
+  description?: string;
+  images: string[];
+  tags: string[];
+  coordinates?: { lat: number; lng: number };
+}
 
 export default function BuyPage() {
+  const router = useRouter();
   const { t } = useTranslation();
+
+  // Дані для фільтрів
+  const propertyTypes = [
+    {key: "apartment", label: t("buy.filters.apartment") || "Квартира"},
+    {key: "house", label: t("buy.filters.house") || "Будинок"},
+    {key: "commercial", label: t("buy.filters.commercial") || "Комерційна"},
+    {key: "land", label: t("buy.filters.land") || "Земельна ділянка"},
+  ];
+
+  const roomOptions = [
+    {key: "1", label: "1 кімната"},
+    {key: "2", label: "2 кімнати"},
+    {key: "3", label: "3 кімнати"},
+    {key: "4", label: "4 кімнати"},
+    {key: "5", label: "5+ кімнат"},
+  ];
+
+  const floorOptions = [
+    {key: "1", label: "1 поверх"},
+    {key: "2", label: "2 поверх"},
+    {key: "3", label: "3 поверх"},
+    {key: "4", label: "4 поверх"},
+    {key: "5", label: "5+ поверх"},
+  ];
+
+  const currencies = [
+    {key: "EUR", label: "EUR", icon: IconCurrencyEuro},
+    {key: "USD", label: "USD", icon: IconCurrencyDollar},
+    {key: "UAH", label: "₴", icon: IconCurrency},
+  ];
   
+  // States
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<PropertyType | "all">("all");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [areaMin, setAreaMin] = useState("");
+  const [areaMax, setAreaMax] = useState("");
+  const [rooms, setRooms] = useState("all");
+  const [floor, setFloor] = useState("");
+  const [currency, setCurrency] = useState("EUR");
+  const [viewMode, setViewMode] = useState<ViewMode>("split");
+  
+  // Drawer для фільтрів
+  const {isOpen: isFiltersOpen, onOpen: onFiltersOpen, onOpenChange: onFiltersOpenChange} = useDisclosure();
+  
+  // Modal для карти
+  const {isOpen: isMapOpen, onOpen: onMapOpen, onOpenChange: onMapOpenChange} = useDisclosure();
+
+  // Пагінація
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  const currentItems = filteredProperties.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Фейкові дані нерухомості з координатами
+  const dummyProperties: Property[] = [
+    {
+      id: "1",
+      title: "Затишна 2-кімнатна квартира",
+      type: "apartment",
+      status: "active",
+      isFeatured: true,
+      price: 85000,
+      currency: "EUR",
+      address: "вул. Головна, 25, кв. 12, Чернівці",
+      area: 62.5,
+      rooms: 2,
+      floor: 3,
+      totalFloors: 9,
+      coordinates: { lat: 48.2975, lng: 25.9322 },
+      description: "Простора квартира з сучасним ремонтом",
+      images: [
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["індивідуальне опалення", "новобудова", "панорамні вікна"],
+    },
+    {
+      id: "2",
+      title: "Комерційне приміщення в центрі міста",
+      type: "commercial",
+      status: "active",
+      isFeatured: true,
+      price: 150000,
+      currency: "EUR",
+      address: "вул. Головна, 120, Чернівці",
+      area: 85.0,
+      floor: 1,
+      totalFloors: 4,
+      coordinates: { lat: 48.2922, lng: 25.9285 },
+      description: "Приміщення на першому поверсі з окремим входом",
+      images: [
+        "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["центр", "окремий вхід", "вітрини"],
+    },
+    {
+      id: "3",
+      title: "Будинок з ділянкою на околиці",
+      type: "house",
+      status: "pending",
+      isFeatured: false,
+      price: 120000,
+      currency: "EUR",
+      address: "вул. Садова, 42, с. Коровія, Чернівецький район",
+      area: 140.0,
+      rooms: 4,
+      totalFloors: 2,
+      coordinates: { lat: 48.3156, lng: 25.9012 },
+      description: "Двоповерховий будинок з прибудинковою ділянкою",
+      images: [
+        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["окремий будинок", "гараж", "власна ділянка"],
+    },
+    {
+      id: "4",
+      title: "1-кімнатна квартира біля університету",
+      type: "apartment",
+      status: "active",
+      isFeatured: false,
+      price: 45000,
+      currency: "EUR",
+      address: "вул. Університетська, 12, Чернівці",
+      area: 38.0,
+      rooms: 1,
+      floor: 2,
+      totalFloors: 5,
+      coordinates: { lat: 48.2889, lng: 25.9350 },
+      description: "Компактна квартира поруч з університетом",
+      images: [
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1534889156217-d643df14f14a?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["студентський район", "ремонт", "меблі"],
+    },
+    {
+      id: "5",
+      title: "Офіс в бізнес-центрі",
+      type: "commercial",
+      status: "active",
+      isFeatured: true,
+      price: 200000,
+      currency: "EUR",
+      address: "вул. Героїв Майдану, 172, Чернівці",
+      area: 120.0,
+      floor: 3,
+      totalFloors: 7,
+      coordinates: { lat: 48.2945, lng: 25.9280 },
+      description: "Сучасний офіс з ремонтом",
+      images: [
+        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["офіс", "бізнес-центр", "ремонт"],
+    },
+    {
+      id: "6",
+      title: "3-кімнатна квартира з ремонтом",
+      type: "apartment",
+      status: "active",
+      isFeatured: false,
+      price: 95000,
+      currency: "EUR",
+      address: "вул. Південно-Кільцева, 12, Чернівці",
+      area: 78.5,
+      rooms: 3,
+      floor: 4,
+      totalFloors: 9,
+      coordinates: { lat: 48.2856, lng: 25.9401 },
+      description: "Простора квартира в спальному районі",
+      images: [
+        "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560185009-5bf9f2849488?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1585412459292-166763d72053?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["якісний ремонт", "спальний район", "гарне планування"],
+    },
+    {
+      id: "7",
+      title: "Котедж з басейном",
+      type: "house",
+      status: "active",
+      isFeatured: true,
+      price: 280000,
+      currency: "EUR",
+      address: "вул. Яблунева, 5, с. Чорнівка, Чернівецький район",
+      area: 210.0,
+      rooms: 5,
+      totalFloors: 2,
+      coordinates: { lat: 48.3201, lng: 25.8956 },
+      description: "Розкішний котедж з басейном",
+      images: [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["преміум", "басейн", "гараж"],
+    },
+    {
+      id: "8",
+      title: "Земельна ділянка під будівництво",
+      type: "land",
+      status: "active",
+      isFeatured: false,
+      price: 30000,
+      currency: "EUR",
+      address: "с. Мамаївці, Чернівецький район",
+      area: 1200.0,
+      coordinates: { lat: 48.3345, lng: 25.8789 },
+      description: "Ділянка правильної форми з підведеними комунікаціями",
+      images: [
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["будівництво", "з комунікаціями"],
+    },
+    {
+      id: "9",
+      title: "Студія в центрі міста",
+      type: "apartment",
+      status: "active",
+      isFeatured: false,
+      price: 42000,
+      currency: "EUR",
+      address: "вул. Центральна, 8, Чернівці",
+      area: 25.0,
+      rooms: 1,
+      floor: 6,
+      totalFloors: 10,
+      coordinates: { lat: 48.2934, lng: 25.9301 },
+      description: "Компактна студія в серці міста",
+      images: [
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["студія", "центр", "новобудова"],
+    },
+    {
+      id: "10",
+      title: "Торгове приміщення",
+      type: "commercial",
+      status: "active",
+      isFeatured: false,
+      price: 75000,
+      currency: "EUR",
+      address: "вул. Промислова, 15, Чернівці",
+      area: 65.0,
+      floor: 1,
+      totalFloors: 2,
+      coordinates: { lat: 48.2798, lng: 25.9456 },
+      description: "Приміщення для торгівлі",
+      images: [
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["торгівля", "проходимість", "парковка"],
+    },
+    {
+      id: "11",
+      title: "Дачний будинок з садом",
+      type: "house",
+      status: "active",
+      isFeatured: false,
+      price: 25000,
+      currency: "EUR",
+      address: "Садове товариство 'Мрія', Чернівецький район",
+      area: 60.0,
+      rooms: 2,
+      totalFloors: 1,
+      coordinates: { lat: 48.3567, lng: 25.8623 },
+      description: "Доглянута дачна ділянка з будинком",
+      images: [
+        "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1448630360428-65456885c650?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["дача", "сад", "природа"],
+    },
+    {
+      id: "12",
+      title: "4-кімнатна квартира в новобудові",
+      type: "apartment",
+      status: "active",
+      isFeatured: true,
+      price: 110000,
+      currency: "EUR",
+      address: "вул. Рівненська, 25а, Чернівці",
+      area: 95.0,
+      rooms: 4,
+      floor: 7,
+      totalFloors: 12,
+      coordinates: { lat: 48.3012, lng: 25.9234 },
+      description: "Велика квартира в новому комплексі",
+      images: [
+        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560185008-b033106af5c3?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["новобудова", "автономне опалення", "лічильники"],
+    },
+    {
+      id: "13",
+      title: "Складське приміщення",
+      type: "commercial",
+      status: "active",
+      isFeatured: false,
+      price: 70000,
+      currency: "EUR",
+      address: "вул. Індустріальна, 8, Чернівці",
+      area: 350.0,
+      floor: 1,
+      totalFloors: 1,
+      coordinates: { lat: 48.2723, lng: 25.9567 },
+      description: "Велике складське приміщення",
+      images: [
+        "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1619438976548-5e397b717f48?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["склад", "під'їзд", "охорона"],
+    },
+    {
+      id: "14",
+      title: "Заміський будинок",
+      type: "house",
+      status: "active",
+      isFeatured: false,
+      price: 135000,
+      currency: "EUR",
+      address: "вул. Весняна, 18, с. Великий Кучурів",
+      area: 160.0,
+      rooms: 5,
+      totalFloors: 2,
+      coordinates: { lat: 48.3456, lng: 25.8445 },
+      description: "Двоповерховий будинок з усіма комунікаціями",
+      images: [
+        "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["меблі", "сауна", "зона відпочинку"],
+    },
+    {
+      id: "15",
+      title: "Пентхаус з терасою",
+      type: "apartment",
+      status: "active",
+      isFeatured: true,
+      price: 180000,
+      currency: "EUR",
+      address: "вул. Небесна, 7, Чернівці",
+      area: 120.0,
+      rooms: 3,
+      floor: 10,
+      totalFloors: 10,
+      coordinates: { lat: 48.2967, lng: 25.9312 },
+      description: "Елітний пентхаус з панорамним видом",
+      images: [
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["пентхаус", "тераса", "панорамний вид"],
+    },
+    {
+      id: "16",
+      title: "Магазин на першому поверсі",
+      type: "commercial",
+      status: "active",
+      isFeatured: false,
+      price: 90000,
+      currency: "EUR",
+      address: "вул. Кобилянської, 54, Чернівці",
+      area: 45.0,
+      floor: 1,
+      totalFloors: 5,
+      coordinates: { lat: 48.2945, lng: 25.9287 },
+      description: "Магазин в центрі міста",
+      images: [
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["магазин", "центр", "проходимість"],
+    },
+    {
+      id: "17",
+      title: "Будинок біля озера",
+      type: "house",
+      status: "active",
+      isFeatured: true,
+      price: 165000,
+      currency: "EUR",
+      address: "с. Озерне, Чернівецький район",
+      area: 130.0,
+      rooms: 4,
+      totalFloors: 1,
+      coordinates: { lat: 48.3678, lng: 25.8234 },
+      description: "Будинок з чудовим видом на озеро",
+      images: [
+        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1504615755583-2916b52192a3?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["озеро", "природа", "риболовля"],
+    },
+    {
+      id: "18",
+      title: "2-кімнатна квартира з балконом",
+      type: "apartment",
+      status: "active",
+      isFeatured: false,
+      price: 72000,
+      currency: "EUR",
+      address: "вул. Льва Толстого, 3, Чернівці",
+      area: 55.0,
+      rooms: 2,
+      floor: 5,
+      totalFloors: 9,
+      coordinates: { lat: 48.2823, lng: 25.9378 },
+      description: "Квартира з великим балконом",
+      images: [
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["балкон", "тихий район", "парк поруч"],
+    },
+    {
+      id: "19",
+      title: "Кафе в оренду",
+      type: "commercial",
+      status: "active",
+      isFeatured: false,
+      price: 45000,
+      currency: "EUR",
+      address: "вул. Театральна, 21, Чернівці",
+      area: 80.0,
+      floor: 1,
+      totalFloors: 3,
+      coordinates: { lat: 48.2956, lng: 25.9295 },
+      description: "Готове кафе з обладнанням",
+      images: [
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["кафе", "обладнання", "готовий бізнес"],
+    },
+    {
+      id: "20",
+      title: "Великий земельний участок",
+      type: "land",
+      status: "active",
+      isFeatured: false,
+      price: 55000,
+      currency: "EUR",
+      address: "с. Заставна, Чернівецький район",
+      area: 2500.0,
+      coordinates: { lat: 48.4234, lng: 25.7845 },
+      description: "Великий участок для розвитку",
+      images: [
+        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1486237433034-5af53bec933b?w=800&h=600&fit=crop&crop=center"
+      ],
+      tags: ["великий участок", "інвестиції", "розвиток"],
+    }
+  ];
+
+  // Завантаження даних та URL параметрів
+  useEffect(() => {
+    setProperties(dummyProperties);
+    setFilteredProperties(dummyProperties);
+
+    // Зчитуємо параметри з URL
+    const { type, category, price_min, price_max, rooms: urlRooms } = router.query;
+    
+    if (type && typeof type === "string") {
+      setFilterType(type as PropertyType);
+    }
+    if (category === "new") {
+      // Логіка для новобудов
+      setFilteredProperties(dummyProperties.filter(p => p.tags.includes("новобудова")));
+    }
+    if (price_min && typeof price_min === "string") {
+      setPriceMin(price_min);
+    }
+    if (price_max && typeof price_max === "string") {
+      setPriceMax(price_max);
+    }
+    if (urlRooms && typeof urlRooms === "string") {
+      setRooms(urlRooms);
+    }
+  }, [router.query]);
+
+  // Фільтрація властивостей
+  useEffect(() => {
+    let result = [...properties];
+
+    // Пошук за назвою та адресою
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        (property) =>
+          property.title.toLowerCase().includes(term) ||
+          property.address.toLowerCase().includes(term) ||
+          property.tags.some((tag) => tag.toLowerCase().includes(term))
+      );
+    }
+
+    // Фільтр за типом
+    if (filterType !== "all") {
+      result = result.filter((property) => property.type === filterType);
+    }
+
+    // Фільтр за ціною
+    const minPrice = priceMin ? parseFloat(priceMin) : 0;
+    const maxPrice = priceMax ? parseFloat(priceMax) : Infinity;
+    result = result.filter(
+      (property) => property.price >= minPrice && property.price <= maxPrice
+    );
+
+    // Фільтр за площею
+    const minArea = areaMin ? parseFloat(areaMin) : 0;
+    const maxArea = areaMax ? parseFloat(areaMax) : Infinity;
+    result = result.filter(
+      (property) => property.area >= minArea && property.area <= maxArea
+    );
+
+    // Фільтр за кількістю кімнат
+    if (rooms !== "all") {
+      const roomCount = parseInt(rooms);
+      result = result.filter((property) => property.rooms === roomCount);
+    }
+
+    setFilteredProperties(result);
+    setCurrentPage(1);
+  }, [searchTerm, filterType, priceMin, priceMax, areaMin, areaMax, rooms, properties]);
+
+  // Форматування ціни
+  const formatPrice = (price: number, currency: string) => {
+    return new Intl.NumberFormat("uk-UA", {
+      style: "currency",
+      currency: currency,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Компонент реальної Google Maps
+  const MapComponent = () => {
+    const handleMarkerClick = (property: any) => {
+      console.log("Клік по маркеру:", property.title);
+      // Тут можна додати логіку відкриття деталей об'єкта
+    };
+
+  return (
+      <OpenStreetMap
+        properties={currentItems
+          .filter(property => property.coordinates) // Фільтруємо тільки об'єкти з координатами
+          .map(property => ({
+            id: property.id,
+            title: property.title,
+            coordinates: property.coordinates!,
+            price: property.price,
+            currency: property.currency,
+            type: property.type,
+          }))}
+        center={{ lat: 48.2909, lng: 25.9314 }} // vul. Nebesnoyi Sotni, 8, Chernivtsi
+        zoom={13}
+        className="w-full h-full"
+        onMarkerClick={handleMarkerClick}
+      />
+    );
+  };
+
+  // Компонент картки властивості
+  const PropertyCard = ({ property }: { property: Property }) => {
+  return (
+      <Card className="w-full">
+      <CardBody className="p-0">
+        <div className="relative h-48 w-full">
+                  <Image
+                    src={property.images[0] || "/img/placeholder.jpg"}
+                    alt={property.title}
+                    fill
+            className="object-cover rounded-t-lg"
+                  />
+                  {property.isFeatured && (
+            <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
+                      {t("buy.featured")}
+            </Chip>
+                  )}
+          <div className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-2 py-1 rounded text-sm font-bold shadow-lg">
+                      {formatPrice(property.price, property.currency)}
+                  </div>
+                </div>
+                <div className="p-4">
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{property.title}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mb-2">
+                    <IconMapPin size={16} className="mr-1 flex-shrink-0" />
+                    <span className="line-clamp-1">{property.address}</span>
+                  </p>
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-3 mb-3">
+                    <span className="flex items-center">
+                      <IconRuler size={16} className="mr-1" />
+                      {property.area} м²
+                    </span>
+                    {property.rooms && (
+                      <span className="flex items-center">
+                        <IconHome size={16} className="mr-1" />
+                        {property.rooms} кімн.
+                      </span>
+                    )}
+        </div>
+          <div className="flex flex-wrap gap-1">
+            {property.tags.slice(0, 2).map((tag, index) => (
+              <Chip key={index} size="sm" variant="flat">
+                {tag}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      </CardBody>
+      <CardFooter className="pt-0">
+        <Button 
+          as={Link}
+          href={`/buy/${property.id}`}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
+          size="sm"
+        >
+          {t("buy.details")}
+        </Button>
+      </CardFooter>
+      </Card>
+    );
+  };
+
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block max-w-lg text-center justify-center">
-          <h1 className={title()}>{t('nav.buy')}</h1>
+      <div className="container mx-auto px-4 py-6">
+        {/* Пошук та основні кнопки */}
+        <div className="mb-6 space-y-4">
+          {/* Рядок з пошуком та кнопкою */}
+          <div className="flex gap-3">
+            <Input
+              className="flex-1"
+              placeholder={t("buy.searchPlaceholder") || "Пошук за назвою, адресою, тегами..."}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              startContent={<IconSearch size={20} />}
+              size="lg"
+            />
+            <Button 
+              color="primary"
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300 px-8"
+            >
+              Шукати
+            </Button>
+            </div>
+
+          {/* Кнопки фільтрів та режимів */}
+          <div className="flex gap-3">
+            <Button 
+              onPress={onFiltersOpen}
+              startContent={<IconFilter size={20} />}
+              variant="flat"
+            >
+              Фільтри
+            </Button>
+            
+            <Button 
+              isIconOnly
+              onPress={() => {
+                const modes: ViewMode[] = ["split", "map", "grid"];
+                const currentIndex = modes.indexOf(viewMode);
+                const nextIndex = (currentIndex + 1) % modes.length;
+                setViewMode(modes[nextIndex]);
+              }}
+              variant="flat"
+              className="hidden lg:flex"
+            >
+              {/* Показуємо іконку НАСТУПНОГО режиму, а не поточного */}
+              {viewMode === "split" && <IconMap size={20} />}
+              {viewMode === "map" && <IconGrid3x3 size={20} />}
+              {viewMode === "grid" && <IconLayoutSidebarRightExpand size={20} />}
+            </Button>
+          </div>
+
+          {/* Плаваюча кнопка карти для мобільних */}
+          <Button
+            isIconOnly
+            onPress={onMapOpen}
+            className="lg:hidden fixed bottom-6 right-6 z-40 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-110 transition-all duration-300"
+            size="lg"
+            radius="full"
+          >
+            <IconMap size={24} />
+          </Button>
+
+          {/* Результати пошуку */}
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t("buy.resultsCount")} {filteredProperties.length} {t("buy.properties")}
+            </p>
+          </div>
         </div>
-      </section>
+
+        {/* Drawer з фільтрами */}
+        <Drawer isOpen={isFiltersOpen} onOpenChange={onFiltersOpenChange} size="lg">
+          <DrawerContent>
+            {(onClose) => (
+              <>
+                <DrawerHeader className="flex flex-col gap-1">
+                  <h2 className="text-xl font-semibold">Фільтри пошуку</h2>
+                  <p className="text-sm text-gray-500">Налаштуйте параметри для пошуку нерухомості</p>
+                </DrawerHeader>
+                <DrawerBody>
+                  <div className="space-y-6">
+                    {/* Тип нерухомості */}
+                <div>
+                      <label className="block text-sm font-medium mb-2">Тип нерухомості</label>
+                      <Autocomplete
+                        defaultItems={propertyTypes}
+                        placeholder="Оберіть тип нерухомості"
+                        selectedKey={filterType !== "all" ? filterType : null}
+                        onSelectionChange={(key) => {
+                          setFilterType(key ? key as PropertyType : "all");
+                        }}
+                      >
+                        {(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+                      </Autocomplete>
+                    </div>
+
+                    {/* Кількість кімнат */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Кількість кімнат</label>
+                      <Autocomplete
+                        defaultItems={roomOptions}
+                        placeholder="Оберіть кількість кімнат"
+                        selectedKey={rooms !== "all" ? rooms : null}
+                        onSelectionChange={(key) => {
+                          setRooms(key ? key as string : "all");
+                        }}
+                      >
+                        {(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+                      </Autocomplete>
+                </div>
+
+                    {/* Поверх */}
+                <div>
+                      <label className="block text-sm font-medium mb-2">Поверх</label>
+                      <Autocomplete
+                        defaultItems={floorOptions}
+                        placeholder="Оберіть поверх"
+                        selectedKey={floor || null}
+                        onSelectionChange={(key) => {
+                          setFloor(key ? key as string : "");
+                        }}
+                      >
+                        {(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+                      </Autocomplete>
+                    </div>
+
+                    {/* Валюта */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Валюта</label>
+                      <Tabs 
+                        aria-label="Currency options"
+                        selectedKey={currency}
+                        onSelectionChange={(key) => setCurrency(key as string)}
+                        variant="bordered"
+                      >
+                        {currencies.map((curr) => (
+                          <Tab 
+                            key={curr.key} 
+                            title={
+                              <div className="flex items-center space-x-2">
+                                <curr.icon size={16} />
+                                <span>{curr.label}</span>
+                              </div>
+                            }
+                          />
+                        ))}
+                      </Tabs>
+                    </div>
+
+                    {/* Ціна */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Ціна ({currency})</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Input
+                          placeholder="Від"
+                      value={priceMin}
+                      onChange={(e) => setPriceMin(e.target.value)}
+                      type="number"
+                          startContent={<span className="text-gray-400 text-sm">{currency}</span>}
+                        />
+                        <Input
+                          placeholder="До"
+                      value={priceMax}
+                      onChange={(e) => setPriceMax(e.target.value)}
+                          type="number"
+                          startContent={<span className="text-gray-400 text-sm">{currency}</span>}
+                    />
+                  </div>
+                </div>
+
+                    {/* Площа */}
+                <div>
+                      <label className="block text-sm font-medium mb-2">Площа (м²)</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Input
+                          placeholder="Від"
+                      value={areaMin}
+                      onChange={(e) => setAreaMin(e.target.value)}
+                      type="number"
+                          endContent={<span className="text-gray-400 text-sm">м²</span>}
+                        />
+                        <Input
+                          placeholder="До"
+                      value={areaMax}
+                      onChange={(e) => setAreaMax(e.target.value)}
+                          type="number"
+                          endContent={<span className="text-gray-400 text-sm">м²</span>}
+                    />
+                  </div>
+                </div>
+                  </div>
+                </DrawerBody>
+                <DrawerFooter>
+                  <Button 
+                    color="danger" 
+                    variant="light" 
+                    onPress={() => {
+                      // Скинути всі фільтри
+                      setFilterType("all");
+                      setRooms("all");
+                      setFloor("");
+                      setPriceMin("");
+                      setPriceMax("");
+                      setAreaMin("");
+                      setAreaMax("");
+                      setCurrency("EUR");
+                    }}
+                  >
+                    Скинути
+                  </Button>
+                  <Button 
+                    color="primary" 
+                    onPress={onClose}
+                    className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
+                  >
+                    Застосувати
+                  </Button>
+                </DrawerFooter>
+              </>
+            )}
+          </DrawerContent>
+        </Drawer>
+
+        {/* Основний контент */}
+        <div className="min-h-screen">
+          {/* Мобільна версія - тільки сітка */}
+          <div className="lg:hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4">
+              {currentItems.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+                </div>
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center px-4 pb-20">
+                <Pagination
+                  loop
+                  showControls
+                  page={currentPage}
+                  total={totalPages}
+                  onChange={setCurrentPage}
+                  classNames={{
+                    wrapper: "gap-0 overflow-visible h-8",
+                    item: "w-8 h-8 text-small bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                    cursor: "bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg",
+                    prev: "hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                    next: "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  }}
+                />
+            </div>
+          )}
+        </div>
+
+          {/* Десктопна версія */}
+          <div className="hidden lg:block">
+            {viewMode === "split" && (
+              <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] h-screen">
+              {/* Ліва частина - список */}
+              <div className="h-screen flex flex-col overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {currentItems.map((property) => (
+                      <PropertyCard key={property.id} property={property} />
+                    ))}
+                    </div>
+                  </div>
+                {totalPages > 1 && (
+                  <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                    <Pagination
+                      loop
+                      showControls
+                      page={currentPage}
+                      total={totalPages}
+                      onChange={setCurrentPage}
+                      classNames={{
+                        wrapper: "gap-0 overflow-visible h-8",
+                        item: "w-8 h-8 text-small bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                        cursor: "bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg",
+                        prev: "hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                        next: "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }}
+                    />
+                </div>
+                    )}
+                  </div>
+              
+              {/* Права частина - карта */}
+              <div className="h-screen sticky top-0">
+                <MapComponent />
+                  </div>
+                    </div>
+            )}
+                </div>
+
+          {viewMode === "map" && (
+            <div className="h-screen">
+              <MapComponent />
+              </div>
+          )}
+
+          {viewMode === "grid" && (
+            <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {currentItems.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+              {totalPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination
+                    loop
+                    showControls
+                    page={currentPage}
+                    total={totalPages}
+                    onChange={setCurrentPage}
+                    classNames={{
+                      wrapper: "gap-0 overflow-visible h-8",
+                      item: "w-8 h-8 text-small bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                      cursor: "bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg",
+                      prev: "hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                      next: "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {filteredProperties.length === 0 && (
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <IconHome className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium mb-2">
+              {t("buy.noPropertiesFound")}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              {t("buy.tryDifferentFilters")}
+            </p>
+          </div>
+        )}
+              </div>
+
+        {/* Модальне вікно з картою для мобільних */}
+        <Modal 
+          isOpen={isMapOpen} 
+          onOpenChange={onMapOpenChange}
+          size="full"
+          hideCloseButton={false}
+          className="lg:hidden"
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1 bg-white dark:bg-gray-900 border-b">
+                  <h2 className="text-lg font-semibold">Карта об'єктів</h2>
+                  <p className="text-sm text-gray-500">{filteredProperties.length} об'єктів на карті</p>
+                </ModalHeader>
+                <ModalBody className="p-0">
+                  <div className="h-full w-full">
+                    <MapComponent />
+            </div>
+                </ModalBody>
+              </>
+        )}
+          </ModalContent>
+        </Modal>
+      </div>
     </DefaultLayout>
   );
-} 
+}

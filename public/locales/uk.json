@@ -1,4 +1,7 @@
 {
+  "common": {
+    "companyName": "Ваш Ковчег"
+  },
   "nav": {
     "buy": "Купити",
     "rent": "Орендувати",
@@ -14,7 +17,7 @@
     "logout": "Вийти"
   },
   "auth": {
-    "title": "Авторизація",
+    "title": "Приєднатись або Увійти",
     "login": "Увійти",
     "signUp": "Зареєструватися",
     "email": "Email",
@@ -24,7 +27,125 @@
     "name": "Ім'я",
     "namePlaceholder": "Введіть ваше ім'я",
     "needAccount": "Потрібен акаунт?",
-    "haveAccount": "Вже маєте акаунт?"
+    "haveAccount": "Вже маєте акаунт?",
+    "orLoginWith": "Або увійти через",
+    "orRegisterWith": "Або зареєструватися через"
+  },
+  "admin": {
+    "title": "Адміністративна панель",
+    "forgotPassword": "Забули пароль?",
+    "forgotPasswordTitle": "Відновлення паролю",
+    "loginButton": "Увійти",
+    "loginLoading": "Авторизація...",
+    "backButton": "Назад",
+    "sendButton": "Відправити",
+    "sendLoading": "Відправка...",
+    "recoveryEmailInfo": "Введіть вашу електронну пошту для отримання інструкцій з відновлення паролю",
+    "recoveryEmailSent": "Перевірте вашу електронну пошту для отримання інструкцій з відновлення паролю.",
+    "returnToLogin": "Повернутися до входу",
+    "orLoginWith": "або увійти через",
+    "or": "або",
+    "telegramLogin": "Увійти через Телеграм",
+    "backToHome": "На головну",
+    "allRightsReserved": "Всі права захищені",
+    "companyName": "Ваш Ковчег"
+  },
+  "footer": {
+    "tagline": "Ваш надійний партнер у сфері нерухомості в Чернівцях",
+    "navigation": "Навігація",
+    "contacts": "Контакти",
+    "phone": "+38050 150 55 55",
+    "phone2": "+38068 850 55 55",
+    "email": "kovcheg@gmail.com",
+    "address": "вул. Небесної сотні 8, Чернівці 58005",
+    "googleMapsUrl": "https://maps.google.com/maps?q=вул.+Небесної+сотні+8,+Чернівці+58005",
+    "socialMedia": "Соціальні мережі",
+    "instagram": "instagram.com/vashkovcheg",
+    "facebook": "https://www.facebook.com/vashkovcheg",
+    "copyright": "Всі права захищено."
+  },
+  "topOffers": {
+    "title": "ТОП пропозиції Чернівців",
+    "description": "Опис",
+    "features": "Характеристики",
+    "learnMore": "Дізнатись більше",
+    "categories": {
+      "apartments": "Квартири",
+      "houses": "Будинки",
+      "commercial": "Комерційна"
+    },
+    "properties": {
+      "apartment": {
+        "title": "Квартира в центрі",
+        "location": "вул. Головна, 1"
+      },
+      "cottage": {
+        "title": "Котедж з басейном",
+        "location": "вул. Паркова, 15"
+      },
+      "penthouse": {
+        "title": "Пентхаус",
+        "location": "вул. Небесна, 7"
+      },
+      "office": {
+        "title": "Офісне приміщення",
+        "location": "вул. Бізнесова, 10"
+      },
+      "studio": {
+        "title": "Студія з ремонтом",
+        "location": "вул. Молодіжна, 15"
+      },
+      "retail": {
+        "title": "Торгове приміщення",
+        "location": "вул. Центральна, 8"
+      }
+    },
+    "descriptions": {
+      "apartment": "Просторе та світле помешкання з сучасним ремонтом. Зручне розташування в центрі міста, поруч парки, школи та магазини. Індивідуальне опалення, кондиціонер, меблі та техніка включені у вартість.",
+      "house": "Розкішний котедж з власним басейном та доглянутою територією. Панорамні вікна, тераса для відпочинку, гараж на 2 авто. Високоякісні матеріали та сучасні системи життєзабезпечення.",
+      "commercial": "Приміщення з якісним ремонтом та зручним розташуванням. Велика прохідність, окремий вхід, всі комунікації. Ідеально підходить для бізнесу будь-якого формату."
+    },
+    "offerFeatures": {
+      "apartments": {
+        "bedrooms": "2 спальні",
+        "bathroom": "1 санвузол",
+        "area": "Площа: 65 м²",
+        "floor": "Поверх: 4/9"
+      },
+      "houses": {
+        "bedrooms": "4 спальні",
+        "bathrooms": "2 санвузли",
+        "area": "Площа: 180 м²",
+        "land": "Ділянка: 10 сот."
+      },
+      "commercial": {
+        "area": "Площа: 120 м²",
+        "floor": "1 поверх",
+        "windows": "Вітрини",
+        "parking": "Парковка"
+      }
+    }
+  },
+  "faq": {
+    "title": "Часті питання",
+    "questions": {
+      "buyingProcess": {
+        "question": "Як довго зазвичай триває процес купівлі нерухомості?",
+        "answer": "Середній термін від початку пошуку до укладання договору купівлі-продажу становить 2-3 тижні. Ми працюємо максимально оперативно, щоб зекономити ваш час."
+      },
+      "mortgage": {
+        "question": "Які документи потрібні для оформлення іпотеки?",
+        "answer": "Для оформлення іпотеки потрібен паспорт, ІПН, довідка про доходи, виписка з банку про рух коштів за останні 6 місяців. Наші експерти допоможуть зібрати всі необхідні документи."
+      },
+      "commission": {
+        "question": "Які комісійні ви берете за послуги?",
+        "answer": "Наші комісійні залежать від типу операції та складності угоди. Ми пропонуємо прозору систему ціноутворення та обговорюємо всі деталі на початку співпраці."
+      },
+      "onlineRent": {
+        "question": "Чи можна оформити оренду онлайн?",
+        "answer": "Так, ми надаємо можливість дистанційного оформлення оренди. Всі документи можна підписати електронно, а перегляд об'єктів можна провести через відеозв'язок."
+      }
+    }
   },
   "search": {
     "placeholder": "Пошук...",
@@ -61,7 +182,7 @@
         "title": "Подобово",
         "description": "Оренда на короткий термін"
       },
-      "long_term": {
+      "longterm": {
         "title": "Довгостроково",
         "description": "Довгострокова оренда"
       },
@@ -149,6 +270,358 @@
       "title": "Оренда",
       "description": "Швидкий пошук житла для фізичних осіб та приміщень для бізнесу. Ми пропонуємо повний спектр послуг з оренди нерухомості з урахуванням ваших потреб.",
       "button": "Дивитись пропозиції"
+    }
+  },
+  "crm": {
+    "title": "CRM-система",
+    "nav": {
+      "analytics": "Аналітика",
+      "calendar": "Календар",
+      "deals": "Угоди",
+      "clients": "Клієнти",
+      "properties": "Об'єкти", 
+      "communications": "Комунікації",
+      "documents": "Документи",
+      "marketing": "Маркетинг"
+    },
+    "sections": {
+      "comingSoon": "Розділ у розробці. Скоро буде доступний.",
+      "analytics": {
+        "title": "Загальна аналітика"
+      },
+      "calendar": {
+        "title": "Календар та завдання"
+      },
+      "deals": {
+        "title": "Угоди"
+      },
+      "clients": {
+        "title": "Клієнти"
+      },
+      "properties": {
+        "title": "Об'єкти нерухомості"
+      },
+      "communications": {
+        "title": "Комунікації"
+      },
+      "documents": {
+        "title": "Документообіг"
+      },
+      "marketing": {
+        "title": "Маркетинг"
+      }
+    },
+    "analytics": {
+      "title": "Аналітика",
+      "subtitle": "Загальна статистика та показники ефективності",
+      "totalSales": "Загальні продажі",
+      "newClients": "Нові клієнти",
+      "activeProperties": "Активні об'єкти",
+      "conversionRate": "Конверсія",
+      "salesChart": "Динаміка продажів",
+      "chartPlaceholder": "Графік буде відображено після отримання даних",
+      "topDeals": "Найкращі угоди",
+      "dealName": "Угода",
+      "clientName": "Клієнт"
+    },
+    "calendar": {
+      "subtitle": "Управління завданнями та зустрічами",
+      "today": "Сьогодні",
+      "noEvents": "На цю дату немає подій",
+      "addEvent": "Додати подію",
+      "details": "Деталі",
+      "hide": "Сховати",
+      "edit": "Редагувати",
+      "complete": "Завершити",
+      "cancel": "Скасувати",
+      "restore": "Відновити"
+    },
+    "deals": {
+      "subtitle": "Управління угодами та операціями з нерухомістю",
+      "searchPlaceholder": "Пошук за назвою, клієнтом, об'єктом...",
+      "filters": "Фільтри",
+      "newDeal": "Нова угода",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "allStatuses": "Всі статуси",
+      "allTypes": "Всі типи",
+      "filterByStatus": "Фільтр за статусом",
+      "filterByType": "Фільтр за типом",
+      "sortBy": "Сортувати за",
+      "noDealsFound": "Угод не знайдено",
+      "createFirstDeal": "Створити першу угоду",
+      "editDeal": "Редагувати угоду",
+      "progressStatus": "Просунути статус",
+      "cancelDeal": "Скасувати угоду",
+      "reopenDeal": "Відновити угоду",
+      "hideDetails": "Сховати деталі",
+      "viewDetails": "Переглянути деталі",
+      "client": "Клієнт",
+      "property": "Об'єкт нерухомості",
+      "responsibleAgent": "Відповідальний агент",
+      "createdAt": "Створено",
+      "updatedAt": "Оновлено",
+      "closingDate": "Дата закриття",
+      "description": "Опис",
+      "value": "Вартість",
+      "statuses": {
+        "new": "Нова",
+        "negotiation": "Переговори",
+        "preparation": "Підготовка",
+        "pending": "В очікуванні",
+        "closed": "Закрита",
+        "cancelled": "Скасована"
+      },
+      "types": {
+        "sale": "Продаж",
+        "purchase": "Купівля",
+        "rent": "Оренда житлова",
+        "lease": "Оренда комерційна"
+      }
+    },
+    "clients": {
+      "subtitle": "Управління клієнтами та контактами",
+      "searchPlaceholder": "Пошук за ім'ям, контактами, тегами...",
+      "filters": "Фільтри",
+      "newClient": "Новий клієнт",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "allStatuses": "Всі статуси",
+      "allTypes": "Всі типи",
+      "filterByStatus": "Фільтр за статусом",
+      "filterByType": "Фільтр за типом",
+      "sortBy": "Сортувати за",
+      "showFavoritesOnly": "Показувати тільки обрані",
+      "noClientsFound": "Клієнтів не знайдено",
+      "createFirstClient": "Створити першого клієнта",
+      "editClient": "Редагувати клієнта",
+      "contactClient": "Зв'язатися з клієнтом",
+      "addTask": "Додати завдання",
+      "hideDetails": "Сховати деталі",
+      "viewDetails": "Переглянути деталі",
+      "addToFavorites": "Додати до обраних",
+      "removeFromFavorites": "Видалити з обраних",
+      "contactInfo": "Контактна інформація",
+      "dates": "Дати",
+      "responsibleAgent": "Відповідальний агент",
+      "notes": "Нотатки",
+      "tags": "Теги",
+      "name": "Ім'я/Назва",
+      "createdAt": "Створено",
+      "lastContact": "Останній контакт",
+      "nextContact": "Наступний контакт",
+      "statuses": {
+        "active": "Активний",
+        "inactive": "Неактивний",
+        "potential": "Потенційний",
+        "former": "Колишній"
+      },
+      "types": {
+        "individual": "Фізична особа",
+        "company": "Компанія"
+      }
+    },
+    "properties": {
+      "subtitle": "Управління об'єктами нерухомості",
+      "searchPlaceholder": "Пошук за назвою, адресою, тегами...",
+      "filters": "Фільтри",
+      "newProperty": "Новий об'єкт",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "allStatuses": "Всі статуси",
+      "allTypes": "Всі типи",
+      "filterByStatus": "Фільтр за статусом",
+      "filterByType": "Фільтр за типом",
+      "sortBy": "Сортувати за",
+      "showFeaturedOnly": "Показувати тільки обрані",
+      "noPropertiesFound": "Об'єктів не знайдено",
+      "createFirstProperty": "Створити перший об'єкт",
+      "editProperty": "Редагувати об'єкт",
+      "viewGallery": "Переглянути галерею",
+      "changeStatus": "Змінити статус",
+      "hideDetails": "Сховати деталі",
+      "viewDetails": "Переглянути деталі",
+      "addToFeatured": "Додати до обраних",
+      "removeFromFeatured": "Видалити з обраних",
+      "details": "Характеристики",
+      "photos": "фото",
+      "dates": "Дати",
+      "images": "Зображення",
+      "description": "Опис",
+      "tags": "Теги",
+      "title": "Назва",
+      "price": "Ціна",
+      "area": "Площа",
+      "rooms": "Кімнати",
+      "floor": "Поверх",
+      "createdAt": "Створено",
+      "updatedAt": "Оновлено",
+      "statuses": {
+        "active": "Активний",
+        "sold": "Продано",
+        "pending": "В процесі",
+        "reserved": "Зарезервовано",
+        "draft": "Чернетка",
+        "archived": "Архівовано"
+      },
+      "types": {
+        "apartment": "Квартира",
+        "house": "Будинок",
+        "commercial": "Комерційна",
+        "land": "Земельна ділянка"
+      }
+    },
+    "communications": {
+      "subtitle": "Управління комунікаціями з клієнтами",
+      "searchPlaceholder": "Пошук за темою, клієнтом, вмістом...",
+      "filters": "Фільтри",
+      "newCommunication": "Нова комунікація",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "allStatuses": "Всі статуси",
+      "allTypes": "Всі типи",
+      "allDirections": "Всі напрямки",
+      "filterByStatus": "Фільтр за статусом",
+      "filterByType": "Фільтр за типом",
+      "filterByDirection": "Фільтр за напрямком",
+      "sortBy": "Сортувати за",
+      "showFavoritesOnly": "Показувати тільки обрані",
+      "noCommunicationsFound": "Комунікацій не знайдено",
+      "createFirstCommunication": "Створити першу комунікацію",
+      "editCommunication": "Редагувати комунікацію",
+      "markAsCompleted": "Позначити як виконане",
+      "startNow": "Розпочати зараз",
+      "cancel": "Скасувати",
+      "hideDetails": "Сховати деталі",
+      "viewDetails": "Переглянути деталі",
+      "addToFavorites": "Додати до обраних",
+      "removeFromFavorites": "Видалити з обраних",
+      "details": "Деталі",
+      "content": "Вміст",
+      "attachments": "Вкладення",
+      "dates": "Дати",
+      "tags": "Теги",
+      "subject": "Тема",
+      "client": "Клієнт",
+      "property": "Об'єкт",
+      "deal": "Угода",
+      "responsibleAgent": "Відповідальний агент",
+      "createdAt": "Створено",
+      "scheduledAt": "Заплановано на",
+      "completedAt": "Виконано",
+      "statuses": {
+        "planned": "Заплановано",
+        "in_progress": "В процесі",
+        "completed": "Виконано",
+        "cancelled": "Скасовано"
+      },
+      "types": {
+        "call": "Дзвінок",
+        "email": "Email",
+        "meeting": "Зустріч",
+        "message": "SMS",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp",
+        "note": "Нотатка"
+      },
+      "directions": {
+        "incoming": "Вхідна",
+        "outgoing": "Вихідна",
+        "internal": "Внутрішня"
+      }
+    },
+    "documents": {
+      "title": "Документи",
+      "uploadNew": "Завантажити",
+      "searchPlaceholder": "Пошук документів...",
+      "filter": "Фільтр",
+      "allTypes": "Всі типи",
+      "folders": "Папки",
+      "name": "Назва",
+      "size": "Розмір",
+      "updatedAt": "Оновлено",
+      "createdBy": "Створив",
+      "actions": "Дії",
+      "noDocuments": "Документи не знайдено",
+      "selected": "Вибрано: {count}",
+      "download": "Завантажити",
+      "delete": "Видалити"
+    },
+    "marketing": {
+      "title": "Маркетинг",
+      "tabCampaigns": "Кампанії",
+      "tabAudience": "Аудиторія",
+      "tabAnalytics": "Аналітика",
+      "searchPlaceholder": "Пошук кампаній...",
+      "filterStatus": "Статус",
+      "filterAll": "Всі",
+      "statusActive": "Активна",
+      "statusDraft": "Чернетка",
+      "statusCompleted": "Завершена",
+      "statusScheduled": "Запланована",
+      "newCampaign": "Нова кампанія",
+      "campaign": "Кампанія",
+      "status": "Статус",
+      "type": "Тип",
+      "target": "Цільова аудиторія",
+      "dates": "Дати",
+      "budget": "Бюджет",
+      "performance": "Ефективність", 
+      "actions": "Дії",
+      "noCampaigns": "Кампанії не знайдено",
+      "reach": "Охоплення",
+      "engagement": "Взаємодія",
+      "conversion": "Конверсія"
+    }
+  },
+  "profile": {
+    "myProfile": "Мій профіль",
+    "settings": "Налаштування",
+    "logout": "Вийти",
+    "darkTheme": "Темна тема",
+    "lightTheme": "Світла тема"
+  },
+  "loading": "Завантаження...",
+  "buy": {
+    "searchPlaceholder": "Пошук нерухомості...",
+    "resultsCount": "знайдено",
+    "properties": "об'єктів",
+    "noPropertiesFound": "Об'єкти не знайдено",
+    "tryDifferentFilters": "Спробуйте змінити фільтри",
+    "featured": "рекомендований",
+    "filters": {
+      "apartment": "Квартира",
+      "house": "Будинок",
+      "commercial": "Комерційна",
+      "land": "Земля",
+      "rooms": "Кількість кімнат",
+      "floor": "Поверх",
+      "priceFrom": "Ціна від",
+      "priceTo": "Ціна до",
+      "currency": "Валюта",
+      "apply": "Застосувати",
+      "reset": "Скинути"
+    },
+    "viewModes": {
+      "split": "Розділений вигляд",
+      "map": "Тільки карта", 
+      "grid": "Тільки сітка"
+    },
+    "details": "Детальніше"
+  },
+  "rent": {
+    "searchPlaceholder": "Пошук оренди...",
+    "resultsCount": "знайдено",
+    "properties": "об'єктів",
+    "noPropertiesFound": "Об'єкти оренди не знайдені",
+    "tryDifferentFilters": "Спробуйте інші фільтри",
+    "featured": "рекомендований",
+    "details": "Докладніше",
+    "filters": {
+      "daily": "Подобово",
+      "longterm": "Довгостроково",
+      "commercial": "Комерційна",
+      "premium": "Преміум"
     }
   }
 } 
