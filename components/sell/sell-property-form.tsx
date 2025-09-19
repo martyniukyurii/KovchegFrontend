@@ -268,11 +268,11 @@ export function SellPropertyForm() {
               label={t("sell.form.propertyInfo.type")}
               placeholder={t("sell.form.propertyInfo.typePlaceholder")}
               value={formData.propertyType}
-              onChange={(e) => handleInputChange("propertyType", e.target.value)}
+              onSelectionChange={(value) => handleInputChange("propertyType", value as string)}
               isRequired
             >
               {propertyTypes.map((type) => (
-                <SelectItem key={type.key} value={type.key}>
+                <SelectItem key={type.key}>
                   {type.label}
                 </SelectItem>
               ))}
@@ -361,10 +361,10 @@ export function SellPropertyForm() {
                 label={t("sell.form.propertyInfo.landType")}
                 placeholder={t("sell.form.propertyInfo.landTypePlaceholder")}
                 value={formData.landType}
-                onChange={(e) => handleInputChange("landType", e.target.value)}
+                onSelectionChange={(value) => handleInputChange("landType", value as string)}
               >
                 {landTypes.map((type) => (
-                  <SelectItem key={type.key} value={type.key}>
+                  <SelectItem key={type.key}>
                     {type.label}
                   </SelectItem>
                 ))}
@@ -376,11 +376,11 @@ export function SellPropertyForm() {
             label={t("sell.form.propertyInfo.condition")}
             placeholder={t("sell.form.propertyInfo.conditionPlaceholder")}
             value={formData.propertyCondition}
-            onChange={(e) => handleInputChange("propertyCondition", e.target.value)}
+            onSelectionChange={(value) => handleInputChange("propertyCondition", value as string)}
             isRequired
           >
             {conditionTypes.map((condition) => (
-              <SelectItem key={condition.key} value={condition.key}>
+              <SelectItem key={condition.key}>
                 {condition.label}
               </SelectItem>
             ))}
@@ -478,10 +478,10 @@ export function SellPropertyForm() {
             label={t("sell.form.additionalInfo.preferredContactTime")}
             placeholder={t("sell.form.additionalInfo.preferredContactTimePlaceholder")}
             value={formData.preferredContactTime}
-            onChange={(e) => handleInputChange("preferredContactTime", e.target.value)}
+            onSelectionChange={(value) => handleInputChange("preferredContactTime", value as string)}
           >
             {contactTimes.map((time) => (
-              <SelectItem key={time.key} value={time.key}>
+              <SelectItem key={time.key}>
                 {time.label}
               </SelectItem>
             ))}
@@ -511,7 +511,6 @@ export function SellPropertyForm() {
           size="lg"
           className="px-12 py-6 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           isLoading={isSubmitting}
-          loadingText={t("sell.form.submitting")}
         >
           {!isSubmitting && (
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
