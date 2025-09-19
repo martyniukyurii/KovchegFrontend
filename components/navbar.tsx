@@ -111,25 +111,25 @@ export const Navbar = () => {
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
                   title={t("submenu.sell.evaluation.title")}
-                  href="/sell/evaluation"
+                  href="/sell?service=evaluation"
                   src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=320&h=200&fit=crop"
                   description={t("submenu.sell.evaluation.description")}
                 />
                 <ProductItem
                   title={t("submenu.sell.list.title")}
-                  href="/sell/list"
+                  href="/sell?service=list"
                   src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=320&h=200&fit=crop"
                   description={t("submenu.sell.list.description")}
                 />
                 <ProductItem
                   title={t("submenu.sell.consultation.title")}
-                  href="/sell/consultation"
+                  href="/sell?service=consultation"
                   src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=320&h=200&fit=crop"
                   description={t("submenu.sell.consultation.description")}
                 />
                 <ProductItem
                   title={t("submenu.sell.fast.title")}
-                  href="/sell/fast"
+                  href="/sell?service=fast"
                   src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=320&h=200&fit=crop"
                   description={t("submenu.sell.fast.description")}
                 />
@@ -143,25 +143,25 @@ export const Navbar = () => {
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
                   title={t("submenu.agents.list.title")}
-                  href="/agents"
+                  href="/agents?section=list"
                   src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=320&h=200&fit=crop"
                   description={t("submenu.agents.list.description")}
                 />
                 <ProductItem
                   title={t("submenu.agents.join.title")}
-                  href="/agents/join"
+                  href="/agents?section=join"
                   src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=320&h=200&fit=crop"
                   description={t("submenu.agents.join.description")}
                 />
                 <ProductItem
                   title={t("submenu.agents.reviews.title")}
-                  href="/agents/reviews"
+                  href="/agents?section=reviews"
                   src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=320&h=200&fit=crop"
                   description={t("submenu.agents.reviews.description")}
                 />
                 <ProductItem
                   title={t("submenu.agents.training.title")}
-                  href="/agents/training"
+                  href="/agents?section=training"
                   src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=320&h=200&fit=crop"
                   description={t("submenu.agents.training.description")}
                 />
@@ -175,25 +175,25 @@ export const Navbar = () => {
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
                   title={t("submenu.about.company.title")}
-                  href="/about"
+                  href="/about?section=company"
                   src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=320&h=200&fit=crop"
                   description={t("submenu.about.company.description")}
                 />
                 <ProductItem
                   title={t("submenu.about.news.title")}
-                  href="/about/news"
+                  href="/about?section=news"
                   src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=320&h=200&fit=crop"
                   description={t("submenu.about.news.description")}
                 />
                 <ProductItem
                   title={t("submenu.about.contacts.title")}
-                  href="/about/contacts"
+                  href="/about?section=contacts"
                   src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=320&h=200&fit=crop"
                   description={t("submenu.about.contacts.description")}
                 />
                 <ProductItem
                   title={t("submenu.about.careers.title")}
-                  href="/about/careers"
+                  href="/about?section=careers"
                   src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=320&h=200&fit=crop"
                   description={t("submenu.about.careers.description")}
                 />
