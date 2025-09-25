@@ -31,25 +31,6 @@
     "orLoginWith": "Или войти через",
     "orRegisterWith": "Или зарегистрироваться через"
   },
-  "admin": {
-    "title": "Административная панель",
-    "forgotPassword": "Забыли пароль?",
-    "forgotPasswordTitle": "Восстановление пароля",
-    "loginButton": "Войти",
-    "loginLoading": "Авторизация...",
-    "backButton": "Назад",
-    "sendButton": "Отправить",
-    "sendLoading": "Отправка...",
-    "recoveryEmailInfo": "Введите вашу электронную почту для получения инструкций по восстановлению пароля",
-    "recoveryEmailSent": "Проверьте вашу электронную почту для получения инструкций по восстановлению пароля.",
-    "returnToLogin": "Вернуться ко входу",
-    "orLoginWith": "или войти через",
-    "or": "или",
-    "telegramLogin": "Войти через Телеграм",
-    "backToHome": "На главную",
-    "allRightsReserved": "Все права защищены",
-    "companyName": "Ваш Ковчег"
-  },
   "footer": {
     "tagline": "Ваш надежный партнер в сфере недвижимости в Черновцах",
     "navigation": "Навигация",
@@ -62,6 +43,7 @@
     "socialMedia": "Социальные сети",
     "instagram": "instagram.com/vashkovcheg",
     "facebook": "https://www.facebook.com/vashkovcheg",
+    "tiktok": "https://www.tiktok.com/@vashkovcheg",
     "copyright": "Все права защищены."
   },
   "topOffers": {
@@ -272,157 +254,6 @@
       "button": "Смотреть предложения"
     }
   },
-  "crm": {
-    "title": "CRM-система",
-    "nav": {
-      "analytics": "Аналитика",
-      "calendar": "Календарь",
-      "deals": "Сделки",
-      "clients": "Клиенты",
-      "properties": "Объекты", 
-      "communications": "Коммуникации",
-      "documents": "Документы",
-      "marketing": "Маркетинг"
-    },
-    "sections": {
-      "comingSoon": "Раздел в разработке. Скоро будет доступен.",
-      "analytics": {
-        "title": "Общая аналитика"
-      },
-      "calendar": {
-        "title": "Календарь и задачи"
-      },
-      "deals": {
-        "title": "Сделки"
-      },
-      "clients": {
-        "title": "Клиенты"
-      },
-      "properties": {
-        "title": "Объекты недвижимости"
-      },
-      "communications": {
-        "title": "Коммуникации"
-      },
-      "documents": {
-        "title": "Документооборот"
-      },
-      "marketing": {
-        "title": "Маркетинг"
-      }
-    },
-    "analytics": {
-      "title": "Аналитика",
-      "subtitle": "Общая статистика и показатели эффективности",
-      "totalSales": "Общие продажи",
-      "newClients": "Новые клиенты",
-      "activeProperties": "Активные объекты",
-      "conversionRate": "Конверсия",
-      "salesChart": "Динамика продаж",
-      "chartPlaceholder": "График будет отображен после получения данных",
-      "topDeals": "Лучшие сделки",
-      "dealName": "Сделка",
-      "clientName": "Клиент"
-    },
-    "calendar": {
-      "subtitle": "Управление задачами и встречами",
-      "today": "Сегодня",
-      "noEvents": "На эту дату нет событий",
-      "addEvent": "Добавить событие",
-      "details": "Детали",
-      "hide": "Скрыть",
-      "edit": "Редактировать",
-      "complete": "Завершить",
-      "cancel": "Отменить",
-      "restore": "Восстановить"
-    },
-    "deals": {
-      "subtitle": "Управление сделками и операциями с недвижимостью",
-      "searchPlaceholder": "Поиск по названию, клиенту, объекту...",
-      "filters": "Фильтры",
-      "newDeal": "Новая сделка",
-      "edit": "Редактировать",
-      "delete": "Удалить",
-      "allStatuses": "Все статусы",
-      "allTypes": "Все типы",
-      "filterByStatus": "Фильтр по статусу",
-      "filterByType": "Фильтр по типу",
-      "sortBy": "Сортировать по",
-      "noDealsFound": "Сделок не найдено",
-      "createFirstDeal": "Создать первую сделку",
-      "editDeal": "Редактировать сделку",
-      "progressStatus": "Продвинуть статус",
-      "cancelDeal": "Отменить сделку",
-      "reopenDeal": "Возобновить сделку",
-      "hideDetails": "Скрыть детали",
-      "viewDetails": "Просмотреть детали",
-      "client": "Клиент",
-      "property": "Объект недвижимости",
-      "responsibleAgent": "Ответственный агент",
-      "createdAt": "Создано",
-      "updatedAt": "Обновлено",
-      "closingDate": "Дата закрытия",
-      "description": "Описание",
-      "value": "Стоимость",
-      "statuses": {
-        "new": "Новая",
-        "negotiation": "Переговоры",
-        "preparation": "Подготовка",
-        "pending": "В ожидании",
-        "closed": "Закрыта",
-        "cancelled": "Отменена"
-      },
-      "types": {
-        "sale": "Продажа",
-        "purchase": "Покупка",
-        "rent": "Аренда жилая",
-        "lease": "Аренда коммерческая"
-      }
-    },
-    "documents": {
-      "title": "Документы",
-      "uploadNew": "Загрузить",
-      "searchPlaceholder": "Поиск документов...",
-      "filter": "Фильтр",
-      "allTypes": "Все типы",
-      "folders": "Папки",
-      "name": "Название",
-      "size": "Размер",
-      "updatedAt": "Обновлено",
-      "createdBy": "Создал",
-      "actions": "Действия",
-      "noDocuments": "Документы не найдены",
-      "selected": "Выбрано: {count}",
-      "download": "Скачать",
-      "delete": "Удалить"
-    },
-    "marketing": {
-      "title": "Маркетинг",
-      "tabCampaigns": "Кампании",
-      "tabAudience": "Аудитория",
-      "tabAnalytics": "Аналитика",
-      "searchPlaceholder": "Поиск кампаний...",
-      "filterStatus": "Статус",
-      "filterAll": "Все",
-      "statusActive": "Активная",
-      "statusDraft": "Черновик",
-      "statusCompleted": "Завершена",
-      "statusScheduled": "Запланирована",
-      "newCampaign": "Новая кампания",
-      "campaign": "Кампания",
-      "status": "Статус",
-      "type": "Тип",
-      "target": "Целевая аудитория",
-      "dates": "Даты",
-      "budget": "Бюджет",
-      "performance": "Эффективность", 
-      "actions": "Действия",
-      "noCampaigns": "Кампании не найдены",
-      "reach": "Охват",
-      "engagement": "Взаимодействие",
-      "conversion": "Конверсия"
-    }
-  },
   "profile": {
     "myProfile": "Мой профиль",
     "settings": "Настройки",
@@ -430,15 +261,19 @@
     "darkTheme": "Темная тема",
     "lightTheme": "Светлая тема"
   },
-  "loading": "Загрузка...",
   "buy": {
     "searchPlaceholder": "Поиск недвижимости...",
     "resultsCount": "найдено",
     "properties": "объектов",
     "noPropertiesFound": "Объекты не найдены",
     "tryDifferentFilters": "Попробуйте другие фильтры",
-    "featured": "рекомендуемый",
+    "featured": "ТОП",
     "filters": {
+      "title": "Фильтры",
+      "searchTitle": "Фильтры поиска",
+      "searchSubtitle": "Настройте параметры для поиска недвижимости",
+      "propertyType": "Тип недвижимости",
+      "propertyTypePlaceholder": "Выберите тип недвижимости",
       "apartment": "Квартира",
       "house": "Дом",
       "commercial": "Коммерческая",
@@ -447,13 +282,32 @@
       "floor": "Этаж",
       "priceFrom": "Цена от",
       "priceTo": "Цена до",
+      "areaFrom": "Площадь от",
+      "areaTo": "Площадь до",
       "currency": "Валюта",
+      "price": "Цена",
+      "area": "Площадь",
+      "from": "От",
+      "to": "До",
       "apply": "Применить",
-      "reset": "Сбросить"
+      "reset": "Сбросить",
+      "roomsPlaceholder": "Выберите количество комнат",
+      "floorPlaceholder": "Выберите этаж",
+      "searchButton": "Поиск",
+      "room1": "1 комната",
+      "room2": "2 комнаты",
+      "room3": "3 комнаты",
+      "room4": "4 комнаты",
+      "room5plus": "5+ комнат",
+      "floor1": "1 этаж",
+      "floor2": "2 этаж",
+      "floor3": "3 этаж",
+      "floor4": "4 этаж",
+      "floor5plus": "5+ этаж"
     },
     "viewModes": {
       "split": "Разделенный вид",
-      "map": "Только карта", 
+      "map": "Только карта",
       "grid": "Только сетка"
     },
     "details": "Подробнее"
@@ -464,13 +318,48 @@
     "properties": "объектов",
     "noPropertiesFound": "Объекты аренды не найдены",
     "tryDifferentFilters": "Попробуйте другие фильтры",
-    "featured": "рекомендуемый",
+    "featured": "ТОП",
     "details": "Подробнее",
     "filters": {
+      "title": "Фильтры",
+      "searchTitle": "Фильтры поиска",
+      "searchSubtitle": "Настройте параметры для поиска недвижимости в аренду",
+      "rentalCategory": "Категория аренды",
+      "rentalCategoryPlaceholder": "Выберите категорию аренды",
       "daily": "Посуточно",
       "longterm": "Долгосрочно",
       "commercial": "Коммерческая",
-      "premium": "Премиум"
+      "premium": "Премиум",
+      "propertyType": "Тип недвижимости",
+      "propertyTypePlaceholder": "Выберите тип недвижимости",
+      "apartment": "Квартира",
+      "house": "Дом",
+      "rooms": "Количество комнат",
+      "floor": "Этаж",
+      "priceFrom": "Цена от",
+      "priceTo": "Цена до",
+      "areaFrom": "Площадь от",
+      "areaTo": "Площадь до",
+      "currency": "Валюта",
+      "price": "Цена",
+      "area": "Площадь",
+      "from": "От",
+      "to": "До",
+      "apply": "Применить",
+      "reset": "Сбросить",
+      "roomsPlaceholder": "Выберите количество комнат",
+      "floorPlaceholder": "Выберите этаж",
+      "searchButton": "Поиск",
+      "room1": "1 комната",
+      "room2": "2 комнаты",
+      "room3": "3 комнаты",
+      "room4": "4 комнаты",
+      "room5plus": "5+ комнат",
+      "floor1": "1 этаж",
+      "floor2": "2 этаж",
+      "floor3": "3 этаж",
+      "floor4": "4 этаж",
+      "floor5plus": "5+ этаж"
     }
   },
   "sell": {
@@ -655,4 +544,4 @@
       "subtitle": "Присоединяйтесь к нашей команде профессионалов и станьте частью успешной истории"
     }
   }
-} 
+}

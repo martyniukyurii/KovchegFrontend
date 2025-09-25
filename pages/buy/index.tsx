@@ -21,10 +21,19 @@ import {
   IconGrid3x3,
   IconMap,
   IconLayoutSidebarRightExpand,
+  IconList,
+  IconGridDots,
   IconCurrencyDollar,
   IconCurrencyEuro,
   IconCurrency
 } from "@tabler/icons-react";
+
+// Іконка для гривні
+const IconCurrencyHryvnia = ({ size = 16 }: { size?: number }) => (
+  <span style={{ fontSize: size, fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+    ₴
+  </span>
+);
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -71,25 +80,25 @@ export default function BuyPage() {
   ];
 
   const roomOptions = [
-    {key: "1", label: "1 кімната"},
-    {key: "2", label: "2 кімнати"},
-    {key: "3", label: "3 кімнати"},
-    {key: "4", label: "4 кімнати"},
-    {key: "5", label: "5+ кімнат"},
+    {key: "1", label: t("buy.filters.room1") || "1 кімната"},
+    {key: "2", label: t("buy.filters.room2") || "2 кімнати"},
+    {key: "3", label: t("buy.filters.room3") || "3 кімнати"},
+    {key: "4", label: t("buy.filters.room4") || "4 кімнати"},
+    {key: "5", label: t("buy.filters.room5plus") || "5+ кімнат"},
   ];
 
   const floorOptions = [
-    {key: "1", label: "1 поверх"},
-    {key: "2", label: "2 поверх"},
-    {key: "3", label: "3 поверх"},
-    {key: "4", label: "4 поверх"},
-    {key: "5", label: "5+ поверх"},
+    {key: "1", label: t("buy.filters.floor1") || "1 поверх"},
+    {key: "2", label: t("buy.filters.floor2") || "2 поверх"},
+    {key: "3", label: t("buy.filters.floor3") || "3 поверх"},
+    {key: "4", label: t("buy.filters.floor4") || "4 поверх"},
+    {key: "5", label: t("buy.filters.floor5plus") || "5+ поверх"},
   ];
 
   const currencies = [
     {key: "EUR", label: "EUR", icon: IconCurrencyEuro},
     {key: "USD", label: "USD", icon: IconCurrencyDollar},
-    {key: "UAH", label: "₴", icon: IconCurrency},
+    {key: "UAH", label: "UAH", icon: IconCurrencyHryvnia},
   ];
   
   // States
@@ -105,6 +114,7 @@ export default function BuyPage() {
   const [floor, setFloor] = useState("");
   const [currency, setCurrency] = useState("EUR");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
+  const [listMode, setListMode] = useState<"grid" | "list">("grid"); // Новий стан для перемикання сітка/список
   
   // Drawer для фільтрів
   const {isOpen: isFiltersOpen, onOpen: onFiltersOpen, onOpenChange: onFiltersOpenChange} = useDisclosure();
@@ -647,63 +657,137 @@ export default function BuyPage() {
   };
 
   // Компонент картки властивості
-  const PropertyCard = ({ property }: { property: Property }) => {
-  return (
-      <Card className="w-full">
-      <CardBody className="p-0">
-        <div className="relative h-48 w-full">
-                  <Image
-                    src={property.images[0] || "/img/placeholder.jpg"}
-                    alt={property.title}
-                    fill
-            className="object-cover rounded-t-lg"
-                  />
-                  {property.isFeatured && (
-            <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
-                      {t("buy.featured")}
-            </Chip>
-                  )}
-          <div className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-2 py-1 rounded text-sm font-bold shadow-lg">
-                      {formatPrice(property.price, property.currency)}
-                  </div>
+  const PropertyCard = ({ property, listView = false }: { property: Property; listView?: boolean }) => {
+    if (listView) {
+      // Горизонтальний макет для режиму списку
+      return (
+        <Card className="w-full">
+          <CardBody className="p-0">
+            <div className="flex">
+              {/* Зображення зліва - адаптивний розмір */}
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-36 lg:w-64 lg:h-48 flex-shrink-0">
+                <Image
+                  src={property.images[0] || "/img/placeholder.jpg"}
+                  alt={property.title}
+                  fill
+                  className="object-cover rounded-l-lg"
+                />
+                {property.isFeatured && (
+                  <Chip className="absolute top-1 left-1 text-xs sm:text-sm font-bold" color="warning" variant="solid" size="sm">
+                    {t("buy.featured")}
+                  </Chip>
+                )}
+                {/* Ціна поверх зображення */}
+                <div className="absolute bottom-1 right-1 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-1 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-bold shadow-lg">
+                  {formatPrice(property.price, property.currency)}
                 </div>
-                <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{property.title}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mb-2">
-                    <IconMapPin size={16} className="mr-1 flex-shrink-0" />
+              </div>
+              
+              {/* Інформація справа */}
+              <div className="flex-1 p-2 sm:p-3 md:p-4 flex flex-col justify-between min-w-0">
+                <div>
+                  <Link 
+                    href={`/buy/${property.id}`}
+                    className="text-sm sm:text-base lg:text-lg font-semibold line-clamp-2 hover:text-blue-600 cursor-pointer transition-colors block mb-2"
+                  >
+                    {property.title}
+                  </Link>
+                  
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center mb-1 sm:mb-2">
+                    <IconMapPin size={14} className="mr-1 flex-shrink-0" />
                     <span className="line-clamp-1">{property.address}</span>
                   </p>
-                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-3 mb-3">
+                  
+                  <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-x-2 sm:space-x-3 mb-2 sm:mb-3">
                     <span className="flex items-center">
-                      <IconRuler size={16} className="mr-1" />
+                      <IconRuler size={14} className="mr-1" />
                       {property.area} м²
                     </span>
                     {property.rooms && (
                       <span className="flex items-center">
-                        <IconHome size={16} className="mr-1" />
+                        <IconHome size={14} className="mr-1" />
                         {property.rooms} кімн.
                       </span>
                     )}
-        </div>
-          <div className="flex flex-wrap gap-1">
-            {property.tags.slice(0, 2).map((tag, index) => (
-              <Chip key={index} size="sm" variant="flat">
-                {tag}
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1 hidden sm:flex">
+                    {property.tags.slice(0, 3).map((tag, index) => (
+                      <Chip key={index} size="sm" variant="flat" className="text-xs">
+                        {tag}
+                      </Chip>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    // Вертикальний макет для режиму сітки (як було)
+    return (
+      <Card className="w-full">
+        <CardBody className="p-0">
+          <div className="relative h-48 w-full">
+            <Image
+              src={property.images[0] || "/img/placeholder.jpg"}
+              alt={property.title}
+              fill
+              className="object-cover rounded-t-lg"
+            />
+            {property.isFeatured && (
+              <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
+                {t("buy.featured")}
               </Chip>
-            ))}
+            )}
+            <div className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-2 py-1 rounded text-sm font-bold shadow-lg">
+              {formatPrice(property.price, property.currency)}
+            </div>
           </div>
-        </div>
-      </CardBody>
-      <CardFooter className="pt-0">
-        <Button 
-          as={Link}
-          href={`/buy/${property.id}`}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
-          size="sm"
-        >
-          {t("buy.details")}
-        </Button>
-      </CardFooter>
+          <div className="p-4">
+            <Link 
+              href={`/buy/${property.id}`}
+              className="text-lg font-semibold mb-2 line-clamp-2 hover:text-blue-600 cursor-pointer transition-colors block"
+            >
+              {property.title}
+            </Link>
+            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mb-2">
+              <IconMapPin size={16} className="mr-1 flex-shrink-0" />
+              <span className="line-clamp-1">{property.address}</span>
+            </p>
+            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-3 mb-3">
+              <span className="flex items-center">
+                <IconRuler size={16} className="mr-1" />
+                {property.area} м²
+              </span>
+              {property.rooms && (
+                <span className="flex items-center">
+                  <IconHome size={16} className="mr-1" />
+                  {property.rooms} кімн.
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {property.tags.slice(0, 2).map((tag, index) => (
+                <Chip key={index} size="sm" variant="flat">
+                  {tag}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        </CardBody>
+        <CardFooter className="pt-0">
+          <Button 
+            as={Link}
+            href={`/buy/${property.id}`}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
+            size="sm"
+          >
+            {t("buy.details")}
+          </Button>
+        </CardFooter>
       </Card>
     );
   };
@@ -728,7 +812,7 @@ export default function BuyPage() {
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300 px-8"
             >
-              Шукати
+{t("buy.filters.searchButton") || "Шукати"}
             </Button>
             </div>
 
@@ -739,7 +823,28 @@ export default function BuyPage() {
               startContent={<IconFilter size={20} />}
               variant="flat"
             >
-              Фільтри
+{t("buy.filters.title") || "Фільтри"}
+            </Button>
+
+            {/* Мобільна кнопка перемикання сітка/список */}
+            <Button 
+              isIconOnly
+              onPress={() => setListMode(listMode === "grid" ? "list" : "grid")}
+              variant="flat"
+              className="lg:hidden"
+            >
+              {listMode === "grid" ? <IconList size={20} /> : <IconGridDots size={20} />}
+            </Button>
+
+            {/* Кнопка перемикання сітка/список */}
+            <Button 
+              isIconOnly
+              onPress={() => setListMode(listMode === "grid" ? "list" : "grid")}
+              variant="flat"
+              isDisabled={viewMode === "map"} // Неактивна коли карта на весь екран
+              className="hidden lg:flex"
+            >
+              {listMode === "grid" ? <IconList size={20} /> : <IconGridDots size={20} />}
             </Button>
             
             <Button 
@@ -780,22 +885,22 @@ export default function BuyPage() {
         </div>
 
         {/* Drawer з фільтрами */}
-        <Drawer isOpen={isFiltersOpen} onOpenChange={onFiltersOpenChange} size="lg">
+        <Drawer isOpen={isFiltersOpen} onOpenChange={onFiltersOpenChange} size="lg" className="z-[100]">
           <DrawerContent>
             {(onClose) => (
               <>
                 <DrawerHeader className="flex flex-col gap-1">
-                  <h2 className="text-xl font-semibold">Фільтри пошуку</h2>
-                  <p className="text-sm text-gray-500">Налаштуйте параметри для пошуку нерухомості</p>
+                  <h2 className="text-xl font-semibold">{t("buy.filters.searchTitle") || "Фільтри пошуку"}</h2>
+                  <p className="text-sm text-gray-500">{t("buy.filters.searchSubtitle") || "Налаштуйте параметри для пошуку нерухомості"}</p>
                 </DrawerHeader>
                 <DrawerBody>
                   <div className="space-y-6">
                     {/* Тип нерухомості */}
                 <div>
-                      <label className="block text-sm font-medium mb-2">Тип нерухомості</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.propertyType") || "Тип нерухомості"}</label>
                       <Autocomplete
                         defaultItems={propertyTypes}
-                        placeholder="Оберіть тип нерухомості"
+                        placeholder={t("buy.filters.propertyTypePlaceholder") || "Оберіть тип нерухомості"}
                         selectedKey={filterType !== "all" ? filterType : null}
                         onSelectionChange={(key) => {
                           setFilterType(key ? key as PropertyType : "all");
@@ -807,10 +912,10 @@ export default function BuyPage() {
 
                     {/* Кількість кімнат */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Кількість кімнат</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.rooms") || "Кількість кімнат"}</label>
                       <Autocomplete
                         defaultItems={roomOptions}
-                        placeholder="Оберіть кількість кімнат"
+                        placeholder={t("buy.filters.roomsPlaceholder") || "Оберіть кількість кімнат"}
                         selectedKey={rooms !== "all" ? rooms : null}
                         onSelectionChange={(key) => {
                           setRooms(key ? key as string : "all");
@@ -822,10 +927,10 @@ export default function BuyPage() {
 
                     {/* Поверх */}
                 <div>
-                      <label className="block text-sm font-medium mb-2">Поверх</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.floor") || "Поверх"}</label>
                       <Autocomplete
                         defaultItems={floorOptions}
-                        placeholder="Оберіть поверх"
+                        placeholder={t("buy.filters.floorPlaceholder") || "Оберіть поверх"}
                         selectedKey={floor || null}
                         onSelectionChange={(key) => {
                           setFloor(key ? key as string : "");
@@ -837,7 +942,7 @@ export default function BuyPage() {
 
                     {/* Валюта */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Валюта</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.currency") || "Валюта"}</label>
                       <Tabs 
                         aria-label="Currency options"
                         selectedKey={currency}
@@ -860,17 +965,17 @@ export default function BuyPage() {
 
                     {/* Ціна */}
                     <div>
-                      <label className="block text-sm font-medium mb-2">Ціна ({currency})</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.price") || "Ціна"} ({currency})</label>
                       <div className="grid grid-cols-2 gap-3">
                         <Input
-                          placeholder="Від"
+                          placeholder={t("buy.filters.from") || "Від"}
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
                       type="number"
                           startContent={<span className="text-gray-400 text-sm">{currency}</span>}
                         />
                         <Input
-                          placeholder="До"
+                          placeholder={t("buy.filters.to") || "До"}
                       value={priceMax}
                       onChange={(e) => setPriceMax(e.target.value)}
                           type="number"
@@ -881,17 +986,17 @@ export default function BuyPage() {
 
                     {/* Площа */}
                 <div>
-                      <label className="block text-sm font-medium mb-2">Площа (м²)</label>
+                      <label className="block text-sm font-medium mb-2">{t("buy.filters.area") || "Площа"} (м²)</label>
                       <div className="grid grid-cols-2 gap-3">
                         <Input
-                          placeholder="Від"
+                          placeholder={t("buy.filters.from") || "Від"}
                       value={areaMin}
                       onChange={(e) => setAreaMin(e.target.value)}
                       type="number"
                           endContent={<span className="text-gray-400 text-sm">м²</span>}
                         />
                         <Input
-                          placeholder="До"
+                          placeholder={t("buy.filters.to") || "До"}
                       value={areaMax}
                       onChange={(e) => setAreaMax(e.target.value)}
                           type="number"
@@ -917,14 +1022,14 @@ export default function BuyPage() {
                       setCurrency("EUR");
                     }}
                   >
-                    Скинути
+{t("buy.filters.reset") || "Скинути"}
                   </Button>
                   <Button 
                     color="primary" 
                     onPress={onClose}
                     className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
                   >
-                    Застосувати
+{t("buy.filters.apply") || "Застосувати"}
                   </Button>
                 </DrawerFooter>
               </>
@@ -936,9 +1041,12 @@ export default function BuyPage() {
         <div className="min-h-screen">
           {/* Мобільна версія - тільки сітка */}
           <div className="lg:hidden">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4">
+            <div className={listMode === "grid" 
+              ? "grid grid-cols-1 sm:grid-cols-2 gap-6 p-4" 
+              : "flex flex-col gap-4 p-4"
+            }>
               {currentItems.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+                <PropertyCard key={property.id} property={property} listView={listMode === "list"} />
               ))}
                 </div>
             {totalPages > 1 && (
@@ -968,9 +1076,12 @@ export default function BuyPage() {
               {/* Ліва частина - список */}
               <div className="h-screen flex flex-col overflow-hidden">
                 <div className="flex-1 overflow-y-auto p-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={listMode === "grid" 
+                    ? "grid grid-cols-1 sm:grid-cols-2 gap-4" 
+                    : "flex flex-col gap-4"
+                  }>
             {currentItems.map((property) => (
-                      <PropertyCard key={property.id} property={property} />
+                      <PropertyCard key={property.id} property={property} listView={listMode === "list"} />
                     ))}
                     </div>
                   </div>
@@ -995,7 +1106,7 @@ export default function BuyPage() {
                   </div>
               
               {/* Права частина - карта */}
-              <div className="h-screen sticky top-0">
+              <div className="h-screen sticky top-16 z-0">
                 <MapComponent />
                   </div>
                     </div>
@@ -1003,16 +1114,19 @@ export default function BuyPage() {
                 </div>
 
           {viewMode === "map" && (
-            <div className="h-screen">
+            <div className="h-screen pt-16 z-0 relative">
               <MapComponent />
               </div>
           )}
 
           {viewMode === "grid" && (
             <div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className={listMode === "grid" 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+                : "flex flex-col gap-4"
+              }>
                 {currentItems.map((property) => (
-                  <PropertyCard key={property.id} property={property} />
+                  <PropertyCard key={property.id} property={property} listView={listMode === "list"} />
             ))}
           </div>
               {totalPages > 1 && (

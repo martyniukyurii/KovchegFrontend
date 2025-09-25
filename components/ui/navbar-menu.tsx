@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const transition = {
   type: "spring" as const,
@@ -18,11 +19,13 @@ export const MenuItem = ({
   active,
   item,
   children,
+  href,
 }: {
   setActive: (item: string | null) => void;
   active: string | null;
   item: string;
   children?: React.ReactNode;
+  href?: string;
 }) => {
   const menuRef = React.useRef<HTMLDivElement>(null);
   const [menuStyle, setMenuStyle] = React.useState<React.CSSProperties>({});
@@ -41,7 +44,17 @@ export const MenuItem = ({
     }
   }, [active, item]);
 
+  const router = useRouter();
+
   const handleClick = () => {
+    // Якщо є href, то навігуємо на сторінку
+    if (href) {
+      router.push(href);
+      setActive(null);
+      return;
+    }
+    
+    // Інакше обробляємо як підменю
     if (active === item && isClicked) {
       setActive(null);
       setIsClicked(false);

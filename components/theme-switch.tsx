@@ -16,15 +16,23 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   classNames,
 }) => {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const onChange = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    // Якщо поточна тема system, перемикаємо на протилежну до resolvedTheme
+    if (theme === "system") {
+      setTheme(resolvedTheme === "light" ? "dark" : "light");
+    } else {
+      setTheme(theme === "light" ? "dark" : "light");
+    }
   };
+
+  // Визначаємо чи показувати світлий режим (сонце чи місяць)
+  const isLightMode = theme === "light" || (theme === "system" && resolvedTheme === "light");
 
   const {
     Component,
@@ -34,7 +42,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
     getInputProps,
     getWrapperProps,
   } = useSwitch({
-    isSelected: theme === "light",
+    isSelected: isLightMode,
     onChange,
   });
 
@@ -45,7 +53,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   return (
     <Component
       aria-label={
-        theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+        isLightMode ? "Switch to dark mode" : "Switch to light mode"
       }
       {...getBaseProps({
         className: clsx(
@@ -77,7 +85,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
           ),
         })}
       >
-        {isSelected ? (
+        {isLightMode ? (
           <MoonFilledIcon size={22} />
         ) : (
           <SunFilledIcon size={22} />

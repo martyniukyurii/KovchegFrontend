@@ -31,25 +31,6 @@
     "orLoginWith": "Or login with",
     "orRegisterWith": "Or register with"
   },
-  "admin": {
-    "title": "Admin Panel",
-    "forgotPassword": "Forgot password?",
-    "forgotPasswordTitle": "Password Recovery",
-    "loginButton": "Login",
-    "loginLoading": "Logging in...",
-    "backButton": "Back",
-    "sendButton": "Send",
-    "sendLoading": "Sending...",
-    "recoveryEmailInfo": "Enter your email to receive password recovery instructions",
-    "recoveryEmailSent": "Check your email for password recovery instructions.",
-    "returnToLogin": "Return to login",
-    "orLoginWith": "or login with",
-    "or": "or",
-    "telegramLogin": "Login with Telegram",
-    "backToHome": "Back to home",
-    "allRightsReserved": "All rights reserved",
-    "companyName": "Your Kovcheg"
-  },
   "footer": {
     "tagline": "Your reliable partner in real estate in Chernivtsi",
     "navigation": "Navigation",
@@ -62,6 +43,7 @@
     "socialMedia": "Social Media",
     "instagram": "instagram.com/vashkovcheg",
     "facebook": "https://www.facebook.com/vashkovcheg",
+    "tiktok": "https://www.tiktok.com/@vashkovcheg",
     "copyright": "All rights reserved."
   },
   "topOffers": {
@@ -272,157 +254,6 @@
       "button": "View offers"
     }
   },
-  "crm": {
-    "title": "CRM System",
-    "nav": {
-      "analytics": "Analytics",
-      "calendar": "Calendar",
-      "deals": "Deals",
-      "clients": "Clients",
-      "properties": "Properties", 
-      "communications": "Communications",
-      "documents": "Documents",
-      "marketing": "Marketing"
-    },
-    "sections": {
-      "comingSoon": "This section is under development. Coming soon.",
-      "analytics": {
-        "title": "General Analytics"
-      },
-      "calendar": {
-        "title": "Calendar & Tasks"
-      },
-      "deals": {
-        "title": "Deals"
-      },
-      "clients": {
-        "title": "Clients"
-      },
-      "properties": {
-        "title": "Real Estate Objects"
-      },
-      "communications": {
-        "title": "Communications"
-      },
-      "documents": {
-        "title": "Documents"
-      },
-      "marketing": {
-        "title": "Marketing"
-      }
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "General statistics and performance indicators",
-      "totalSales": "Total Sales",
-      "newClients": "New Clients",
-      "activeProperties": "Active Properties",
-      "conversionRate": "Conversion Rate",
-      "salesChart": "Sales Dynamics",
-      "chartPlaceholder": "Chart will be displayed after data is received",
-      "topDeals": "Top Deals",
-      "dealName": "Deal",
-      "clientName": "Client"
-    },
-    "calendar": {
-      "subtitle": "Task and meeting management",
-      "today": "Today",
-      "noEvents": "No events for this date",
-      "addEvent": "Add event",
-      "details": "Details",
-      "hide": "Hide",
-      "edit": "Edit",
-      "complete": "Complete",
-      "cancel": "Cancel",
-      "restore": "Restore"
-    },
-    "deals": {
-      "subtitle": "Management of real estate deals and transactions",
-      "searchPlaceholder": "Search by name, client, property...",
-      "filters": "Filters",
-      "newDeal": "New Deal",
-      "edit": "Edit",
-      "delete": "Delete",
-      "allStatuses": "All Statuses",
-      "allTypes": "All Types",
-      "filterByStatus": "Filter by Status",
-      "filterByType": "Filter by Type",
-      "sortBy": "Sort by",
-      "noDealsFound": "No deals found",
-      "createFirstDeal": "Create first deal",
-      "editDeal": "Edit deal",
-      "progressStatus": "Progress status",
-      "cancelDeal": "Cancel deal",
-      "reopenDeal": "Reopen deal",
-      "hideDetails": "Hide details",
-      "viewDetails": "View details",
-      "client": "Client",
-      "property": "Property",
-      "responsibleAgent": "Responsible Agent",
-      "createdAt": "Created at",
-      "updatedAt": "Updated at",
-      "closingDate": "Closing date",
-      "description": "Description",
-      "value": "Value",
-      "statuses": {
-        "new": "New",
-        "negotiation": "Negotiation",
-        "preparation": "Preparation",
-        "pending": "Pending",
-        "closed": "Closed",
-        "cancelled": "Cancelled"
-      },
-      "types": {
-        "sale": "Sale",
-        "purchase": "Purchase",
-        "rent": "Residential Rent",
-        "lease": "Commercial Lease"
-      }
-    },
-    "documents": {
-      "title": "Documents",
-      "uploadNew": "Upload",
-      "searchPlaceholder": "Search documents...",
-      "filter": "Filter",
-      "allTypes": "All Types",
-      "folders": "Folders",
-      "name": "Name",
-      "size": "Size",
-      "updatedAt": "Updated",
-      "createdBy": "Created By",
-      "actions": "Actions",
-      "noDocuments": "No documents found",
-      "selected": "Selected: {count}",
-      "download": "Download",
-      "delete": "Delete"
-    },
-    "marketing": {
-      "title": "Marketing",
-      "tabCampaigns": "Campaigns",
-      "tabAudience": "Audience",
-      "tabAnalytics": "Analytics",
-      "searchPlaceholder": "Search campaigns...",
-      "filterStatus": "Status",
-      "filterAll": "All",
-      "statusActive": "Active",
-      "statusDraft": "Draft",
-      "statusCompleted": "Completed",
-      "statusScheduled": "Scheduled",
-      "newCampaign": "New Campaign",
-      "campaign": "Campaign",
-      "status": "Status",
-      "type": "Type",
-      "target": "Target Audience",
-      "dates": "Dates",
-      "budget": "Budget",
-      "performance": "Performance", 
-      "actions": "Actions",
-      "noCampaigns": "No campaigns found",
-      "reach": "Reach",
-      "engagement": "Engagement",
-      "conversion": "Conversion"
-    }
-  },
   "profile": {
     "myProfile": "My Profile",
     "settings": "Settings",
@@ -430,15 +261,19 @@
     "darkTheme": "Dark Theme",
     "lightTheme": "Light Theme"
   },
-  "loading": "Loading...",
   "buy": {
     "searchPlaceholder": "Search properties...",
     "resultsCount": "found",
     "properties": "properties",
     "noPropertiesFound": "No properties found",
     "tryDifferentFilters": "Try different filters",
-    "featured": "featured",
+    "featured": "TOP",
     "filters": {
+      "title": "Filters",
+      "searchTitle": "Search Filters",
+      "searchSubtitle": "Configure parameters for property search",
+      "propertyType": "Property Type",
+      "propertyTypePlaceholder": "Select property type",
       "apartment": "Apartment",
       "house": "House",
       "commercial": "Commercial",
@@ -447,13 +282,32 @@
       "floor": "Floor",
       "priceFrom": "Price from",
       "priceTo": "Price to",
+      "areaFrom": "Area from",
+      "areaTo": "Area to",
       "currency": "Currency",
+      "price": "Price",
+      "area": "Area",
+      "from": "From",
+      "to": "To",
       "apply": "Apply",
-      "reset": "Reset"
+      "reset": "Reset",
+      "roomsPlaceholder": "Select number of rooms",
+      "floorPlaceholder": "Select floor",
+      "searchButton": "Search",
+      "room1": "1 room",
+      "room2": "2 rooms",
+      "room3": "3 rooms",
+      "room4": "4 rooms",
+      "room5plus": "5+ rooms",
+      "floor1": "1st floor",
+      "floor2": "2nd floor",
+      "floor3": "3rd floor",
+      "floor4": "4th floor",
+      "floor5plus": "5+ floors"
     },
     "viewModes": {
       "split": "Split view",
-      "map": "Map only", 
+      "map": "Map only",
       "grid": "Grid only"
     },
     "details": "Details"
@@ -464,13 +318,48 @@
     "properties": "properties",
     "noPropertiesFound": "No rental properties found",
     "tryDifferentFilters": "Try different filters",
-    "featured": "featured",
+    "featured": "TOP",
     "details": "Details",
     "filters": {
+      "title": "Filters",
+      "searchTitle": "Search Filters",
+      "searchSubtitle": "Configure parameters for rental property search",
+      "rentalCategory": "Rental Category",
+      "rentalCategoryPlaceholder": "Select rental category",
       "daily": "Daily",
       "longterm": "Long-term",
       "commercial": "Commercial",
-      "premium": "Premium"
+      "premium": "Premium",
+      "propertyType": "Property Type",
+      "propertyTypePlaceholder": "Select property type",
+      "apartment": "Apartment",
+      "house": "House",
+      "rooms": "Number of rooms",
+      "floor": "Floor",
+      "priceFrom": "Price from",
+      "priceTo": "Price to",
+      "areaFrom": "Area from",
+      "areaTo": "Area to",
+      "currency": "Currency",
+      "price": "Price",
+      "area": "Area",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "reset": "Reset",
+      "roomsPlaceholder": "Select number of rooms",
+      "floorPlaceholder": "Select floor",
+      "searchButton": "Search",
+      "room1": "1 room",
+      "room2": "2 rooms",
+      "room3": "3 rooms",
+      "room4": "4 rooms",
+      "room5plus": "5+ rooms",
+      "floor1": "1st floor",
+      "floor2": "2nd floor",
+      "floor3": "3rd floor",
+      "floor4": "4th floor",
+      "floor5plus": "5+ floors"
     }
   }
-} 
+}

@@ -48,6 +48,10 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [visibleCards, setVisibleCards] = useState(3);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0); // Замість currentIndex для плавного скролу
+  const [dragOffset, setDragOffset] = useState(0);
 
   useEffect(() => {
     const checkScreen = () => {
@@ -55,7 +59,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
 
       setIsMobile(width < 768);
       // Розраховуємо кількість видимих карток на екрані
-      const cardWidth = width < 768 ? width - 64 : 380;
+      const cardWidth = width < 768 ? width - 120 : 380; // Ще більше зменшуємо ширину на мобільних
       const gap = 16;
       const containerWidth = width - (width < 768 ? 32 : 48); // зменшуємо відступи
 
@@ -70,22 +74,124 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
 
   const totalItems = items.length;
 
-  const scrollLeft = () => {
-    if (currentIndex === 0) {
-      // Якщо ми на початку, переходимо в кінець
-      setCurrentIndex(totalItems - visibleCards);
-    } else {
-      setCurrentIndex((prev) => Math.max(0, prev - 1));
-    }
+  const getCardWidth = () => {
+    return isMobile ? window.innerWidth - 120 : 380; // Ще більше зменшуємо ширину на мобільних
   };
 
-  const scrollRight = () => {
-    if (currentIndex >= totalItems - visibleCards) {
-      // Якщо ми бачимо останні картки, повертаємося на початок
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex((prev) => Math.min(totalItems - visibleCards, prev + 1));
-    }
+  const getGap = () => 16;
+
+  const scrollLeftBtn = () => {
+    const cardWidth = getCardWidth();
+    const gap = getGap();
+    const step = cardWidth + gap;
+    
+    setScrollPosition(prev => {
+      const newPos = prev + step; // Рухаємося вправо (додатний напрямок)
+      const maxScroll = -(totalItems - visibleCards) * step;
+      
+      if (newPos > 0) {
+        return maxScroll; // Переходимо в кінець
+      }
+      return newPos;
+    });
+  };
+
+  const scrollRightBtn = () => {
+    const cardWidth = getCardWidth();
+    const gap = getGap();
+    const step = cardWidth + gap;
+    
+    setScrollPosition(prev => {
+      const newPos = prev - step; // Рухаємося вліво (від'ємний напрямок)
+      const maxScroll = -(totalItems - visibleCards) * step;
+      
+      if (newPos < maxScroll) {
+        return 0; // Повертаємося на початок
+      }
+      return newPos;
+    });
+  };
+
+  // Обробники для свайпу мишкою
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setStartX(e.pageX);
+    setDragOffset(0);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX;
+    const walk = (x - startX); // Прямий зв'язок з рухом миші
+    setDragOffset(walk);
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    setIsDragging(false);
+    
+    // Застосовуємо зміщення до поточної позиції
+    setScrollPosition(prev => {
+      const newPos = prev + dragOffset;
+      const cardWidth = getCardWidth();
+      const gap = getGap();
+      const maxScroll = -(totalItems - visibleCards) * (cardWidth + gap);
+      
+      // Обмежуємо позицію в межах допустимого діапазону
+      return Math.max(maxScroll, Math.min(0, newPos));
+    });
+    setDragOffset(0);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Застосовуємо зміщення до поточної позиції
+    setScrollPosition(prev => {
+      const newPos = prev + dragOffset;
+      const cardWidth = getCardWidth();
+      const gap = getGap();
+      const maxScroll = -(totalItems - visibleCards) * (cardWidth + gap);
+      
+      // Обмежуємо позицію в межах допустимого діапазону
+      return Math.max(maxScroll, Math.min(0, newPos));
+    });
+    setDragOffset(0);
+  };
+
+  // Обробники для сенсорного свайпу
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX);
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const x = e.touches[0].pageX;
+    const walk = (x - startX);
+    setDragOffset(walk);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Застосовуємо зміщення до поточної позиції
+    setScrollPosition(prev => {
+      const newPos = prev + dragOffset;
+      const cardWidth = getCardWidth();
+      const gap = getGap();
+      const maxScroll = -(totalItems - visibleCards) * (cardWidth + gap);
+      
+      // Обмежуємо позицію в межах допустимого діапазону
+      return Math.max(maxScroll, Math.min(0, newPos));
+    });
+    setDragOffset(0);
   };
 
   const handleCardClose = (index: number) => {
@@ -93,10 +199,8 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   };
 
   const getTranslateX = () => {
-    const gap = 16;
-    const cardWidth = isMobile ? window.innerWidth - 64 : 380;
-
-    return -(cardWidth + gap) * currentIndex;
+    // Використовуємо scrollPosition замість currentIndex для плавного скролу
+    return scrollPosition + dragOffset;
   };
 
   const closeAllCards = () => {
@@ -121,7 +225,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         <div className="absolute left-0 md:left-2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
           <button
             className="relative z-40 h-10 w-10 md:h-12 md:w-12 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center disabled:opacity-50 bg-background/50 backdrop-blur-sm hover:scale-110 transition-transform"
-            onClick={scrollLeft}
+            onClick={scrollLeftBtn}
           >
             <IconArrowNarrowLeft className="h-5 w-5 md:h-6 md:w-6 text-foreground" />
           </button>
@@ -130,7 +234,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         <div className="absolute right-0 md:right-2 top-1/2 translate-x-1/2 -translate-y-1/2 z-50">
           <button
             className="relative z-40 h-10 w-10 md:h-12 md:w-12 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center disabled:opacity-50 bg-background/50 backdrop-blur-sm hover:scale-110 transition-transform"
-            onClick={scrollRight}
+            onClick={scrollRightBtn}
           >
             <IconArrowNarrowRight className="h-5 w-5 md:h-6 md:w-6 text-foreground" />
           </button>
@@ -139,13 +243,20 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         <div className="overflow-hidden mx-2 md:mx-4">
           <div
             ref={containerRef}
-            className="flex gap-4 transition-transform duration-300 ease-out"
+            className={`flex gap-4 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isDragging ? '' : 'transition-transform duration-300 ease-out'}`}
             style={{ transform: `translateX(${getTranslateX()}px)` }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {items.map((item, index) => (
               <div
                 key={"card" + index}
-                className="flex-none w-[calc(100vw-2rem)] md:w-[380px]"
+                className="flex-none w-[calc(100vw-7.5rem)] md:w-[380px]"
               >
                 {item}
               </div>
@@ -155,15 +266,27 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
 
         <div className="flex justify-center gap-2 mt-4">
           {Array.from({ length: totalItems - visibleCards + 1 }).map(
-            (_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? "bg-foreground" : "bg-foreground/20"
-                }`}
-                onClick={() => setCurrentIndex(index)}
-              />
-            ),
+            (_, index) => {
+              const cardWidth = getCardWidth();
+              const gap = getGap();
+              const targetPosition = -(cardWidth + gap) * index;
+              const currentPos = scrollPosition;
+              const isActive = Math.abs(currentPos - targetPosition) < (cardWidth + gap) / 2;
+              
+              return (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    isActive ? "bg-foreground" : "bg-foreground/20"
+                  }`}
+                  onClick={() => {
+                    const cardWidth = getCardWidth();
+                    const gap = getGap();
+                    setScrollPosition(-(cardWidth + gap) * index);
+                  }}
+                />
+              );
+            }
           )}
         </div>
       </div>
@@ -206,7 +329,7 @@ export const Card = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="absolute top-0 left-0 right-0 z-[60] bg-card rounded-3xl overflow-hidden shadow-xl h-[320px] w-full md:h-[450px] md:w-[380px]"
+            className="absolute top-0 left-0 right-0 z-[60] bg-card rounded-3xl overflow-hidden shadow-xl h-[500px] w-full md:h-[600px] md:w-[380px]"
           >
             <div className="relative h-full p-3 md:p-4 flex flex-col">
               <button
@@ -230,7 +353,7 @@ export const Card = ({
               >
                 {card.title}
               </motion.p>
-              <div className="flex-1 overflow-y-auto mt-3">{card.content}</div>
+              <div className="flex-1 overflow-y-auto mt-3 min-h-[300px] md:min-h-[400px]">{card.content}</div>
             </div>
           </motion.div>
         )}
@@ -238,7 +361,7 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="rounded-3xl bg-gray-100 dark:bg-neutral-900 h-[320px] w-full md:h-[450px] md:w-[380px] overflow-hidden flex flex-col items-start justify-start relative z-10"
+        className="rounded-3xl bg-gray-100 dark:bg-neutral-900 h-[400px] w-full md:h-[450px] md:w-[380px] overflow-hidden flex flex-col items-start justify-start relative z-10"
       >
         <BlurImage
           src={card.src}

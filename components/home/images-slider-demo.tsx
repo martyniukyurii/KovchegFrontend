@@ -94,7 +94,7 @@ export function ImagesSliderDemo() {
             gradientWords={gradientWords[locale]}
           />
         </div>
-        <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl scale-85 sm:scale-90 md:scale-100">
+        <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl scale-85 sm:scale-90 md:scale-100">
           <PlaceholdersAndVanishInput
             placeholders={placeholders}
             onChange={handleChange}

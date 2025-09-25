@@ -42,7 +42,7 @@ export const Navbar = () => {
       <NavbarContent className="hidden lg:flex basis-2/3" justify="center">
         <div className="flex gap-4">
           <Menu setActive={setActive}>
-            <MenuItem setActive={setActive} active={active} item={t("nav.buy")}>
+            <MenuItem setActive={setActive} active={active} item={t("nav.buy")} href="/buy">
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
                   title={t("submenu.buy.apartments.title")}
@@ -74,6 +74,7 @@ export const Navbar = () => {
               setActive={setActive}
               active={active}
               item={t("nav.rent")}
+              href="/rent"
             >
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
@@ -107,6 +108,7 @@ export const Navbar = () => {
               setActive={setActive}
               active={active}
               item={t("nav.sell")}
+              href="/sell"
             >
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
@@ -139,6 +141,7 @@ export const Navbar = () => {
               setActive={setActive}
               active={active}
               item={t("nav.agents")}
+              href="/agents"
             >
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
@@ -171,6 +174,7 @@ export const Navbar = () => {
               setActive={setActive}
               active={active}
               item={t("nav.about")}
+              href="/about"
             >
               <div className="grid grid-cols-2 gap-8 p-4">
                 <ProductItem
