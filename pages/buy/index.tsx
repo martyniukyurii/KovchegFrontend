@@ -657,7 +657,7 @@ export default function BuyPage() {
   };
 
   // Компонент картки властивості
-  const PropertyCard = ({ property, listView = false }: { property: Property; listView?: boolean }) => {
+  const PropertyCard = ({ property, listView = false, showDescription = false }: { property: Property; listView?: boolean; showDescription?: boolean }) => {
     if (listView) {
       // Горизонтальний макет для режиму списку
       return (
@@ -692,6 +692,13 @@ export default function BuyPage() {
                   >
                     {property.title}
                   </Link>
+                  
+                  {/* Опис тільки для десктопного режиму списку без карти */}
+                  {showDescription && (
+                    <p className="text-base text-gray-600 dark:text-gray-400 mb-3 line-clamp-4 leading-relaxed">
+                      {property.description || "Чудова нерухомість з відмінним розташуванням та сучасним ремонтом. Ідеально підходить для комфортного проживання або інвестицій. Всі необхідні зручності поблизу. Розвинена інфраструктура району забезпечує максимальний комфорт для мешканців."}
+                    </p>
+                  )}
                   
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center mb-1 sm:mb-2">
                     <IconMapPin size={14} className="mr-1 flex-shrink-0" />
@@ -1126,7 +1133,12 @@ export default function BuyPage() {
                 : "flex flex-col gap-4"
               }>
                 {currentItems.map((property) => (
-                  <PropertyCard key={property.id} property={property} listView={listMode === "list"} />
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property} 
+                    listView={listMode === "list"} 
+                    showDescription={listMode === "list"}
+                  />
             ))}
           </div>
               {totalPages > 1 && (

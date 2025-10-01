@@ -2,41 +2,70 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   IconArrowLeft,
   IconMapPin,
-  IconRuler,
   IconHome,
-  IconBuilding,
-  IconCurrencyDollar,
-  IconTag,
   IconPhone,
   IconMail,
   IconBrandTelegram,
   IconBrandWhatsapp,
   IconCalendar,
-  IconArrowNarrowLeft,
-  IconArrowNarrowRight,
+  IconX,
+  IconChevronLeft,
+  IconChevronRight,
   IconPhoto,
   IconLoader2,
+  IconZoomIn,
+  IconZoomOut,
+  IconShare,
+  IconLink,
+  IconMapSearch,
+  IconEye,
+  IconSend,
+  IconCoffee,
+  IconShoppingCart,
+  IconBus,
+  IconSchool,
+  IconRoad,
+  IconBuildingBank,
+  IconHospital,
+  IconPill,
+  IconTree,
+  IconBarbell,
+  IconBike,
+  IconCurrencyDollar,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@heroui/button";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Image } from "@heroui/image";
-import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
 import { Avatar } from "@heroui/avatar";
+import { Input, Textarea } from "@heroui/input";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
+import { Snippet } from "@heroui/snippet";
+import { DatePicker } from "@heroui/date-picker";
+import { Select, SelectItem } from "@heroui/select";
+
+// Currency options
+const currencies = [
+  { key: "EUR", label: "EUR" },
+  { key: "USD", label: "USD" },
+  { key: "UAH", label: "UAH" },
+];
 
 import DefaultLayout from "@/layouts/default";
 import { useTranslation } from "@/hooks/useTranslation";
 import { title } from "@/components/primitives";
+import { OpenStreetMap } from "@/components/maps/openstreet-map";
 
 // Типи для нерухомості
 type PropertyType = "apartment" | "house" | "commercial" | "land";
 type PropertyStatus = "active" | "pending" | "sold" | "reserved";
+type Currency = "EUR" | "USD" | "UAH";
 
 // Інтерфейс для об'єкта нерухомості
 interface Property {
@@ -46,7 +75,7 @@ interface Property {
   status: PropertyStatus;
   isFeatured: boolean;
   price: number;
-  currency: string;
+  currency: Currency;
   address: string;
   area: number;
   rooms?: number;
@@ -56,6 +85,8 @@ interface Property {
   images: string[];
   tags: string[];
   responsibleAgent?: string;
+  coordinates?: { lat: number; lng: number };
+  panoeeUrl?: string; // URL для 3D туру Panoee
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -66,7 +97,32 @@ export default function PropertyDetails() {
   const { t } = useTranslation();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<"gallery" | "interior" | "street">("gallery");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
+  const [subscribeMethod, setSubscribeMethod] = useState<"email" | "telegram">("email");
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>("EUR");
+  const [offerPrice, setOfferPrice] = useState<number>(0);
+  const [nearbyPlaces, setNearbyPlaces] = useState({
+    cafes: 0,
+    shops: 0,
+    busStops: 0,
+    schools: 0,
+    parks: 0,
+    hospitals: 0,
+    pharmacies: 0,
+    banks: 0,
+    gyms: 0,
+    bikeRoads: 0,
+  });
+  const [contactMessage, setContactMessage] = useState("");
 
   // Фейкові дані нерухомості
   const dummyProperties: Property[] = [
@@ -83,11 +139,17 @@ export default function PropertyDetails() {
       rooms: 2,
       floor: 3,
       totalFloors: 9,
+      coordinates: { lat: 48.2920, lng: 25.9350 },
+      panoeeUrl: "https://momento360.com/e/uc/22442f3e0cb44b449a19e5d0d95d77e5?utm_campaign=embed&utm_source=other&reset-heading=true&size=medium&display-plan=true&upload-key=48cb6e86866945d1be78a14d3194ab87",
       description:
         "Простора квартира з сучасним ремонтом, індивідуальним опаленням та панорамними вікнами. Розташована в новому житловому комплексі з закритою територією. Поруч з будинком є дитячий майданчик, супермаркет, аптека, школа та дитячий садок. Зручна транспортна розв'язка. \n\nВ квартирі виконаний якісний ремонт з використанням екологічно чистих матеріалів. Встановлені якісні металопластикові вікна з енергозберігаючим склопакетом. Утеплена лоджія з панорамними вікнами. \n\nКухня обладнана сучасною технікою: варильна поверхня, духова шафа, посудомийна машина, холодильник. Санвузол роздільний, оснащений якісною сантехнікою. \n\nВартість включає всі меблі та техніку. Документи в порядку, можливий торг.",
       images: [
-        "/img/properties/apartment1.jpg",
-        "/img/properties/apartment1_2.jpg",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&h=800&fit=crop&crop=center", 
+        "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1571055107559-3e67626fa8be?w=1200&h=800&fit=crop&crop=center",
       ],
       tags: ["індивідуальне опалення", "новобудова", "панорамні вікна", "з меблями", "паркінг"],
       responsibleAgent: "Олена Петренко",
@@ -106,16 +168,18 @@ export default function PropertyDetails() {
       area: 85.0,
       floor: 1,
       totalFloors: 4,
+      coordinates: { lat: 48.2910, lng: 25.9320 },
       description:
-        "Приміщення на першому поверсі з окремим входом та вітринними вікнами. Ідеальне розташування для магазину чи офісу компанії. Центральна вулиця міста з високим пішохідним трафіком. \n\nПриміщення має два входи: центральний з фасаду будівлі та додатковий з двору. Простора зала площею 70 кв.м та додаткові підсобні приміщення.\n\nВиконаний якісний ремонт, встановлена сигналізація, кондиціонери, високошвидкісний інтернет. Є можливість розміщення рекламної вивіски на фасаді будівлі. \n\nМожливе використання як під магазин, так і під офіс, салон краси, медичний центр тощо. Комунікації всі центральні, є санвузол.",
+        "Приміщення на першому поверсі з окремим входом та вітринними вікнами.",
       images: [
-        "/img/properties/commercial1.jpg",
-        "/img/properties/commercial1_2.jpg",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=800&fit=crop&crop=center",
       ],
       tags: ["центр", "окремий вхід", "вітрини"],
       responsibleAgent: "Олександр Мельник",
       createdAt: new Date(new Date().setDate(new Date().getDate() - 25)),
-      updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)),
     },
     {
       id: "3",
@@ -125,17 +189,18 @@ export default function PropertyDetails() {
       isFeatured: false,
       price: 120000,
       currency: "EUR",
-      address: "вул. Садова, 42, с. Коровія, Чернівецький район",
+      address: "вул. Садова, 42, с. Коровія",
       area: 140.0,
       rooms: 4,
       totalFloors: 2,
-      description:
-        "Двоповерховий будинок з прибудинковою ділянкою 10 соток. Гараж, літня кухня, фруктовий сад. Будинок збудований з цегли, утеплений. На першому поверсі розташовані кухня, вітальня, санвузол та технічне приміщення. На другому поверсі - три спальні кімнати та ванна кімната. \n\nНа території є гараж на два автомобілі, літня кухня з піччю, фруктовий сад (яблуні, груші, сливи, вишні), виноградник, теплиця. Ділянка повністю огороджена, встановлені автоматичні ворота. \n\nБудинок підключений до центрального водопостачання та каналізації. Опалення - газовий котел, є альтернативне опалення твердопаливним котлом. \n\nЗручне розташування - 15 хвилин до центру Чернівців. Поруч зупинка громадського транспорту, магазин, школа.",
-      images: ["/img/properties/house1.jpg", "/img/properties/house1_2.jpg"],
+      coordinates: { lat: 48.3050, lng: 25.9200 },
+      description: "Двоповерховий будинок з прибудинковою ділянкою.",
+      images: [
+        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=800&fit=crop&crop=center",
+      ],
       tags: ["окремий будинок", "гараж", "власна ділянка"],
       responsibleAgent: "Василь Коваль",
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 40)),
-      updatedAt: new Date(new Date().setDate(new Date().getDate() - 8)),
     },
     {
       id: "4",
@@ -147,31 +212,85 @@ export default function PropertyDetails() {
       currency: "EUR",
       address: "с. Мамаївці, Чернівецький район",
       area: 1200.0,
-      description:
-        "Ділянка правильної форми з підведеними комунікаціями. Хороший під'їзд, мальовнича місцевість. Ділянка розташована в затишному районі села Мамаївці, всього в 10 км від Чернівців. \n\nРівна ділянка правильної прямокутної форми, площею 12 соток. До ділянки підведені всі необхідні комунікації: електрика, газ, вода. \n\nПоруч з ділянкою розташовані нові приватні будинки, гарні сусіди. Зручний під'їзд - асфальтована дорога. З ділянки відкривається чудовий краєвид на мальовничі пагорби та ліс. \n\nВсі документи оформлені належним чином, є кадастровий номер, цільове призначення - для індивідуального житлового будівництва. Можлива розстрочка платежу.",
-      images: ["/img/properties/land1.jpg", "/img/properties/land1_2.jpg"],
+      coordinates: { lat: 48.2800, lng: 25.9500 },
+      description: "Ділянка правильної форми з підведеними комунікаціями.",
+      images: [
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1574263867128-9c5c7a5b8c4f?w=1200&h=800&fit=crop&crop=center",
+      ],
       tags: ["будівництво", "з комунікаціями"],
       responsibleAgent: "Ірина Коваленко",
-      createdAt: new Date(new Date().setDate(new Date().getDate() - 60)),
-      updatedAt: new Date(new Date().setDate(new Date().getDate() - 10)),
     },
   ];
 
+  const getSimilarProperties = (currentPropertyId: string): Property[] => {
+    return dummyProperties.filter((p) => p.id !== currentPropertyId).slice(0, 12);
+  };
+
   useEffect(() => {
     if (id) {
-      // Імітація завантаження даних з API
       setLoading(true);
       setTimeout(() => {
         const foundProperty = dummyProperties.find((p) => p.id === id);
-
         setProperty(foundProperty || null);
+        if (foundProperty) {
+          setSelectedCurrency(foundProperty.currency);
+          setOfferPrice(foundProperty.price);
+          
+          // Завантажити дані про місця поблизу
+          if (foundProperty.coordinates) {
+            fetchNearbyPlaces(foundProperty.coordinates);
+          }
+        }
         setLoading(false);
       }, 500);
     }
   }, [id]);
 
-  // Допоміжна функція для форматування ціни
-  const formatPrice = (price: number, currency: string) => {
+  const fetchNearbyPlaces = async (coordinates: { lat: number; lng: number }) => {
+    try {
+      const response = await fetch(
+        `/api/nearby-places?lat=${coordinates.lat}&lng=${coordinates.lng}`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        setNearbyPlaces(data);
+      } else {
+        console.error("Failed to fetch nearby places");
+        // Fallback до дефолтних значень
+        setNearbyPlaces({
+          cafes: 12,
+          shops: 8,
+          busStops: 5,
+          schools: 3,
+          parks: 4,
+          hospitals: 2,
+          pharmacies: 6,
+          banks: 4,
+          gyms: 3,
+          bikeRoads: 2,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching nearby places:", error);
+      // Fallback до дефолтних значень
+      setNearbyPlaces({
+        cafes: 12,
+        shops: 8,
+        busStops: 5,
+        schools: 3,
+        parks: 4,
+        hospitals: 2,
+        pharmacies: 6,
+        banks: 4,
+        gyms: 3,
+        bikeRoads: 2,
+      });
+    }
+  };
+
+  const formatPrice = (price: number, currency: Currency) => {
     return new Intl.NumberFormat("uk-UA", {
       style: "currency",
       currency: currency,
@@ -179,10 +298,152 @@ export default function PropertyDetails() {
     }).format(price);
   };
 
-  // Функція для форматування дати
+  const convertCurrency = (amount: number, fromCurrency: Currency, toCurrency: Currency): number => {
+    const rates: { [key in Currency]: number } = {
+      EUR: 1,
+      USD: 1.09,
+      UAH: 41.35,
+    };
+    const inEUR = amount / rates[fromCurrency];
+    return inEUR * rates[toCurrency];
+  };
+
+  const formatPriceDetailed = (price: number, currency: Currency, area: number) => {
+    const usdPrice = convertCurrency(price, currency, "USD");
+    const uahPrice = convertCurrency(price, currency, "UAH");
+    const pricePerSqm = usdPrice / area;
+
+    return `${Math.round(usdPrice).toLocaleString("uk-UA")} $ за об'єкт  ·  ${Math.round(uahPrice).toLocaleString("uk-UA")} грн  ·  ${Math.round(pricePerSqm).toLocaleString("uk-UA")} $ за м²`;
+  };
+
+  const Lightbox = ({
+    images,
+    currentIndex,
+    onClose,
+  }: {
+    images: string[];
+    currentIndex: number;
+    onClose: () => void;
+  }) => {
+    const [activeIndex, setActiveIndex] = useState(currentIndex);
+    const [zoom, setZoom] = useState(1);
+
+    useEffect(() => {
+      setActiveIndex(currentIndex);
+    }, [currentIndex]);
+
+    const goToPrevious = () => {
+      setActiveIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      setZoom(1);
+    };
+
+    const goToNext = () => {
+      setActiveIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      setZoom(1);
+    };
+
+    const handleZoomIn = () => {
+      setZoom((prev) => Math.min(prev + 0.5, 3));
+    };
+
+    const handleZoomOut = () => {
+      setZoom((prev) => Math.max(prev - 0.5, 1));
+    };
+
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") onClose();
+        if (e.key === "ArrowLeft") goToPrevious();
+        if (e.key === "ArrowRight") goToNext();
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+        >
+          <IconX size={24} className="text-white" />
+        </button>
+
+        <div className="absolute top-4 left-4 z-50 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm text-white text-sm">
+          {activeIndex + 1} / {images.length}
+        </div>
+
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2">
+          <button
+            onClick={handleZoomIn}
+            disabled={zoom >= 3}
+            className="px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
+            <IconZoomIn size={20} />
+            <span className="text-sm">{t("buy.zoomIn")}</span>
+          </button>
+          <button
+            onClick={handleZoomOut}
+            disabled={zoom <= 1}
+            className="px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
+            <IconZoomOut size={20} />
+            <span className="text-sm">{t("buy.zoomOut")}</span>
+          </button>
+        </div>
+
+        <button
+          onClick={goToPrevious}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+        >
+          <IconChevronLeft size={32} className="text-white" />
+        </button>
+
+        <button
+          onClick={goToNext}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+        >
+          <IconChevronRight size={32} className="text-white" />
+        </button>
+
+        <div className="w-full h-full flex items-center justify-center p-4 overflow-auto">
+          <img
+            src={images[activeIndex]}
+            alt={`Фото ${activeIndex + 1}`}
+            className="object-contain transition-transform duration-300"
+            style={{
+              transform: `scale(${zoom})`,
+              maxWidth: zoom === 1 ? "100%" : "none",
+              maxHeight: zoom === 1 ? "100%" : "none",
+              width: zoom > 1 ? "100%" : "auto",
+              height: zoom > 1 ? "100%" : "auto",
+            }}
+          />
+        </div>
+
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 px-4 py-3 rounded-full bg-black/50 backdrop-blur-sm max-w-full overflow-x-auto">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              onClick={() => {
+                setActiveIndex(index);
+                setZoom(1);
+              }}
+              className={`w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                activeIndex === index ? "border-blue-500 scale-110" : "border-transparent opacity-60"
+              }`}
+            >
+              <img src={image} alt={`Мініатюра ${index + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const formatDate = (date?: Date) => {
     if (!date) return "";
-
     return new Intl.DateTimeFormat("uk-UA", {
       day: "2-digit",
       month: "long",
@@ -192,64 +453,50 @@ export default function PropertyDetails() {
 
   const getPropertyTypeText = (type: PropertyType) => {
     switch (type) {
-      case "apartment":
-        return t("buy.filters.apartment");
-      case "house":
-        return t("buy.filters.house");
-      case "commercial":
-        return t("buy.filters.commercial");
-      case "land":
-        return t("buy.filters.land");
-      default:
-        return type;
+      case "apartment": return t("buy.filters.apartment");
+      case "house": return t("buy.filters.house");
+      case "commercial": return t("buy.filters.commercial");
+      case "land": return t("buy.filters.land");
+      default: return type;
     }
   };
 
-  const getStatusText = (status: PropertyStatus) => {
-    switch (status) {
-      case "active":
-        return t("buy.status.active");
-      case "pending":
-        return t("buy.status.pending");
-      case "sold":
-        return t("buy.status.sold");
-      case "reserved":
-        return t("buy.status.reserved");
-      default:
-        return status;
+  const handleShare = (platform: "copy" | "viber" | "telegram" | "whatsapp" | "email") => {
+    const url = window.location.href;
+    const propertyInfo = property ? `${property.title} - ${formatPrice(property.price, property.currency)}` : "";
+    const shareText = "Дивіться яку пропозицію знайшов на сайті Ваш Ковчег! " + propertyInfo;
+
+    switch (platform) {
+      case "copy":
+        navigator.clipboard.writeText(url);
+        alert(t("buy.linkCopied"));
+        break;
+      case "viber":
+        window.open(`viber://forward?text=${encodeURIComponent(shareText + " " + url)}`);
+        break;
+      case "telegram":
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`);
+        break;
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + " " + url)}`);
+        break;
+      case "email":
+        window.location.href = `mailto:?subject=${encodeURIComponent(propertyInfo)}&body=${encodeURIComponent(shareText + "\n\n" + url)}`;
+        break;
     }
+    setIsShareModalOpen(false);
   };
 
-  const getStatusColor = (status: PropertyStatus) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
-      case "sold":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-      case "reserved":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-      default:
-        return "";
-    }
+  const goToPreviousImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? (property?.images.length || 1) - 1 : prev - 1));
   };
 
-  // Навігація по галереї
-  const nextImage = () => {
-    if (property) {
-      setSelectedImageIndex((prevIndex) =>
-        prevIndex === property.images.length - 1 ? 0 : prevIndex + 1,
-      );
-    }
+  const goToNextImage = () => {
+    setCurrentImageIndex((prev) => (prev === (property?.images.length || 1) - 1 ? 0 : prev + 1));
   };
 
-  const prevImage = () => {
-    if (property) {
-      setSelectedImageIndex((prevIndex) =>
-        prevIndex === 0 ? property.images.length - 1 : prevIndex - 1,
-      );
-    }
+  const addQuickReply = (text: string) => {
+    setContactMessage(text);
   };
 
   if (loading) {
@@ -283,9 +530,7 @@ export default function PropertyDetails() {
             transition={{ duration: 0.5 }}
           >
             <h1 className={title()}>{t("buy.propertyNotFound")}</h1>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">
-              {t("buy.propertyNotFoundDescription")}
-            </p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{t("buy.propertyNotFoundDescription")}</p>
             <Link href="/buy">
               <Button
                 size="lg"
@@ -301,394 +546,1015 @@ export default function PropertyDetails() {
     );
   }
 
+  const similarProperties = getSimilarProperties(property.id);
+  const currentPrice = convertCurrency(property.price, property.currency, selectedCurrency);
+
   return (
     <DefaultLayout>
-      <motion.section 
-        className="container mx-auto px-4 py-8 md:py-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Навігація назад */}
-        <motion.div 
-          className="mb-6"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Link href="/buy">
-            <Button
-              variant="light"
-              startContent={<IconArrowLeft size={16} />}
-              className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors p-0"
-            >
-              {t("buy.backToResults")}
-            </Button>
-          </Link>
-        </motion.div>
+      {isLightboxOpen && property && (
+        <Lightbox images={property.images} currentIndex={currentImageIndex} onClose={() => setIsLightboxOpen(false)} />
+      )}
 
-        {/* Заголовок та статус */}
-        <motion.div 
-          className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="flex-1 w-full lg:w-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-              <h1 className={`${title({ size: "sm" })} text-xl sm:text-2xl lg:text-3xl`}>{property.title}</h1>
-              {property.isFeatured && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.5, type: "spring" }}
-                >
-                  <Chip size="sm" color="warning" variant="solid" className="self-start">
-                    ⭐ Рекомендовано
-                  </Chip>
-                </motion.div>
+      {/* Модальне вікно "Поділитися" */}
+      <Modal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)}>
+        <ModalContent>
+          <ModalHeader>{t("buy.shareProperty")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-3">
+              <Button fullWidth variant="flat" startContent={<IconLink size={20} />} onClick={() => handleShare("copy")}>
+                {t("buy.copyLink")}
+              </Button>
+              <Button fullWidth className="bg-blue-500 text-white" startContent={<IconBrandTelegram size={20} />} onClick={() => handleShare("telegram")}>
+                Telegram
+              </Button>
+              <Button fullWidth className="bg-green-500 text-white" startContent={<IconBrandWhatsapp size={20} />} onClick={() => handleShare("whatsapp")}>
+                WhatsApp
+              </Button>
+              <Button fullWidth className="bg-purple-500 text-white" startContent={<IconPhone size={20} />} onClick={() => handleShare("viber")}>
+                Viber
+              </Button>
+              <Button fullWidth variant="flat" startContent={<IconMail size={20} />} onClick={() => handleShare("email")}>
+                Email
+              </Button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальне вікно підписки */}
+      <Modal isOpen={isSubscribeModalOpen} onClose={() => setIsSubscribeModalOpen(false)}>
+        <ModalContent>
+          <ModalHeader>{t("buy.subscribeToNewOffers")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              {subscribeMethod === "email" ? (
+                <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+              ) : (
+                <p className="text-gray-600 dark:text-gray-400">
+                  Натисніть кнопку нижче, щоб підписатися через Telegram бота
+                </p>
               )}
             </div>
-            <p className="text-gray-600 dark:text-gray-400 flex items-start sm:items-center gap-2">
-              <IconMapPin size={18} className="mt-0.5 sm:mt-0 flex-shrink-0" />
-              <span className="text-sm sm:text-base">{property.address}</span>
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row w-full lg:w-auto items-stretch sm:items-center gap-3">
-            <Chip
-              color={property.status === 'active' ? 'success' : property.status === 'pending' ? 'warning' : property.status === 'reserved' ? 'primary' : 'danger'}
-              variant="solid"
-              size="lg"
-              className="self-start sm:self-center"
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsSubscribeModalOpen(false)}>
+              Скасувати
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
+              onPress={() => setIsSubscribeModalOpen(false)}
             >
-              {getStatusText(property.status)}
-            </Chip>
-            <motion.div 
-              className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 sm:px-6 py-3 rounded-xl text-lg sm:text-xl font-bold shadow-lg text-center"
-              whileHover={{ scale: 1.02 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              {formatPrice(property.price, property.currency)}
-            </motion.div>
-          </div>
-        </motion.div>
+              Підписатися
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-        {/* Галерея зображень */}
-        <motion.div 
-          className="mb-8"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Card className="relative overflow-hidden shadow-xl">
-            <div className="relative w-full h-[300px] md:h-[500px]">
-            {property.images.length > 0 ? (
-              <>
-                <Image
-                  src={property.images[selectedImageIndex]}
-                  alt={property.title}
-                    className="object-cover w-full h-full"
-                    classNames={{
-                      wrapper: "w-full h-full",
-                      img: "w-full h-full object-cover"
-                    }}
-                />
-                {property.images.length > 1 && (
-                  <>
-                      <Button
-                        isIconOnly
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-sm border-white/20"
-                        variant="bordered"
-                        size="lg"
-                      onClick={prevImage}
-                      aria-label={t("buy.prevImage")}
-                    >
-                        <IconArrowNarrowLeft size={20} className="text-white" />
-                      </Button>
-                      <Button
-                        isIconOnly
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-sm border-white/20"
-                        variant="bordered"
-                        size="lg"
-                      onClick={nextImage}
-                      aria-label={t("buy.nextImage")}
-                    >
-                        <IconArrowNarrowRight size={20} className="text-white" />
-                      </Button>
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-sm py-2 px-4 rounded-full text-white border border-white/20">
-                        <span className="flex items-center gap-2 text-sm font-medium">
-                          <IconPhoto size={16} />
-                        {selectedImageIndex + 1} / {property.images.length}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                  <IconPhoto size={60} className="text-gray-400" />
+      {/* Модальне вікно телефону */}
+      <Modal isOpen={isCallModalOpen} onClose={() => setIsCallModalOpen(false)}>
+        <ModalContent>
+          <ModalHeader>{t("buy.callAgent")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className="text-gray-600 dark:text-gray-400">Контактний номер телефону:</p>
+              <Snippet symbol="" variant="bordered" className="w-full">
+                {t("footer.phone")}
+              </Snippet>
+        </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsCallModalOpen(false)}>
+              Закрити
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
+              as="a"
+              href={`tel:${t("footer.phone")}`}
+            >
+              Зателефонувати
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальне вікно email */}
+      <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)}>
+        <ModalContent>
+          <ModalHeader>{t("buy.writeEmail")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+              <Textarea label={t("buy.writeQuestion")} placeholder={t("buy.messagePlaceholder")} rows={4} />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsEmailModalOpen(false)}>
+              Скасувати
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
+              onPress={() => setIsEmailModalOpen(false)}
+            >
+              Відправити
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальне вікно замовлення огляду */}
+      <Modal isOpen={isBookingModalOpen} onClose={() => setIsBookingModalOpen(false)}>
+        <ModalContent>
+          <ModalHeader>{t("buy.bookViewing")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input type="tel" label={t("footer.phone")} placeholder="+380" />
+              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+              <DatePicker label={t("buy.selectDate")} />
+              <Textarea label={t("buy.yourMessage")} placeholder={t("buy.messagePlaceholder")} />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsBookingModalOpen(false)}>
+              Скасувати
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
+              onPress={() => setIsBookingModalOpen(false)}
+            >
+              Відправити
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальне вікно пропозиції ціни */}
+      <Modal isOpen={isOfferModalOpen} onClose={() => setIsOfferModalOpen(false)} size="lg">
+        <ModalContent>
+          <ModalHeader>{t("buy.makeOffer")}</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("buy.currentPrice")}</span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    {formatPrice(currentPrice, selectedCurrency)}
+                  </span>
+                </div>
+                <Divider className="my-2" />
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("buy.yourOffer")}</span>
+                  <span className="text-lg font-bold text-blue-600">
+                    {formatPrice(offerPrice, selectedCurrency)}
+                  </span>
+                </div>
+                <Divider className="my-2" />
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-green-600 dark:text-green-400">{t("buy.potentialSavings")}</span>
+                  <span className="text-lg font-bold text-green-600">
+                    {formatPrice(Math.max(0, currentPrice - offerPrice), selectedCurrency)}
+                  </span>
+                </div>
               </div>
-            )}
-          </div>
-          </Card>
+              <Input
+                type="number"
+                label={t("buy.yourOffer")}
+                placeholder="Введіть суму"
+                value={offerPrice.toString()}
+                onChange={(e) => setOfferPrice(Number(e.target.value))}
+              />
+              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input type="tel" label={t("footer.phone")} placeholder="+380" />
+              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+              <Textarea label={t("buy.yourMessage")} placeholder={t("buy.messagePlaceholder")} />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsOfferModalOpen(false)}>
+              Скасувати
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
+              onPress={() => setIsOfferModalOpen(false)}
+            >
+              {t("buy.makeAnOffer")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-          {/* Мініатюри */}
-          {property.images.length > 1 && (
-            <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
-              {property.images.map((image, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer ${
-                    selectedImageIndex === index 
-                      ? "ring-3 ring-blue-500 shadow-lg" 
-                      : "ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-blue-300"
-                  } transition-all duration-200`}
-                  onClick={() => setSelectedImageIndex(index)}
+
+      <section className="container mx-auto px-4 py-6 md:py-10 max-w-7xl">
+        {/* Заголовок */}
+        <div className="mb-6">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+            {property.title}
+          </h1>
+        </div>
+
+        {/* Галерея зображень з бічними карточками */}
+        <div className="mb-8 flex flex-col lg:flex-row gap-4">
+          {/* Ліва частина - Головна галерея */}
+          <div className="lg:w-2/3 relative">
+            {/* Основне зображення або Street View з анімацією */}
+            <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+              {/* Кнопка "Інші пропозиції" та чіп ТОП */}
+              <div className="absolute top-4 left-4 z-40 flex items-center gap-3">
+                <Link href="/buy">
+                  <Button
+                    variant="flat"
+                    className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm"
+                    startContent={<IconArrowLeft size={18} />}
+                  >
+                    {t("buy.otherOffers")}
+                  </Button>
+                </Link>
+                {property.isFeatured && (
+                  <Chip size="md" className="bg-yellow-400 text-black font-bold">
+                    ТОП
+                  </Chip>
+                )}
+              </div>
+
+              {/* Кнопки переключення виглядів - завжди видимі */}
+              <div className="absolute bottom-4 left-4 z-40 flex gap-2">
+                <Button
+                  size="sm"
+                  className={
+                    viewMode === "gallery"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-lg min-w-0 px-2 sm:px-3"
+                      : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm min-w-0 px-2 sm:px-3"
+                  }
+                  startContent={<IconPhoto size={18} />}
+                  onPress={() => setViewMode("gallery")}
                 >
+                  <span className="hidden sm:inline">{t("buy.gallery")}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  className={
+                    viewMode === "interior"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-lg min-w-0 px-2 sm:px-3"
+                      : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm min-w-0 px-2 sm:px-3"
+                  }
+                  startContent={<IconEye size={18} />}
+                  onPress={() => {
+                    if (property?.panoeeUrl) {
+                      setViewMode("interior");
+                    } else {
+                      alert('3D тур недоступний для цього об\'єкта');
+                    }
+                  }}
+                >
+                  <span className="hidden sm:inline">{t("buy.interiorView")}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  className={
+                    viewMode === "street"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-lg min-w-0 px-2 sm:px-3"
+                      : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm min-w-0 px-2 sm:px-3"
+                  }
+                  startContent={<IconRoad size={18} />}
+                  onPress={() => setViewMode("street")}
+                >
+                  <span className="hidden sm:inline">{t("buy.streetView")}</span>
+                </Button>
+              </div>
+
+              {/* Навігаційні кнопки галереї - завжди видимі */}
+              {viewMode === "gallery" && property.images.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPreviousImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    <IconChevronLeft size={28} className="text-gray-900 dark:text-white" />
+                  </button>
+                  <button
+                    onClick={goToNextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    <IconChevronRight size={28} className="text-gray-900 dark:text-white" />
+                  </button>
+                </>
+              )}
+
+              {/* Анімований контент */}
+              <AnimatePresence mode="wait">
+                {viewMode === "gallery" ? (
+                  <motion.div
+                    key={`gallery-${currentImageIndex}`}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="w-full h-full"
+                  >
+                    {property.images.length > 0 ? (
+                      <Image
+                        src={property.images[currentImageIndex]}
+                        alt={property.title}
+                        className="w-full h-full object-cover cursor-pointer"
+                        classNames={{
+                          wrapper: "w-full h-full !max-w-full",
+                          img: "w-full h-full object-cover",
+                        }}
+                        onClick={() => setIsLightboxOpen(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <IconPhoto size={80} className="text-gray-400" />
+                      </div>
+                    )}
+                  </motion.div>
+                ) : viewMode === "interior" ? (
+                  <motion.div
+                    key="interior"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-full"
+                  >
+                    <iframe
+                      src={property.panoeeUrl}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      title="3D Interior View"
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="street"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-full"
+                  >
+                    <iframe
+                      src={`https://www.google.com/maps/embed/v1/streetview?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&location=${property.coordinates?.lat},${property.coordinates?.lng}&heading=210&pitch=10&fov=90`}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      title="Street View"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Права частина - 3 карточки */}
+          <div className="lg:w-1/3 flex flex-row lg:flex-col gap-4">
+            {/* 1. Маленьке превю картинка - наступна (тільки на десктопі) */}
+            <div className="hidden lg:block flex-1 relative h-[120px] lg:h-[190px] rounded-xl overflow-hidden">
+              {property.images[(currentImageIndex + 1) % property.images.length] && (
+                <Image
+                  src={property.images[(currentImageIndex + 1) % property.images.length]}
+                  alt="Наступне превю"
+                  className="w-full h-full object-cover"
+                  classNames={{
+                    wrapper: "w-full h-full !max-w-full",
+                    img: "w-full h-full object-cover",
+                  }}
+                />
+              )}
+            </div>
+
+            {/* 2. Блюр з картинкою "Дивитись всі фото" */}
+            <div
+              className="flex-1 relative h-[120px] lg:h-[190px] rounded-xl overflow-hidden cursor-pointer group"
+              onClick={() => {
+                setCurrentImageIndex(0);
+                setIsLightboxOpen(true);
+              }}
+            >
+              {/* Фонове зображення */}
+              <div className="absolute inset-0 z-0">
+                {property.images[2] ? (
                   <Image
-                    src={image}
-                    alt={`${property.title} - зображення ${index + 1}`}
-                    className="object-cover w-full h-full"
+                    src={property.images[2]}
+                    alt="Всі фото"
+                    className="w-full h-full object-cover blur-md"
                     classNames={{
-                      wrapper: "w-full h-full",
-                      img: "w-full h-full object-cover"
+                      wrapper: "w-full h-full !max-w-full",
+                      img: "w-full h-full object-cover blur-md",
                     }}
                   />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Основна інформація */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 mb-8">
-          <motion.div 
-            className="xl:col-span-2"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="shadow-xl">
-              <CardHeader className="pb-4">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {t("buy.details")}
-                </h2>
-              </CardHeader>
-              <CardBody className="space-y-6">
-                {/* Основні характеристики */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                  <motion.div 
-                    className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl hover:shadow-lg transition-shadow duration-300"
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                    >
-                      <IconHome size={24} className="text-blue-600 mb-2" />
-                    </motion.div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Тип</span>
-                    <span className="font-semibold">{getPropertyTypeText(property.type)}</span>
-                  </motion.div>
-
-                  <motion.div 
-                    className="flex flex-col items-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl hover:shadow-lg transition-shadow duration-300"
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                  >
-                    <IconRuler size={24} className="text-green-600 mb-2" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Площа</span>
-                    <span className="font-semibold">{property.area} м²</span>
-                  </motion.div>
-
-                {property.rooms && (
-                    <motion.div 
-                      className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl hover:shadow-lg transition-shadow duration-300"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.3 }}
-                    >
-                      <IconBuilding size={24} className="text-purple-600 mb-2" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Кімнати</span>
-                      <span className="font-semibold">{property.rooms}</span>
-                    </motion.div>
-                )}
-
-                {property.floor && property.totalFloors && (
-                    <motion.div 
-                      className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl hover:shadow-lg transition-shadow duration-300"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.4 }}
-                    >
-                      <IconBuilding size={24} className="text-orange-600 mb-2" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Поверх</span>
-                      <span className="font-semibold">{property.floor}/{property.totalFloors}</span>
-                    </motion.div>
+                ) : (
+                  <div className="w-full h-full bg-gray-700" />
                 )}
               </div>
-
-                <Divider />
-
-                {/* Опис */}
-                <div>
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <IconPhoto size={20} className="text-blue-600" />
-                {t("buy.description")}
-              </h3>
-                  <div className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
-                {property.description}
+              
+              {/* Оверлей завжди видимий */}
+              <div className="absolute inset-0 z-10 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
+                <div className="text-center">
+                  <div className="relative inline-block mb-2">
+                    <IconPhoto size={40} className="text-white" />
+                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                      <IconZoomIn size={16} className="text-blue-600" />
+                    </div>
                   </div>
+                  <div className="text-white font-semibold text-sm">
+                    {t("buy.openFullscreen")}
+                  </div>
+                  <div className="text-white/90 text-xs mt-1">{property.images.length} {t("buy.photos")}</div>
+                </div>
               </div>
+            </div>
 
-                {/* Теги/Особливості */}
-              {property.tags.length > 0 && (
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                      <IconTag size={20} className="text-blue-600" />
-                    {t("buy.tags")}
-                  </h3>
+            {/* 3. Дивитись на мапі з блюром */}
+            <div
+              className="flex-1 relative h-[120px] lg:h-[190px] rounded-xl overflow-hidden cursor-pointer group"
+              onClick={() => {
+                document.getElementById("map-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              {property.coordinates && (
+                <>
+                  <div className="absolute inset-0 blur-sm">
+                    <OpenStreetMap
+                      properties={[
+                        {
+                          id: property.id,
+                          title: property.title,
+                          coordinates: property.coordinates,
+                          price: property.price,
+                          currency: property.currency,
+                          type: property.type,
+                        },
+                      ]}
+                      center={property.coordinates}
+                      zoom={13}
+                      className="w-full h-full"
+                    />
+            </div>
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
+                    <div className="text-center">
+                      <IconMapSearch size={32} className="text-white mx-auto mb-2" />
+                      <span className="text-white font-semibold text-sm">{t("buy.viewOnMap")}</span>
+            </div>
+                  </div>
+                </>
+          )}
+            </div>
+          </div>
+        </div>
+
+        {/* Основна інформація - 2 колонки */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Ліва колонка */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Карточка з основними даними */}
+            <Card className="shadow-lg border border-gray-200 dark:border-gray-700 relative">
+              {/* Кнопка "Поділитися" */}
+              <Button
+                size="sm"
+                variant="bordered"
+                className="absolute top-4 right-4 z-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-gray-300 dark:border-gray-600 min-w-0 px-2 sm:px-3"
+                startContent={<IconShare size={16} />}
+                onPress={() => setIsShareModalOpen(true)}
+              >
+                <span className="hidden sm:inline">Поділитися</span>
+              </Button>
+
+              <CardBody className="p-6">
+                {/* Адреса і Ціна на одному рівні */}
+                <div className="mb-6">
+                  <div className="mb-3 pr-20 md:pr-0">
+                    <span className="text-gray-700 dark:text-gray-300">{property.address}</span>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {formatPriceDetailed(property.price, property.currency, property.area)}
+                  </div>
+                </div>
+
+            {/* Характеристики */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyType")}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {getPropertyTypeText(property.type)}
+                    </div>
+                  </div>
+
+                  <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyArea")}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{property.area} м²</div>
+                  </div>
+
+                  {property.rooms && (
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyRooms")}</div>
+                      <div className="font-semibold text-gray-900 dark:text-white">{property.rooms}</div>
+                    </div>
+                  )}
+
+                  {property.floor && property.totalFloors && (
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyFloor")}</div>
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        {property.floor}/{property.totalFloors}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Опис */}
+            <Card className="shadow-lg border border-gray-200 dark:border-gray-700">
+              <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("buy.description")}</h3>
+              </CardHeader>
+              <CardBody className="p-6">
+                <div className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
+                  {/* Для мобільних - згорнутий опис */}
+                  <div className="md:hidden">
+                    {!isDescriptionExpanded ? (
+                      <>
+                        {property.description?.slice(0, 150)}...
+                        <button
+                          onClick={() => setIsDescriptionExpanded(true)}
+                          className="ml-2 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 font-medium"
+                        >
+                          Більше
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {property.description}
+                        <button
+                          onClick={() => setIsDescriptionExpanded(false)}
+                          className="ml-2 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 font-medium"
+                        >
+                          Менше
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {/* Для десктопу - повний опис */}
+                  <div className="hidden md:block">
+                    {property.description}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Особливості (без заголовка, без іконок) */}
+            {property.tags.length > 0 && (
+              <Card className="shadow-lg border border-gray-200 dark:border-gray-700">
+                <CardBody className="p-6">
                   <div className="flex flex-wrap gap-2">
                     {property.tags.map((tag, index) => (
-                        <motion.div
+                      <Chip
                         key={index}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <Chip
-                            variant="flat"
-                            color="primary"
-                            size="md"
-                            className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 hover:shadow-md transition-shadow duration-200"
+                        size="md"
+                        variant="flat"
+                        className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium"
                       >
                         {tag}
-                          </Chip>
-                        </motion.div>
+                      </Chip>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
+            {/* Форма чату з агенством (тільки на мобільних після галереї) */}
+            <Card className="shadow-lg border border-gray-200 dark:border-gray-700 lg:hidden">
+              <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {t("buy.contactAgency")}
+                </h3>
+              </CardHeader>
+              <CardBody className="p-6">
+                <div className="space-y-4">
+                  <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+                  <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+                  <Textarea
+                    name="message"
+                    label={t("buy.yourMessage")}
+                    placeholder={t("buy.messagePlaceholder")}
+                    rows={4}
+                    value={contactMessage}
+                    onValueChange={setContactMessage}
+                  />
+
+                  {/* Швидкі відповіді */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply1"))}
+                    >
+                      {t("buy.quickReply1")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply2"))}
+                    >
+                      {t("buy.quickReply2")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply3"))}
+                    >
+                      {t("buy.quickReply3")}
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-3">
+                    <Button
+                      className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg px-8"
+                      startContent={<IconSend size={18} />}
+                    >
+                      {t("buy.sendMessage")}
+                    </Button>
+                    <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                      {t("buy.orCallUs")}{" "}
+                      <a
+                        href={`tel:${t("footer.phone")}`}
+                        className="text-blue-600 hover:text-blue-700 underline font-medium"
+                      >
+                        {t("footer.phone")}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Форма чату з агенством (тільки на десктопі в лівій колонці) */}
+              <Card className="shadow-lg border border-gray-200 dark:border-gray-700 hidden lg:block">
+              <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {t("buy.contactAgency")}
+                </h3>
+              </CardHeader>
+              <CardBody className="p-6">
+                <div className="space-y-4">
+                  <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+                  <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+                  <Textarea
+                    name="message"
+                    label={t("buy.yourMessage")}
+                    placeholder={t("buy.messagePlaceholder")}
+                    rows={4}
+                    value={contactMessage}
+                    onValueChange={setContactMessage}
+                  />
+
+                  {/* Швидкі відповіді */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply1"))}
+                    >
+                      {t("buy.quickReply1")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply2"))}
+                    >
+                      {t("buy.quickReply2")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      className="text-xs"
+                      onPress={() => addQuickReply(t("buy.quickReply3"))}
+                    >
+                      {t("buy.quickReply3")}
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-3">
+                    <Button
+                      className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg px-8"
+                      startContent={<IconSend size={18} />}
+                    >
+                      {t("buy.sendMessage")}
+                    </Button>
+                    <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                      {t("buy.orCallUs")}{" "}
+                      <a
+                        href={`tel:${t("footer.phone")}`}
+                        className="text-blue-600 hover:text-blue-700 underline font-medium"
+                      >
+                        {t("footer.phone")}
+                      </a>
+                        </div>
+                        </div>
+                      </div>
+              </CardBody>
+            </Card>
+
+            {/* Карта з точкою та тегами поблизу */}
+            <Card className="shadow-lg border border-gray-200 dark:border-gray-700" id="map-section">
+              <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("buy.location")}</h3>
+              </CardHeader>
+              <CardBody className="p-0">
+                <div className="h-[400px] w-full">
+                  {property.coordinates && (
+                    <OpenStreetMap
+                      properties={[
+                        {
+                          id: property.id,
+                          title: property.title,
+                          coordinates: property.coordinates,
+                          price: property.price,
+                          currency: property.currency,
+                          type: property.type,
+                        },
+                      ]}
+                      center={property.coordinates}
+                      zoom={15}
+                      className="w-full h-full"
+                    />
+                    )}
+                  </div>
+
+                <div className="p-6 bg-gray-50 dark:bg-gray-800">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  {t("buy.nearby")} (500 {t("buy.meters")})
+                </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {nearbyPlaces.cafes > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconCoffee size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.cafes")} ({nearbyPlaces.cafes})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.shops > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconShoppingCart size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.shops")} ({nearbyPlaces.shops})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.busStops > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconBus size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.busStops")} ({nearbyPlaces.busStops})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.schools > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconSchool size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.schools")} ({nearbyPlaces.schools})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.parks > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconTree size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.parks")} ({nearbyPlaces.parks})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.hospitals > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconHospital size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.hospitals")} ({nearbyPlaces.hospitals})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.pharmacies > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconPill size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.pharmacies")} ({nearbyPlaces.pharmacies})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.banks > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconBuildingBank size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.banks")} ({nearbyPlaces.banks})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.gyms > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconBarbell size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.gyms")} ({nearbyPlaces.gyms})
+                      </Chip>
+                    )}
+                    {nearbyPlaces.bikeRoads > 0 && (
+                      <Chip size="sm" variant="flat" startContent={<IconBike size={14} />} className="bg-white dark:bg-gray-700">
+                        {t("buy.bikeRoads")} ({nearbyPlaces.bikeRoads})
+                      </Chip>
+                    )}
+                  </div>
+                </div>
+                </CardBody>
+              </Card>
+
+            {/* Схожі пропозиції - карусель з кнопками */}
+            <div className="mt-8">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                {t("buy.similarProperties")}
+              </h3>
+              <div className="relative">
+                {/* Кнопки навігації */}
+                <button
+                  onClick={() => {
+                    const container = document.getElementById("similar-properties-container");
+                    if (container) container.scrollBy({ left: -300, behavior: "smooth" });
+                  }}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all hover:scale-110"
+                >
+                  <IconChevronLeft size={28} className="text-gray-900 dark:text-white" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    const container = document.getElementById("similar-properties-container");
+                    if (container) container.scrollBy({ left: 300, behavior: "smooth" });
+                  }}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all hover:scale-110"
+                >
+                  <IconChevronRight size={28} className="text-gray-900 dark:text-white" />
+                </button>
+
+                <div
+                  id="similar-properties-container"
+                  className="overflow-x-auto pb-4 hide-scrollbar px-10"
+                >
+                  <div className="flex gap-4" style={{ width: "fit-content" }}>
+                    {similarProperties.slice(0, 12).map((similarProperty) => (
+                      <Link
+                        key={similarProperty.id}
+                        href={`/buy/${similarProperty.id}`}
+                        className="block w-[280px] flex-shrink-0"
+                      >
+                        <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700 h-full">
+                          <CardBody className="p-0">
+                            <div className="relative h-[200px] w-full">
+                              <Image
+                                src={similarProperty.images[0]}
+                                alt={similarProperty.title}
+                                className="w-full h-full object-cover"
+                                classNames={{
+                                  wrapper: "w-full h-full !max-w-full",
+                                  img: "w-full h-full object-cover",
+                                }}
+                              />
+                              {similarProperty.isFeatured && (
+                                <Chip size="sm" className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                                  ТОП
+                                </Chip>
+                              )}
+                            </div>
+                            <div className="p-4">
+                              <h4 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                                {similarProperty.title}
+                              </h4>
+                              <div className="text-xl font-bold text-blue-600 mb-2">
+                                {formatPrice(similarProperty.price, similarProperty.currency)}
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <IconMapPin size={14} />
+                                <span className="line-clamp-1">{similarProperty.address}</span>
+                              </div>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Link>
                     ))}
                   </div>
                 </div>
-              )}
-
-                {/* Дати */}
-              {property.createdAt && (
-                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex flex-col sm:flex-row gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-2">
-                        <IconCalendar size={16} className="text-blue-600" />
-                        <strong>{t("buy.addedOn")}:</strong> {formatDate(property.createdAt)}
-                  </span>
-                  {property.updatedAt && (
-                        <span className="flex items-center gap-2">
-                          <IconCalendar size={16} className="text-green-600" />
-                          <strong>{t("buy.updatedOn")}:</strong> {formatDate(property.updatedAt)}
-                    </span>
-                  )}
-                    </div>
-                </div>
-              )}
-              </CardBody>
-            </Card>
-          </motion.div>
-
-          {/* Контактна інформація */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <Card className="shadow-xl xl:sticky xl:top-8">
-              <CardHeader className="pb-4">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  {t("buy.contactInfo")}
-                </h2>
-              </CardHeader>
-              <CardBody className="space-y-6">
-                {/* Ціна */}
-                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-200 dark:border-blue-800">
-                  <p className="text-gray-600 dark:text-gray-400 mb-2 text-sm">
-                    {t("buy.price")}
-                  </p>
-                  <div className="flex items-center justify-center gap-2">
-                    <IconCurrencyDollar size={28} className="text-blue-600" />
-                    <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                  {formatPrice(property.price, property.currency)}
-                    </span>
-                  </div>
               </div>
+          </div>
 
-                {/* Агент */}
-              {property.responsibleAgent && (
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                    <Avatar 
-                      size="md"
-                      name={property.responsibleAgent}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                    />
-                    <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {t("buy.responsibleAgent")}
-                      </p>
-                      <p className="font-semibold">{property.responsibleAgent}</p>
-                    </div>
-                </div>
-              )}
-
-                <Divider />
-
-                {/* Кнопки контактів */}
-              <div className="space-y-3">
+            {/* Підписка на нові пропозиції */}
+            <Card className="shadow-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30">
+              <CardBody className="p-8 text-center">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  {t("buy.subscribeToNewOffers")}
+                </h3>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                    startContent={<IconPhone size={20} />}
-                  >
-                  {t("buy.callAgent")}
-                  </Button>
-
-                  <Button
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg hover:scale-105 transition-transform"
                     startContent={<IconMail size={20} />}
+                    onPress={() => {
+                      setSubscribeMethod("email");
+                      setIsSubscribeModalOpen(true);
+                    }}
                   >
-                  {t("buy.writeEmail")}
+                    {t("buy.subscribeViaEmail")}
                   </Button>
-
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      size="lg"
-                      className="flex-1 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-400 hover:to-blue-300 text-white shadow-md hover:shadow-lg transition-all duration-300"
-                      startContent={<IconBrandTelegram size={20} />}
-                    >
-                    Telegram
-                    </Button>
-
-                    <Button
-                      size="lg"
-                      className="flex-1 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 text-white shadow-md hover:shadow-lg transition-all duration-300"
-                      startContent={<IconBrandWhatsapp size={20} />}
-                    >
-                    WhatsApp
-                    </Button>
-                  </div>
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg hover:scale-105 transition-transform"
+                    startContent={<IconBrandTelegram size={20} />}
+                    onPress={() => {
+                      setSubscribeMethod("telegram");
+                      setIsSubscribeModalOpen(true);
+                    }}
+                  >
+                    {t("buy.subscribeViaTelegram")}
+                  </Button>
                 </div>
               </CardBody>
             </Card>
-          </motion.div>
+          </div>
+
+          {/* Права колонка - контактна інформація */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-24">
+              <Card className="shadow-lg border border-gray-200 dark:border-gray-700">
+                <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                  <h2 className="text-xl font-bold">{t("buy.contactInfo")}</h2>
+                </CardHeader>
+                <CardBody className="p-6 space-y-4">
+                  {property.responsibleAgent && (
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="lg" name={property.responsibleAgent} className="bg-gradient-to-r from-blue-600 to-blue-400 text-white" />
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">{t("buy.responsibleAgent")}</p>
+                          <p className="font-bold text-gray-900 dark:text-white">{property.responsibleAgent}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <Divider />
+
+                  <div className="space-y-3">
+                    <Button
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white font-medium shadow-lg"
+                      startContent={<IconPhone size={20} />}
+                      onPress={() => setIsCallModalOpen(true)}
+                    >
+                      {t("buy.callAgent")}
+                    </Button>
+
+                    <Button
+                      size="lg"
+                      variant="bordered"
+                      className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
+                      startContent={<IconMail size={20} />}
+                      onPress={() => setIsEmailModalOpen(true)}
+                    >
+                      {t("buy.writeEmail")}
+                    </Button>
+
+                    <Button
+                      size="lg"
+                      variant="bordered"
+                      className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
+                      startContent={<IconCalendar size={20} />}
+                      onPress={() => setIsBookingModalOpen(true)}
+                    >
+                      {t("buy.bookViewing")}
+                    </Button>
+
+                    <Button
+                      size="lg"
+                      variant="bordered"
+                      className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onPress={() => setIsOfferModalOpen(true)}
+                    >
+                      {t("buy.makeOffer")}
+                    </Button>
+
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <Button
+                        size="md"
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                        startContent={<IconBrandTelegram size={18} />}
+                      >
+                        Telegram
+                      </Button>
+
+                      <Button
+                        size="md"
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        startContent={<IconBrandWhatsapp size={18} />}
+                      >
+                        WhatsApp
+                      </Button>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </div>
+          </div>
         </div>
-      </motion.section>
+      </section>
+
+      <style jsx global>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </DefaultLayout>
   );
 }

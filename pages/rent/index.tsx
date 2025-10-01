@@ -460,7 +460,7 @@ export default function RentPage() {
   };
 
   // Компонент картки властивості
-  const PropertyCard = ({ property, listView = false }: { property: Property; listView?: boolean }) => {
+  const PropertyCard = ({ property, listView = false, showDescription = false }: { property: Property; listView?: boolean; showDescription?: boolean }) => {
     if (listView) {
       // Горизонтальний макет для режиму списку
       return (
@@ -495,6 +495,13 @@ export default function RentPage() {
                   >
                     {property.title}
                   </Link>
+                  
+                  {/* Опис тільки для десктопного режиму списку без карти */}
+                  {showDescription && (
+                    <p className="text-base text-gray-600 dark:text-gray-400 mb-3 line-clamp-4 leading-relaxed">
+                      {property.description || "Чудова нерухомість з відмінним розташуванням та сучасним ремонтом. Ідеально підходить для комфортного проживання або інвестицій. Всі необхідні зручності поблизу. Розвинена інфраструктура району забезпечує максимальний комфорт для мешканців."}
+                    </p>
+                  )}
                   
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center mb-1 sm:mb-2">
                     <IconMapPin size={14} className="mr-1 flex-shrink-0" />
@@ -532,65 +539,65 @@ export default function RentPage() {
     // Вертикальний макет для режиму сітки (як було)
     return (
       <Card className="w-full">
-        <CardBody className="p-0">
-          <div className="relative h-48 w-full">
-            <Image
-              src={property.images[0] || "/img/placeholder.jpg"}
-              alt={property.title}
-              fill
-              className="object-cover rounded-t-lg"
-            />
-            {property.isFeatured && (
-              <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
-                {t("rent.featured")}
-              </Chip>
-            )}
-            <div className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-2 py-1 rounded text-sm font-bold shadow-lg">
-              {formatPrice(property.price, property.currency)}
-            </div>
-          </div>
-          <div className="p-4">
+      <CardBody className="p-0">
+        <div className="relative h-48 w-full">
+                  <Image
+                    src={property.images[0] || "/img/placeholder.jpg"}
+                    alt={property.title}
+                    fill
+            className="object-cover rounded-t-lg"
+                  />
+                  {property.isFeatured && (
+            <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
+                      {t("rent.featured")}
+            </Chip>
+                  )}
+          <div className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-2 py-1 rounded text-sm font-bold shadow-lg">
+                      {formatPrice(property.price, property.currency)}
+                  </div>
+                </div>
+                <div className="p-4">
             <Link 
               href={`/rent/${property.id}`}
               className="text-lg font-semibold mb-2 line-clamp-2 hover:text-blue-600 cursor-pointer transition-colors block"
             >
               {property.title}
             </Link>
-            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mb-2">
-              <IconMapPin size={16} className="mr-1 flex-shrink-0" />
-              <span className="line-clamp-1">{property.address}</span>
-            </p>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-3 mb-3">
-              <span className="flex items-center">
-                <IconRuler size={16} className="mr-1" />
-                {property.area} м²
-              </span>
-              {property.rooms && (
-                <span className="flex items-center">
-                  <IconHome size={16} className="mr-1" />
-                  {property.rooms} кімн.
-                </span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {property.tags.slice(0, 2).map((tag, index) => (
-                <Chip key={index} size="sm" variant="flat">
-                  {tag}
-                </Chip>
-              ))}
-            </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center mb-2">
+                    <IconMapPin size={16} className="mr-1 flex-shrink-0" />
+                    <span className="line-clamp-1">{property.address}</span>
+                  </p>
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-3 mb-3">
+                    <span className="flex items-center">
+                      <IconRuler size={16} className="mr-1" />
+                      {property.area} м²
+                    </span>
+                    {property.rooms && (
+                      <span className="flex items-center">
+                        <IconHome size={16} className="mr-1" />
+                        {property.rooms} кімн.
+                      </span>
+                    )}
+                  </div>
+          <div className="flex flex-wrap gap-1">
+            {property.tags.slice(0, 2).map((tag, index) => (
+              <Chip key={index} size="sm" variant="flat">
+                {tag}
+              </Chip>
+            ))}
           </div>
-        </CardBody>
-        <CardFooter className="pt-0">
-          <Button 
-            as={Link}
-            href={`/rent/${property.id}`}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
-            size="sm"
-          >
-            {t("rent.details")}
-          </Button>
-        </CardFooter>
+        </div>
+      </CardBody>
+      <CardFooter className="pt-0">
+        <Button 
+          as={Link}
+          href={`/rent/${property.id}`}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all duration-300"
+          size="sm"
+        >
+          {t("rent.details")}
+        </Button>
+      </CardFooter>
       </Card>
     );
   };
@@ -930,7 +937,12 @@ export default function RentPage() {
                 : "flex flex-col gap-4"
               }>
                 {currentItems.map((property) => (
-                  <PropertyCard key={property.id} property={property} listView={listMode === "list"} />
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property} 
+                    listView={listMode === "list"} 
+                    showDescription={listMode === "list"}
+                  />
             ))}
           </div>
               {totalPages > 1 && (

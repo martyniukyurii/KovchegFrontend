@@ -310,7 +310,28 @@
       "map": "Map only",
       "grid": "Grid only"
     },
-    "details": "Details"
+    "details": "Details",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "sold": "Sold",
+      "reserved": "Reserved"
+    },
+    "propertyNotFound": "Property not found",
+    "propertyNotFoundDescription": "The property may have been deleted or its ID changed",
+    "backToSearch": "Back to search",
+    "backToResults": "Back to results",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "description": "Description",
+    "tags": "Features",
+    "addedOn": "Added on",
+    "updatedOn": "Updated on",
+    "contactInfo": "Contact information",
+    "price": "Price",
+    "responsibleAgent": "Responsible agent",
+    "callAgent": "Call agent",
+    "writeEmail": "Send email"
   },
   "rent": {
     "searchPlaceholder": "Search rentals...",
@@ -360,6 +381,267 @@
       "floor3": "3rd floor",
       "floor4": "4th floor",
       "floor5plus": "5+ floors"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "sold": "Rented",
+      "reserved": "Reserved"
+    },
+    "propertyNotFound": "Property not found",
+    "propertyNotFoundDescription": "The property may have been deleted or its ID changed",
+    "backToSearch": "Back to search",
+    "backToResults": "Back to results",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "details": "Detailed information",
+    "description": "Description",
+    "tags": "Features",
+    "addedOn": "Added on",
+    "updatedOn": "Updated on",
+    "contactInfo": "Contact information",
+    "price": "Price per month",
+    "utilities": "Utilities",
+    "deposit": "Deposit",
+    "minRentPeriod": "Minimum rental period",
+    "responsibleAgent": "Responsible agent",
+    "callAgent": "Call agent",
+    "writeEmail": "Send email",
+    "rentalConditions": "Rental conditions",
+    "perMonth": "per month",
+    "otherOffers": "Other offers",
+    "shareProperty": "Share property",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "sendMessage": "Send message",
+    "orCallUs": "Or call us",
+    "yourName": "Your name",
+    "yourEmail": "Your email",
+    "yourMessage": "Your message",
+    "messagePlaceholder": "Write your message...",
+    "nearby": "Nearby",
+    "cafes": "Cafes",
+    "shops": "Shops",
+    "busStops": "Bus stops",
+    "schools": "Schools",
+    "parks": "Parks",
+    "hospitals": "Hospitals",
+    "pharmacies": "Pharmacies",
+    "banks": "Banks",
+    "gyms": "Gyms",
+    "bikeRoads": "Bike roads",
+    "similarProperties": "Similar properties",
+    "subscribeToNewOffers": "Get new offers for this search?",
+    "subscribeViaEmail": "Email",
+    "subscribeViaTelegram": "Telegram",
+    "bookViewing": "Book viewing",
+    "makeOffer": "Make an offer",
+    "propertyType": "Type",
+    "propertyArea": "Area",
+    "propertyRooms": "Rooms",
+    "propertyFloor": "Floor",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "quickReply1": "Interested in this property. Can I get more information?",
+    "quickReply2": "When can I view this property?",
+    "quickReply3": "Is there room for negotiation on the price?",
+    "viewAllPhotos": "View all photos",
+    "viewOnMap": "View on map",
+    "streetView": "Street view",
+    "interiorView": "Interior view",
+    "openFullscreen": "Open fullscreen",
+    "photos": "photos",
+    "writeQuestion": "Write your question",
+    "selectDate": "Select date",
+    "currentPrice": "Current price",
+    "yourOffer": "Your offer",
+    "potentialSavings": "You can save",
+    "makeAnOffer": "Make an offer",
+    "location": "Location",
+    "contactAgency": "Contact agency",
+    "meters": "meters",
+    "gallery": "Gallery"
+  },
+  "sell": {
+    "title": "Sell property",
+    "subtitle": "Get a professional appraisal and sell your property quickly with our help",
+    "form": {
+      "sellerInfo": {
+        "title": "Contact information",
+        "subtitle": "How to contact you to discuss details",
+        "name": "Your name",
+        "namePlaceholder": "Enter your full name",
+        "phone": "Phone number",
+        "phonePlaceholder": "+380 XX XXX XX XX",
+        "email": "Email",
+        "emailPlaceholder": "example@email.com"
+      },
+      "serviceType": {
+        "title": "Service type",
+        "subtitle": "Choose the service you are interested in"
+      },
+      "services": {
+        "evaluation": "Property valuation",
+        "evaluationDescription": "Free market value assessment",
+        "consultation": "Consultation",
+        "consultationDescription": "Professional sales consultation",
+        "fastSale": "Quick sale",
+        "fastSaleDescription": "Urgent property buyout",
+        "fast_sale": "Quick sale",
+        "fast_saleDescription": "Urgent property buyout",
+        "fullService": "Full service",
+        "fullServiceDescription": "Complete turnkey sales cycle",
+        "full_service": "Full service",
+        "full_serviceDescription": "Complete turnkey sales cycle"
+      },
+      "propertyInfo": {
+        "title": "Property information",
+        "subtitle": "Detailed information about the property you want to sell",
+        "type": "Property type",
+        "typePlaceholder": "Select type",
+        "city": "City",
+        "cityPlaceholder": "Chernivtsi",
+        "address": "Address",
+        "addressPlaceholder": "Enter full address",
+        "area": "Area (m²)",
+        "rooms": "Number of rooms",
+        "floor": "Floor",
+        "totalFloors": "Building floors",
+        "yearBuilt": "Year built",
+        "price": "Desired price (₴)",
+        "condition": "Property condition",
+        "conditionPlaceholder": "Select condition",
+        "landArea": "Land area (acres)",
+        "landType": "Land plot type",
+        "landTypePlaceholder": "Select plot type",
+        "description": "Property description",
+        "descriptionPlaceholder": "Tell us about the features, advantages and conveniences of your property..."
+      },
+      "propertyTypes": {
+        "apartment": "Apartment",
+        "house": "House",
+        "commercial": "Commercial property",
+        "land": "Land plot"
+      },
+      "conditions": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "satisfactory": "Satisfactory",
+        "needsRenovation": "Needs renovation"
+      },
+      "landTypes": {
+        "residential": "Residential development",
+        "commercial": "Commercial development",
+        "agricultural": "Agricultural",
+        "industrial": "Industrial"
+      },
+      "amenities": {
+        "title": "Amenities and features",
+        "balcony": "Balcony",
+        "parking": "Parking",
+        "elevator": "Elevator",
+        "security": "Security"
+      },
+      "additionalInfo": {
+        "title": "Additional information",
+        "preferredContactTime": "Preferred contact time",
+        "preferredContactTimePlaceholder": "When is it better to call",
+        "urgentSale": "Urgent sale",
+        "additionalInfo": "Additional information",
+        "additionalInfoPlaceholder": "Any additional information that may be useful..."
+      },
+      "contactTimes": {
+        "morning": "Morning (9:00-12:00)",
+        "afternoon": "Afternoon (12:00-18:00)",
+        "evening": "Evening (18:00-21:00)",
+        "anytime": "Anytime"
+      },
+      "submitButton": "Submit request",
+      "submitting": "Submitting...",
+      "submitSuccess": "Your request has been successfully sent! We will contact you shortly.",
+      "submitError": "Error submitting request. Please try again."
+    }
+  },
+  "agents": {
+    "title": "Our agents",
+    "subtitle": "Professional team of real estate experts who will help you find the perfect solution",
+    "ourTeam": {
+      "title": "Meet our team",
+      "subtitle": "Experienced professionals with many years of experience in the real estate market"
+    },
+    "search": {
+      "placeholder": "Search agents by name or specialization...",
+      "noResults": "No agents found",
+      "tryDifferent": "Try different keywords for search"
+    },
+    "contact": "Contact",
+    "stats": {
+      "agents": "Professional agents",
+      "deals": "Successful deals",
+      "experience": "Years of experience"
+    }
+  },
+  "about": {
+    "title": "About us",
+    "subtitle": "Your reliable partner in the world of real estate since 2004. Real estate agency in Chernivtsi - purchase, sale, rental of apartments, houses, land plots.",
+    "sections": {
+      "company": {
+        "title": "Company"
+      },
+      "news": {
+        "title": "News"
+      },
+      "contacts": {
+        "title": "Contacts"
+      },
+      "careers": {
+        "title": "Careers"
+      }
+    },
+    "company": {
+      "story": {
+        "title": "Our story",
+        "paragraph1": "During its existence since 2004, 'Your Kovcheg' Agency has mastered the specifics of work in all segments of the real estate market. Today we are actively working in the market of land plots for residential, commercial, industrial purposes, sale of objects in new buildings, industrial real estate.",
+        "paragraph2": "We effectively serve clients in the secondary housing market. Our company confidently implements advanced technologies, is known for its innovative approach to business. Clients who have used our services contact us again and recommend us to colleagues and friends.",
+        "paragraph3": "Experts from 'Your Kovcheg' real estate agency will advise you on issues related to the purchase of residential and commercial real estate. Over 20 years of work, we have become a leading company in Chernivtsi and the region."
+      },
+      "mission": {
+        "title": "Our mission",
+        "description": "To make the process of buying and selling real estate as simple, fast and safe as possible for our clients, providing professional services of the highest quality."
+      },
+      "vision": {
+        "title": "Our vision",
+        "description": "To become a leading real estate company in the region, known for its reliability, professionalism and individual approach to each client."
+      }
+    },
+    "values": {
+      "title": "Our values",
+      "trust": {
+        "title": "Trust",
+        "description": "We build long-term relationships with clients based on honesty, transparency and mutual respect."
+      },
+      "excellence": {
+        "title": "Excellence",
+        "description": "We constantly strive for the highest standards of quality in all aspects of our work."
+      },
+      "partnership": {
+        "title": "Partnership",
+        "description": "We consider each client as a partner and work together to achieve common goals."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "We implement the latest technologies and work methods to improve the quality of services."
+      }
+    },
+    "news": {
+      "title": "News and events"
+    },
+    "contacts": {
+      "title": "Contact information"
+    },
+    "careers": {
+      "title": "Career in our company",
+      "subtitle": "Join our team of professionals and become part of a success story"
     }
   }
 }
