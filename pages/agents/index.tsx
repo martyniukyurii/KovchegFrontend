@@ -10,11 +10,11 @@ export default function AgentsPage() {
     <>
       <Head>
         <title>Наші агенти - Професійна команда агентів нерухомості в Чернівцях | Ваш Ковчег</title>
-        <meta name="description" content="10 професійних агентів нерухомості в Чернівцях з 500+ успішними угодами. Олександра Петренко, Михайло Коваленко та інші експерти з нерухомості." />
-        <meta name="keywords" content="агенти нерухомості Чернівці, риелтори Чернівці, консультанти нерухомості, експерти з нерухомості Чернівці, агентство нерухомості співробітники" />
+        <meta name="description" content="7 професійних агентів нерухомості в Чернівцях з 1800+ успішними угодами. Сергій Босовик, Микола Гунько, Ніна Богданова та інші експерти з нерухомості." />
+        <meta name="keywords" content="агенти нерухомості Чернівці, риелтори Чернівці, консультанти нерухомості, експерти з нерухомості Чернівці, агентство нерухомості співробітники, Сергій Босовик, Микола Гунько" />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content="Наші агенти - Професійна команда агентів нерухомості в Чернівцях" />
-        <meta property="og:description" content="10 досвідчених агентів нерухомості з 500+ успішними угодами. Кожен агент спеціалізується на своїй сфері нерухомості." />
+        <meta property="og:description" content="7 досвідчених агентів нерухомості з 1800+ успішними угодами та 30 років досвіду. Кожен агент спеціалізується на своїй сфері нерухомості." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://kovcheg.com.ua/agents" />
         <link rel="canonical" href="https://kovcheg.com.ua/agents" />
@@ -47,17 +47,17 @@ export default function AgentsPage() {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">10+</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">7</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Професійних агентів</div>
             </div>
             
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">500+</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">1800+</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Успішних угод</div>
             </div>
             
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">15+</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">30</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Років досвіду</div>
             </div>
           </div>
