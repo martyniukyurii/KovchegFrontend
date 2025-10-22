@@ -116,6 +116,32 @@ export function AgentsSection() {
       rating: 4.8,
       deals: 98,
       specialties: ["Купівля-продаж", "Супровід угод", "Житлова нерухомість", "Документообіг"]
+    },
+    {
+      id: 8,
+      name: "Максим",
+      position: "Спеціаліст з нерухомості",
+      experience: "Досвідчений агент",
+      photo: "/images/agents/Maxim.jpg",
+      bio: "Працюю у сфері нерухомості в місті Чернівці. Допомагаю з купівлею, продажем та орендою квартир, будинків і комерційних приміщень. Забезпечую чесність, відкритість і підтримку на кожному етапі угоди.",
+      phone: "+380501234574",
+      email: "maxim@kovcheg.com",
+      rating: 4.8,
+      deals: 85,
+      specialties: ["Купівля-продаж", "Оренда", "Комерційна нерухомість", "Житлова нерухомість"]
+    },
+    {
+      id: 9,
+      name: "Таня",
+      position: "Спеціаліст з нерухомості",
+      experience: "Досвідчений агент",
+      photo: "/images/agents/Tanya.jpg",
+      bio: "Працюю у сфері нерухомості міста Чернівці. Надаю послуги з купівлі, продажу та оренди житла. Гарантую уважне ставлення, індивідуальний підхід та прозорість на всіх етапах роботи. Консультація — безкоштовна.",
+      phone: "+380501234575",
+      email: "tanya@kovcheg.com",
+      rating: 4.8,
+      deals: 92,
+      specialties: ["Купівля-продаж", "Оренда", "Житлова нерухомість", "Консультації"]
     }
   ];
 
@@ -177,10 +203,10 @@ export function AgentsSection() {
                   <img
                     src={agent.photo}
                     alt={agent.name}
-                    className="w-20 h-20 rounded-full object-cover border-4 border-blue-100 dark:border-blue-900"
+                    className="w-48 h-48 rounded-2xl object-cover border-4 border-blue-100 dark:border-blue-900 shadow-md"
                   />
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-white fill-current" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                  <div className="absolute bottom-2 right-2 w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg className="w-5 h-5 text-white fill-current" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                   </div>
                 </div>
               </div>
