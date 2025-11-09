@@ -40,8 +40,9 @@ export default function AdminLogin() {
       setError('');
 
       try {
-        console.log('📤 Sending request to /api/admin/auth');
-        const response = await fetch('/api/admin/auth', {
+        // Спочатку тестуємо простий endpoint
+        console.log('📤 Sending request to /api/admin/auth-simple');
+        const response = await fetch('/api/admin/auth-simple', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
