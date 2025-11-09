@@ -40,6 +40,7 @@ export default function AdminLogin() {
       setError('');
 
       try {
+        console.log('📤 Sending request to /api/admin/auth');
         const response = await fetch('/api/admin/auth', {
           method: 'POST',
           headers: {
@@ -48,7 +49,21 @@ export default function AdminLogin() {
           body: JSON.stringify({ telegram_id: user.id }),
         });
 
-        const data = await response.json();
+        console.log('📥 Response status:', response.status, response.statusText);
+
+        // Перевірка чи відповідь не порожня
+        const text = await response.text();
+        console.log('📄 Response text:', text);
+        
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (parseError) {
+          console.error('❌ JSON parse error:', parseError);
+          setError(`Помилка сервера: ${response.status} ${response.statusText}`);
+          isProcessingRef.current = false;
+          return;
+        }
 
         if (response.ok) {
           localStorage.setItem('admin_authenticated', 'true');
@@ -56,12 +71,12 @@ export default function AdminLogin() {
           localStorage.setItem('admin_info', JSON.stringify(data.admin));
           router.push('/admin/dashboard');
         } else {
-          setError(data.message || 'Помилка авторизації через Telegram');
+          setError(data.message || `Помилка авторизації: ${response.status}`);
           isProcessingRef.current = false;
         }
       } catch (err) {
         console.error('Auth error:', err);
-        setError('Помилка з\'єднання з сервером');
+        setError('Помилка з\'єднання з сервером: ' + (err as Error).message);
         isProcessingRef.current = false;
       } finally {
         setLoading(false);

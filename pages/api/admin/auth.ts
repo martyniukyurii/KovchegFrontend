@@ -5,8 +5,28 @@ import bcrypt from 'bcrypt';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
+// Конфігурація API route
+export const config = {
+  api: {
+    bodyParser: true,
+    externalResolver: false,
+  },
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('🔐 Auth API called:', { method: req.method, body: req.body });
+  
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  
+  // Handle OPTIONS request
+  if (req.method === 'OPTIONS') {
+    console.log('✅ OPTIONS request handled');
+    return res.status(200).end();
+  }
   
   if (req.method !== 'POST') {
     console.error('❌ Method not allowed:', req.method);
