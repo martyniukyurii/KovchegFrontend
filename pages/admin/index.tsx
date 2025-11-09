@@ -67,10 +67,35 @@ export default function AdminLogin() {
         }
 
         if (response.ok) {
-          localStorage.setItem('admin_authenticated', 'true');
-          localStorage.setItem('admin_token', data.token);
-          localStorage.setItem('admin_info', JSON.stringify(data.admin));
-          router.push('/admin/dashboard');
+          console.log('✅ Auth successful! Data:', data);
+          console.log('💾 Saving to localStorage...');
+          
+          try {
+            localStorage.setItem('admin_authenticated', 'true');
+            localStorage.setItem('admin_token', data.token);
+            localStorage.setItem('admin_info', JSON.stringify(data.admin));
+            
+            // Перевіряємо що дані збереглися
+            const saved = localStorage.getItem('admin_authenticated');
+            console.log('✅ Saved to localStorage, verification:', saved);
+            
+            if (saved === 'true') {
+              console.log('🔄 Redirecting to dashboard...');
+              
+              // Невелика затримка для гарантії
+              setTimeout(() => {
+                window.location.href = '/admin/dashboard';
+              }, 100);
+            } else {
+              console.error('❌ Failed to save to localStorage');
+              setError('Помилка збереження даних');
+              isProcessingRef.current = false;
+            }
+          } catch (storageError) {
+            console.error('❌ localStorage error:', storageError);
+            setError('Помилка доступу до localStorage');
+            isProcessingRef.current = false;
+          }
         } else {
           setError(data.message || `Помилка авторизації: ${response.status}`);
           isProcessingRef.current = false;
