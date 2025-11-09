@@ -27,9 +27,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).end();
   }
   
+  // Діагностика - перевірка методу
+  if (req.method === 'GET') {
+    console.log('✅ GET request - API is working!');
+    return res.status(200).json({ 
+      success: true, 
+      message: 'API is working. Use POST to authenticate.',
+      method: req.method 
+    });
+  }
+  
   if (req.method !== 'POST') {
     console.error('❌ Method not allowed:', req.method);
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method not allowed', receivedMethod: req.method });
   }
 
   const { login, password, telegram_id } = req.body;
