@@ -5,13 +5,12 @@ import bcrypt from 'bcrypt';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
-// Конфігурація API route
-export const config = {
-  api: {
-    bodyParser: true,
-    externalResolver: false,
-  },
-};
+// Вимкнути bodyParser не потрібно для JSON
+// export const config = {
+//   api: {
+//     bodyParser: true,
+//   },
+// };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('🔐 Auth API called:', { method: req.method, body: req.body });
