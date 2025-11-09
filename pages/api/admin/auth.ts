@@ -5,16 +5,7 @@ import bcrypt from 'bcrypt';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
-// Вимкнути bodyParser не потрібно для JSON
-// export const config = {
-//   api: {
-//     bodyParser: true,
-//   },
-// };
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log('🔐 Auth API called:', { method: req.method, body: req.body });
-  
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,13 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   // Handle OPTIONS request
   if (req.method === 'OPTIONS') {
-    console.log('✅ OPTIONS request handled');
     return res.status(200).end();
   }
   
   // Діагностика - перевірка методу
   if (req.method === 'GET') {
-    console.log('✅ GET request - API is working!');
     return res.status(200).json({ 
       success: true, 
       message: 'API is working. Use POST to authenticate.',
@@ -38,12 +27,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   
   if (req.method !== 'POST') {
-    console.error('❌ Method not allowed:', req.method);
     return res.status(405).json({ message: 'Method not allowed', receivedMethod: req.method });
   }
 
   const { login, password, telegram_id } = req.body;
-  console.log('📝 Auth data:', { login, telegram_id: telegram_id ? 'present' : 'missing' });
 
   try {
     const client = await MongoClient.connect(MONGODB_URI);
@@ -54,13 +41,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Варіант 1: Вхід через Telegram ID
     if (telegram_id) {
-      console.log('🔍 Searching for Telegram ID:', telegram_id);
       admin = await adminsCollection.findOne({ 
         telegram_id: parseInt(telegram_id),
         role: { $in: ['admin', 'agent'] }
       });
-
-      console.log('👤 Admin found:', admin ? 'YES' : 'NO');
 
       if (!admin) {
         await client.close();
@@ -135,6 +119,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({
       success: false,
       message: 'Помилка сервера',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
