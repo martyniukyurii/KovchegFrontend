@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import bcrypt from 'bcrypt';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
+// Захардкоджене підключення до MongoDB
+const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
