@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import DefaultLayout from '@/layouts/default';
 
@@ -16,6 +16,7 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'form' | 'telegram'>('form');
+  const isProcessingRef = useRef(false);
 
   useEffect(() => {
     // Перевірка чи користувач вже авторизований
@@ -27,6 +28,14 @@ export default function AdminLogin() {
     // Callback для Telegram Login Widget
     window.onTelegramAuth = async (user) => {
       console.log('Telegram auth:', user);
+      
+      // Захист від множинних викликів
+      if (isProcessingRef.current) {
+        console.log('⏳ Already processing, skipping...');
+        return;
+      }
+      
+      isProcessingRef.current = true;
       setLoading(true);
       setError('');
 
@@ -48,9 +57,12 @@ export default function AdminLogin() {
           router.push('/admin/dashboard');
         } else {
           setError(data.message || 'Помилка авторизації через Telegram');
+          isProcessingRef.current = false;
         }
       } catch (err) {
+        console.error('Auth error:', err);
         setError('Помилка з\'єднання з сервером');
+        isProcessingRef.current = false;
       } finally {
         setLoading(false);
       }
@@ -58,6 +70,7 @@ export default function AdminLogin() {
 
     return () => {
       delete window.onTelegramAuth;
+      isProcessingRef.current = false;
     };
   }, [router]);
 

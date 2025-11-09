@@ -6,11 +6,15 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgK
 const DB_NAME = 'kovcheg_db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('🔐 Auth API called:', { method: req.method, body: req.body });
+  
   if (req.method !== 'POST') {
+    console.error('❌ Method not allowed:', req.method);
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   const { login, password, telegram_id } = req.body;
+  console.log('📝 Auth data:', { login, telegram_id: telegram_id ? 'present' : 'missing' });
 
   try {
     const client = await MongoClient.connect(MONGODB_URI);
@@ -21,10 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Варіант 1: Вхід через Telegram ID
     if (telegram_id) {
+      console.log('🔍 Searching for Telegram ID:', telegram_id);
       admin = await adminsCollection.findOne({ 
         telegram_id: parseInt(telegram_id),
         role: { $in: ['admin', 'agent'] }
       });
+
+      console.log('👤 Admin found:', admin ? 'YES' : 'NO');
 
       if (!admin) {
         await client.close();
