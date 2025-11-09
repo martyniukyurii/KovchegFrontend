@@ -46,7 +46,44 @@ export default async function handler(
       },
     });
 
-    const data = await response.json();
+    // Перевірка чи відповідь - це JSON
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error("Overpass API повернув не JSON, можливо сервер перевантажений");
+      // Повертаємо пусті дані замість помилки
+      return res.status(200).json({
+        cafes: 0,
+        shops: 0,
+        busStops: 0,
+        schools: 0,
+        parks: 0,
+        hospitals: 0,
+        pharmacies: 0,
+        banks: 0,
+        gyms: 0,
+        bikeRoads: 0,
+      });
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      console.error("Помилка парсингу JSON від Overpass API:", jsonError);
+      // Повертаємо пусті дані
+      return res.status(200).json({
+        cafes: 0,
+        shops: 0,
+        busStops: 0,
+        schools: 0,
+        parks: 0,
+        hospitals: 0,
+        pharmacies: 0,
+        banks: 0,
+        gyms: 0,
+        bikeRoads: 0,
+      });
+    }
     
     // Підраховуємо кількість кожного типу
     const counts = {

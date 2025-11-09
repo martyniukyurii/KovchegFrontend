@@ -347,9 +347,30 @@ export default function RentPage() {
   ];
 
   // Завантаження даних та URL параметрів
+  // Завантаження даних з MongoDB
   useEffect(() => {
-    setProperties(dummyProperties);
-    setFilteredProperties(dummyProperties);
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('/api/properties?transaction_type=rent');
+        const data = await response.json();
+        
+        if (data.success) {
+          setProperties(data.data);
+          setFilteredProperties(data.data);
+        } else {
+          // Якщо помилка, використовуємо фейкові дані як fallback
+          setProperties(dummyProperties);
+          setFilteredProperties(dummyProperties);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        // Використовуємо фейкові дані як fallback
+        setProperties(dummyProperties);
+        setFilteredProperties(dummyProperties);
+      }
+    };
+
+    fetchProperties();
 
     // Зчитуємо параметри з URL
     const { type, category, price_min, price_max, rooms: urlRooms } = router.query;
@@ -382,7 +403,7 @@ export default function RentPage() {
         (property) =>
           property.title.toLowerCase().includes(term) ||
           property.address.toLowerCase().includes(term) ||
-          property.tags.some((tag) => tag.toLowerCase().includes(term))
+          (property.tags && Array.isArray(property.tags) && property.tags.some((tag) => tag.toLowerCase().includes(term)))
       );
     }
 
@@ -395,7 +416,7 @@ export default function RentPage() {
       } else if (filterCategory === "commercial") {
         result = result.filter((property) => property.type === "commercial");
       } else if (filterCategory === "premium") {
-        result = result.filter((property) => property.price > 1000 || property.tags.includes("преміум") || property.tags.includes("VIP"));
+        result = result.filter((property) => property.price > 1000 || (property.tags && Array.isArray(property.tags) && (property.tags.includes("преміум") || property.tags.includes("VIP"))));
       }
     }
 
@@ -430,6 +451,44 @@ export default function RentPage() {
       currency: currency,
       maximumFractionDigits: 0,
     }).format(price) + "/міс";
+  };
+
+  // Перевірка валідності URL зображення
+  const getValidImageUrl = (images: string[]) => {
+    // SVG placeholder замість пошкодженого JPG
+    const placeholderDataUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect width='800' height='600' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%239CA3AF'%3EНемає зображення%3C/text%3E%3C/svg%3E";
+    
+    if (!images || images.length === 0) {
+      return placeholderDataUrl;
+    }
+
+    // Дозволені хости (розширений список)
+    const allowedHosts = [
+      'i.ibb.co', 
+      'ibb.co', 
+      'images.unsplash.com',
+      'imgpx.com',
+      'i.imgpx.com',
+      'i.postimg.cc',
+      'postimg.cc',
+      'gifyu.com',
+      's12.gifyu.com'
+    ];
+    
+    for (const img of images) {
+      try {
+        const url = new URL(img);
+        if (allowedHosts.includes(url.hostname)) {
+          return img;
+        }
+      } catch (e) {
+        // Невалідний URL, пропускаємо
+        continue;
+      }
+    }
+    
+    // Якщо жодне зображення не валідне, повертаємо placeholder
+    return placeholderDataUrl;
   };
 
   // Компонент реальної Google Maps
@@ -470,7 +529,7 @@ export default function RentPage() {
               {/* Зображення зліва - адаптивний розмір */}
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-36 lg:w-64 lg:h-48 flex-shrink-0">
                 <Image
-                  src={property.images[0] || "/img/placeholder.jpg"}
+                  src={getValidImageUrl(property.images)}
                   alt={property.title}
                   fill
                   className="object-cover rounded-l-lg"
@@ -522,7 +581,7 @@ export default function RentPage() {
                   </div>
                   
                   <div className="flex flex-wrap gap-1 hidden sm:flex">
-                    {property.tags.slice(0, 3).map((tag, index) => (
+                    {property.tags && Array.isArray(property.tags) && property.tags.slice(0, 3).map((tag, index) => (
                       <Chip key={index} size="sm" variant="flat" className="text-xs">
                         {tag}
                       </Chip>
@@ -542,11 +601,11 @@ export default function RentPage() {
       <CardBody className="p-0">
         <div className="relative h-48 w-full">
                   <Image
-                    src={property.images[0] || "/img/placeholder.jpg"}
+                    src={getValidImageUrl(property.images)}
                     alt={property.title}
                     fill
             className="object-cover rounded-t-lg"
-                  />
+          />
                   {property.isFeatured && (
             <Chip className="absolute top-2 left-2" color="warning" variant="solid" size="sm">
                       {t("rent.featured")}
@@ -580,7 +639,7 @@ export default function RentPage() {
                     )}
                   </div>
           <div className="flex flex-wrap gap-1">
-            {property.tags.slice(0, 2).map((tag, index) => (
+            {property.tags && Array.isArray(property.tags) && property.tags.slice(0, 2).map((tag, index) => (
               <Chip key={index} size="sm" variant="flat">
                 {tag}
               </Chip>

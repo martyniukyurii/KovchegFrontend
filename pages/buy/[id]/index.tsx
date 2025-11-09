@@ -86,7 +86,10 @@ interface Property {
   tags: string[];
   responsibleAgent?: string;
   coordinates?: { lat: number; lng: number };
-  panoeeUrl?: string; // URL для 3D туру Panoee
+  panoeeUrl?: string; // URL для 3D туру
+  utilities?: number; // Комунальні послуги
+  deposit?: number; // Застава
+  minRentPeriod?: string; // Мінімальний термін оренди
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -124,15 +127,15 @@ export default function PropertyDetails() {
   });
   const [contactMessage, setContactMessage] = useState("");
 
-  // Фейкові дані нерухомості
+  // Фейкові дані нерухомості для оренди
   const dummyProperties: Property[] = [
     {
       id: "1",
-      title: "Затишна 2-кімнатна квартира",
+      title: "Затишна 2-кімнатна квартира в оренду",
       type: "apartment",
       status: "active",
       isFeatured: true,
-      price: 85000,
+      price: 450,
       currency: "EUR",
       address: "вул. Головна, 25, кв. 12, Чернівці",
       area: 62.5,
@@ -141,15 +144,18 @@ export default function PropertyDetails() {
       totalFloors: 9,
       coordinates: { lat: 48.2920, lng: 25.9350 },
       panoeeUrl: "https://momento360.com/e/uc/22442f3e0cb44b449a19e5d0d95d77e5?utm_campaign=embed&utm_source=other&reset-heading=true&size=medium&display-plan=true&upload-key=48cb6e86866945d1be78a14d3194ab87",
+      utilities: 80,
+      deposit: 450,
+      minRentPeriod: "6 місяців",
       description:
-        "Простора квартира з сучасним ремонтом, індивідуальним опаленням та панорамними вікнами. Розташована в новому житловому комплексі з закритою територією. Поруч з будинком є дитячий майданчик, супермаркет, аптека, школа та дитячий садок. Зручна транспортна розв'язка. \n\nВ квартирі виконаний якісний ремонт з використанням екологічно чистих матеріалів. Встановлені якісні металопластикові вікна з енергозберігаючим склопакетом. Утеплена лоджія з панорамними вікнами. \n\nКухня обладнана сучасною технікою: варильна поверхня, духова шафа, посудомийна машина, холодильник. Санвузол роздільний, оснащений якісною сантехнікою. \n\nВартість включає всі меблі та техніку. Документи в порядку, можливий торг.",
+        "Простора квартира з сучасним ремонтом для довгострокової оренди. Індивідуальне опалення та панорамні вікна. Розташована в новому житловому комплексі з закритою територією. \n\nПоруч з будинком є дитячий майданчик, супермаркет, аптека, школа та дитячий садок. Зручна транспортна розв'язка. \n\nВ квартирі виконаний якісний ремонт з використанням екологічно чистих матеріалів. Встановлені якісні металопластикові вікна з енергозберігаючим склопакетом. Утеплена лоджія з панорамними вікнами. \n\nКухня обладнана сучасною технікою: варильна поверхня, духова шафа, посудомийна машина, холодильник. Санвузол роздільний, оснащений якісною сантехнікою. \n\nВартість включає всі меблі та техніку. Комунальні послуги оплачуються окремо. Потрібна застава в розмірі місячної оплати.",
       images: [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop&crop=center",
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop&crop=center",
         "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=800&fit=crop&crop=center",
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&h=800&fit=crop&crop=center", 
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&h=800&fit=crop&crop=center",
         "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=1200&h=800&fit=crop&crop=center",
         "https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=1200&h=800&fit=crop&crop=center",
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=800&fit=crop&crop=center",
-        "https://images.unsplash.com/photo-1571055107559-3e67626fa8be?w=1200&h=800&fit=crop&crop=center",
       ],
       tags: ["індивідуальне опалення", "новобудова", "панорамні вікна", "з меблями", "паркінг"],
       responsibleAgent: "Олена Петренко",
@@ -230,20 +236,58 @@ export default function PropertyDetails() {
   useEffect(() => {
     if (id) {
       setLoading(true);
-      setTimeout(() => {
-        const foundProperty = dummyProperties.find((p) => p.id === id);
-        setProperty(foundProperty || null);
-        if (foundProperty) {
-          setSelectedCurrency(foundProperty.currency);
-          setOfferPrice(foundProperty.price);
-          
-          // Завантажити дані про місця поблизу
-          if (foundProperty.coordinates) {
-            fetchNearbyPlaces(foundProperty.coordinates);
+      
+      // Завантажуємо дані з API
+      fetch(`/api/properties/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Трансформуємо дані з API до формату Property
+            const prop = data.data;
+            const transformedProperty: Property = {
+              id: prop.id,
+              title: prop.title,
+              type: prop.type,
+              status: prop.status || 'active',
+              isFeatured: prop.isFeatured,
+              price: prop.price,
+              currency: prop.currency as Currency,
+              address: prop.fullAddress,
+              area: prop.area,
+              rooms: prop.rooms,
+              floor: prop.floor,
+              totalFloors: prop.totalFloors,
+              description: prop.description,
+              images: prop.images,
+              tags: prop.features || [],
+              coordinates: prop.coordinates,
+              // Додаємо інформацію про рієлтора
+              responsibleAgent: prop.created_by 
+                ? `${prop.created_by.first_name} ${prop.created_by.last_name}`.trim() 
+                : undefined,
+              createdAt: prop.createdAt ? new Date(prop.createdAt) : undefined,
+              updatedAt: prop.updatedAt ? new Date(prop.updatedAt) : undefined,
+            };
+            
+            setProperty(transformedProperty);
+            setSelectedCurrency(transformedProperty.currency);
+            setOfferPrice(transformedProperty.price);
+            
+            // Завантажити дані про місця поблизу
+            if (transformedProperty.coordinates) {
+              fetchNearbyPlaces(transformedProperty.coordinates);
+            }
+          } else {
+            // Об'єкт не знайдено
+            setProperty(null);
           }
-        }
-        setLoading(false);
-      }, 500);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error fetching property:', error);
+          setProperty(null);
+          setLoading(false);
+        });
     }
   }, [id]);
 
@@ -295,7 +339,7 @@ export default function PropertyDetails() {
       style: "currency",
       currency: currency,
       maximumFractionDigits: 0,
-    }).format(price);
+    }).format(price) + "/міс";
   };
 
   const convertCurrency = (amount: number, fromCurrency: Currency, toCurrency: Currency): number => {
@@ -381,7 +425,7 @@ export default function PropertyDetails() {
             className="px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white disabled:opacity-50 transition-colors flex items-center gap-2"
           >
             <IconZoomIn size={20} />
-            <span className="text-sm">{t("buy.zoomIn")}</span>
+            <span className="text-sm">{t("rent.zoomIn")}</span>
           </button>
           <button
             onClick={handleZoomOut}
@@ -389,7 +433,7 @@ export default function PropertyDetails() {
             className="px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white disabled:opacity-50 transition-colors flex items-center gap-2"
           >
             <IconZoomOut size={20} />
-            <span className="text-sm">{t("buy.zoomOut")}</span>
+            <span className="text-sm">{t("rent.zoomOut")}</span>
           </button>
         </div>
 
@@ -453,10 +497,10 @@ export default function PropertyDetails() {
 
   const getPropertyTypeText = (type: PropertyType) => {
     switch (type) {
-      case "apartment": return t("buy.filters.apartment");
-      case "house": return t("buy.filters.house");
-      case "commercial": return t("buy.filters.commercial");
-      case "land": return t("buy.filters.land");
+      case "apartment": return t("rent.filters.apartment");
+      case "house": return t("rent.filters.house");
+      case "commercial": return t("rent.filters.commercial");
+      case "land": return t("rent.filters.land");
       default: return type;
     }
   };
@@ -469,7 +513,7 @@ export default function PropertyDetails() {
     switch (platform) {
       case "copy":
         navigator.clipboard.writeText(url);
-        alert(t("buy.linkCopied"));
+        alert(t("rent.linkCopied"));
         break;
       case "viber":
         window.open(`viber://forward?text=${encodeURIComponent(shareText + " " + url)}`);
@@ -529,15 +573,15 @@ export default function PropertyDetails() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className={title()}>{t("buy.propertyNotFound")}</h1>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">{t("buy.propertyNotFoundDescription")}</p>
-            <Link href="/buy">
+            <h1 className={title()}>{t("rent.propertyNotFound")}</h1>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{t("rent.propertyNotFoundDescription")}</p>
+            <Link href="/rent">
               <Button
                 size="lg"
                 className="mt-8 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 startContent={<IconArrowLeft size={18} />}
               >
-                {t("buy.backToSearch")}
+                {t("rent.backToSearch")}
               </Button>
             </Link>
           </motion.div>
@@ -558,11 +602,11 @@ export default function PropertyDetails() {
       {/* Модальне вікно "Поділитися" */}
       <Modal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)}>
         <ModalContent>
-          <ModalHeader>{t("buy.shareProperty")}</ModalHeader>
+          <ModalHeader>{t("rent.shareProperty")}</ModalHeader>
           <ModalBody>
             <div className="space-y-3">
               <Button fullWidth variant="flat" startContent={<IconLink size={20} />} onClick={() => handleShare("copy")}>
-                {t("buy.copyLink")}
+                {t("rent.copyLink")}
               </Button>
               <Button fullWidth className="bg-blue-500 text-white" startContent={<IconBrandTelegram size={20} />} onClick={() => handleShare("telegram")}>
                 Telegram
@@ -584,11 +628,11 @@ export default function PropertyDetails() {
       {/* Модальне вікно підписки */}
       <Modal isOpen={isSubscribeModalOpen} onClose={() => setIsSubscribeModalOpen(false)}>
         <ModalContent>
-          <ModalHeader>{t("buy.subscribeToNewOffers")}</ModalHeader>
+          <ModalHeader>{t("rent.subscribeToNewOffers")}</ModalHeader>
           <ModalBody>
             <div className="space-y-4">
               {subscribeMethod === "email" ? (
-                <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+                <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
               ) : (
                 <p className="text-gray-600 dark:text-gray-400">
                   Натисніть кнопку нижче, щоб підписатися через Telegram бота
@@ -613,7 +657,7 @@ export default function PropertyDetails() {
       {/* Модальне вікно телефону */}
       <Modal isOpen={isCallModalOpen} onClose={() => setIsCallModalOpen(false)}>
         <ModalContent>
-          <ModalHeader>{t("buy.callAgent")}</ModalHeader>
+          <ModalHeader>{t("rent.callAgent")}</ModalHeader>
           <ModalBody>
             <div className="space-y-4">
               <p className="text-gray-600 dark:text-gray-400">Контактний номер телефону:</p>
@@ -640,12 +684,12 @@ export default function PropertyDetails() {
       {/* Модальне вікно email */}
       <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)}>
         <ModalContent>
-          <ModalHeader>{t("buy.writeEmail")}</ModalHeader>
+          <ModalHeader>{t("rent.writeEmail")}</ModalHeader>
           <ModalBody>
             <div className="space-y-4">
-              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
-              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
-              <Textarea label={t("buy.writeQuestion")} placeholder={t("buy.messagePlaceholder")} rows={4} />
+              <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
+              <Textarea label={t("rent.writeQuestion")} placeholder={t("rent.messagePlaceholder")} rows={4} />
             </div>
           </ModalBody>
           <ModalFooter>
@@ -665,14 +709,14 @@ export default function PropertyDetails() {
       {/* Модальне вікно замовлення огляду */}
       <Modal isOpen={isBookingModalOpen} onClose={() => setIsBookingModalOpen(false)}>
         <ModalContent>
-          <ModalHeader>{t("buy.bookViewing")}</ModalHeader>
+          <ModalHeader>{t("rent.bookViewing")}</ModalHeader>
           <ModalBody>
             <div className="space-y-4">
-              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
               <Input type="tel" label={t("footer.phone")} placeholder="+380" />
-              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
-              <DatePicker label={t("buy.selectDate")} />
-              <Textarea label={t("buy.yourMessage")} placeholder={t("buy.messagePlaceholder")} />
+              <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
+              <DatePicker label={t("rent.selectDate")} />
+              <Textarea label={t("rent.yourMessage")} placeholder={t("rent.messagePlaceholder")} />
             </div>
           </ModalBody>
           <ModalFooter>
@@ -692,26 +736,26 @@ export default function PropertyDetails() {
       {/* Модальне вікно пропозиції ціни */}
       <Modal isOpen={isOfferModalOpen} onClose={() => setIsOfferModalOpen(false)} size="lg">
         <ModalContent>
-          <ModalHeader>{t("buy.makeOffer")}</ModalHeader>
+          <ModalHeader>{t("rent.makeOffer")}</ModalHeader>
           <ModalBody>
             <div className="space-y-4">
               <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("buy.currentPrice")}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("rent.currentPrice")}</span>
                   <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {formatPrice(currentPrice, selectedCurrency)}
                   </span>
                 </div>
                 <Divider className="my-2" />
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("buy.yourOffer")}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t("rent.yourOffer")}</span>
                   <span className="text-lg font-bold text-blue-600">
                     {formatPrice(offerPrice, selectedCurrency)}
                   </span>
                 </div>
                 <Divider className="my-2" />
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-green-600 dark:text-green-400">{t("buy.potentialSavings")}</span>
+                  <span className="text-sm text-green-600 dark:text-green-400">{t("rent.potentialSavings")}</span>
                   <span className="text-lg font-bold text-green-600">
                     {formatPrice(Math.max(0, currentPrice - offerPrice), selectedCurrency)}
                   </span>
@@ -719,15 +763,15 @@ export default function PropertyDetails() {
               </div>
               <Input
                 type="number"
-                label={t("buy.yourOffer")}
+                label={t("rent.yourOffer")}
                 placeholder="Введіть суму"
                 value={offerPrice.toString()}
                 onChange={(e) => setOfferPrice(Number(e.target.value))}
               />
-              <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
+              <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
               <Input type="tel" label={t("footer.phone")} placeholder="+380" />
-              <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
-              <Textarea label={t("buy.yourMessage")} placeholder={t("buy.messagePlaceholder")} />
+              <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
+              <Textarea label={t("rent.yourMessage")} placeholder={t("rent.messagePlaceholder")} />
             </div>
           </ModalBody>
           <ModalFooter>
@@ -738,7 +782,7 @@ export default function PropertyDetails() {
               className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
               onPress={() => setIsOfferModalOpen(false)}
             >
-              {t("buy.makeAnOffer")}
+              {t("rent.makeAnOffer")}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -761,13 +805,13 @@ export default function PropertyDetails() {
             <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
               {/* Кнопка "Інші пропозиції" та чіп ТОП */}
               <div className="absolute top-4 left-4 z-40 flex items-center gap-3">
-                <Link href="/buy">
+                <Link href="/rent">
                   <Button
                     variant="flat"
                     className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm"
                     startContent={<IconArrowLeft size={18} />}
                   >
-                    {t("buy.otherOffers")}
+                    {t("rent.otherOffers")}
                   </Button>
                 </Link>
                 {property.isFeatured && (
@@ -789,7 +833,7 @@ export default function PropertyDetails() {
                   startContent={<IconPhoto size={18} />}
                   onPress={() => setViewMode("gallery")}
                 >
-                  <span className="hidden sm:inline">{t("buy.gallery")}</span>
+                  <span className="hidden sm:inline">{t("rent.gallery")}</span>
                 </Button>
                 <Button
                   size="sm"
@@ -807,7 +851,7 @@ export default function PropertyDetails() {
                     }
                   }}
                 >
-                  <span className="hidden sm:inline">{t("buy.interiorView")}</span>
+                  <span className="hidden sm:inline">{t("rent.interiorView")}</span>
                 </Button>
                 <Button
                   size="sm"
@@ -819,7 +863,7 @@ export default function PropertyDetails() {
                   startContent={<IconRoad size={18} />}
                   onPress={() => setViewMode("street")}
                 >
-                  <span className="hidden sm:inline">{t("buy.streetView")}</span>
+                  <span className="hidden sm:inline">{t("rent.streetView")}</span>
                 </Button>
               </div>
 
@@ -960,9 +1004,9 @@ export default function PropertyDetails() {
                     </div>
                   </div>
                   <div className="text-white font-semibold text-sm">
-                    {t("buy.openFullscreen")}
+                    {t("rent.openFullscreen")}
                   </div>
-                  <div className="text-white/90 text-xs mt-1">{property.images.length} {t("buy.photos")}</div>
+                  <div className="text-white/90 text-xs mt-1">{property.images.length} {t("rent.photos")}</div>
                 </div>
               </div>
             </div>
@@ -996,7 +1040,7 @@ export default function PropertyDetails() {
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
                     <div className="text-center">
                       <IconMapSearch size={32} className="text-white mx-auto mb-2" />
-                      <span className="text-white font-semibold text-sm">{t("buy.viewOnMap")}</span>
+                      <span className="text-white font-semibold text-sm">{t("rent.viewOnMap")}</span>
             </div>
                   </div>
                 </>
@@ -1036,40 +1080,78 @@ export default function PropertyDetails() {
             {/* Характеристики */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyType")}</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("rent.propertyType")}</div>
                     <div className="font-semibold text-gray-900 dark:text-white">
                       {getPropertyTypeText(property.type)}
                     </div>
                   </div>
 
                   <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyArea")}</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("rent.propertyArea")}</div>
                     <div className="font-semibold text-gray-900 dark:text-white">{property.area} м²</div>
                   </div>
 
                   {property.rooms && (
                     <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyRooms")}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("rent.propertyRooms")}</div>
                       <div className="font-semibold text-gray-900 dark:text-white">{property.rooms}</div>
                     </div>
                   )}
 
                   {property.floor && property.totalFloors && (
                     <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("buy.propertyFloor")}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t("rent.propertyFloor")}</div>
                       <div className="font-semibold text-gray-900 dark:text-white">
                         {property.floor}/{property.totalFloors}
                       </div>
                     </div>
                   )}
                 </div>
+
+                {/* Умови оренди */}
+                {(property.utilities || property.deposit || property.minRentPeriod) && (
+                  <>
+                    <Divider className="my-4" />
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        Умови оренди
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {property.utilities && (
+                          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                            <span className="text-xs text-gray-600 dark:text-gray-400 block mb-1">Комунальні</span>
+                            <span className="font-semibold text-yellow-700 dark:text-yellow-400">
+                              +{property.utilities} {property.currency}/міс
+                            </span>
+                          </div>
+                        )}
+                        {property.deposit && (
+                          <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                            <span className="text-xs text-gray-600 dark:text-gray-400 block mb-1">Застава</span>
+                            <span className="font-semibold text-red-700 dark:text-red-400">
+                              {property.deposit} {property.currency}
+                            </span>
+                          </div>
+                        )}
+                        {property.minRentPeriod && (
+                          <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                            <span className="text-xs text-gray-600 dark:text-gray-400 block mb-1">Мін. термін</span>
+                            <span className="font-semibold text-indigo-700 dark:text-indigo-400">
+                              {property.minRentPeriod}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardBody>
             </Card>
 
             {/* Опис */}
             <Card className="shadow-lg border border-gray-200 dark:border-gray-700">
               <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("buy.description")}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("rent.description")}</h3>
               </CardHeader>
               <CardBody className="p-6">
                 <div className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
@@ -1129,17 +1211,17 @@ export default function PropertyDetails() {
             <Card className="shadow-lg border border-gray-200 dark:border-gray-700 lg:hidden">
               <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {t("buy.contactAgency")}
+                  {t("rent.contactAgency")}
                 </h3>
               </CardHeader>
               <CardBody className="p-6">
                 <div className="space-y-4">
-                  <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
-                  <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+                  <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
+                  <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
                   <Textarea
                     name="message"
-                    label={t("buy.yourMessage")}
-                    placeholder={t("buy.messagePlaceholder")}
+                    label={t("rent.yourMessage")}
+                    placeholder={t("rent.messagePlaceholder")}
                     rows={4}
                     value={contactMessage}
                     onValueChange={setContactMessage}
@@ -1151,25 +1233,25 @@ export default function PropertyDetails() {
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply1"))}
+                      onPress={() => addQuickReply(t("rent.quickReply1"))}
                     >
-                      {t("buy.quickReply1")}
+                      {t("rent.quickReply1")}
                     </Button>
                     <Button
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply2"))}
+                      onPress={() => addQuickReply(t("rent.quickReply2"))}
                     >
-                      {t("buy.quickReply2")}
+                      {t("rent.quickReply2")}
                     </Button>
                     <Button
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply3"))}
+                      onPress={() => addQuickReply(t("rent.quickReply3"))}
                     >
-                      {t("buy.quickReply3")}
+                      {t("rent.quickReply3")}
                     </Button>
                   </div>
 
@@ -1178,10 +1260,10 @@ export default function PropertyDetails() {
                       className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg px-8"
                       startContent={<IconSend size={18} />}
                     >
-                      {t("buy.sendMessage")}
+                      {t("rent.sendMessage")}
                     </Button>
                     <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                      {t("buy.orCallUs")}{" "}
+                      {t("rent.orCallUs")}{" "}
                       <a
                         href={`tel:${t("footer.phone")}`}
                         className="text-blue-600 hover:text-blue-700 underline font-medium"
@@ -1198,17 +1280,17 @@ export default function PropertyDetails() {
               <Card className="shadow-lg border border-gray-200 dark:border-gray-700 hidden lg:block">
               <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {t("buy.contactAgency")}
+                  {t("rent.contactAgency")}
                 </h3>
               </CardHeader>
               <CardBody className="p-6">
                 <div className="space-y-4">
-                  <Input label={t("buy.yourName")} placeholder="Введіть ваше ім'я" />
-                  <Input type="email" label={t("buy.yourEmail")} placeholder="example@email.com" />
+                  <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
+                  <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
                   <Textarea
                     name="message"
-                    label={t("buy.yourMessage")}
-                    placeholder={t("buy.messagePlaceholder")}
+                    label={t("rent.yourMessage")}
+                    placeholder={t("rent.messagePlaceholder")}
                     rows={4}
                     value={contactMessage}
                     onValueChange={setContactMessage}
@@ -1220,25 +1302,25 @@ export default function PropertyDetails() {
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply1"))}
+                      onPress={() => addQuickReply(t("rent.quickReply1"))}
                     >
-                      {t("buy.quickReply1")}
+                      {t("rent.quickReply1")}
                     </Button>
                     <Button
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply2"))}
+                      onPress={() => addQuickReply(t("rent.quickReply2"))}
                     >
-                      {t("buy.quickReply2")}
+                      {t("rent.quickReply2")}
                     </Button>
                     <Button
                       size="sm"
                       variant="flat"
                       className="text-xs"
-                      onPress={() => addQuickReply(t("buy.quickReply3"))}
+                      onPress={() => addQuickReply(t("rent.quickReply3"))}
                     >
-                      {t("buy.quickReply3")}
+                      {t("rent.quickReply3")}
                     </Button>
                   </div>
 
@@ -1247,10 +1329,10 @@ export default function PropertyDetails() {
                       className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg px-8"
                       startContent={<IconSend size={18} />}
                     >
-                      {t("buy.sendMessage")}
+                      {t("rent.sendMessage")}
                     </Button>
                     <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                      {t("buy.orCallUs")}{" "}
+                      {t("rent.orCallUs")}{" "}
                       <a
                         href={`tel:${t("footer.phone")}`}
                         className="text-blue-600 hover:text-blue-700 underline font-medium"
@@ -1266,7 +1348,7 @@ export default function PropertyDetails() {
             {/* Карта з точкою та тегами поблизу */}
             <Card className="shadow-lg border border-gray-200 dark:border-gray-700" id="map-section">
               <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("buy.location")}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("rent.location")}</h3>
               </CardHeader>
               <CardBody className="p-0">
                 <div className="h-[400px] w-full">
@@ -1291,57 +1373,57 @@ export default function PropertyDetails() {
 
                 <div className="p-6 bg-gray-50 dark:bg-gray-800">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                  {t("buy.nearby")} (500 {t("buy.meters")})
+                  {t("rent.nearby")} (500 {t("rent.meters")})
                 </h4>
                   <div className="flex flex-wrap gap-2">
                     {nearbyPlaces.cafes > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconCoffee size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.cafes")} ({nearbyPlaces.cafes})
+                        {t("rent.cafes")} ({nearbyPlaces.cafes})
                       </Chip>
                     )}
                     {nearbyPlaces.shops > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconShoppingCart size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.shops")} ({nearbyPlaces.shops})
+                        {t("rent.shops")} ({nearbyPlaces.shops})
                       </Chip>
                     )}
                     {nearbyPlaces.busStops > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconBus size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.busStops")} ({nearbyPlaces.busStops})
+                        {t("rent.busStops")} ({nearbyPlaces.busStops})
                       </Chip>
                     )}
                     {nearbyPlaces.schools > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconSchool size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.schools")} ({nearbyPlaces.schools})
+                        {t("rent.schools")} ({nearbyPlaces.schools})
                       </Chip>
                     )}
                     {nearbyPlaces.parks > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconTree size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.parks")} ({nearbyPlaces.parks})
+                        {t("rent.parks")} ({nearbyPlaces.parks})
                       </Chip>
                     )}
                     {nearbyPlaces.hospitals > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconHospital size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.hospitals")} ({nearbyPlaces.hospitals})
+                        {t("rent.hospitals")} ({nearbyPlaces.hospitals})
                       </Chip>
                     )}
                     {nearbyPlaces.pharmacies > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconPill size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.pharmacies")} ({nearbyPlaces.pharmacies})
+                        {t("rent.pharmacies")} ({nearbyPlaces.pharmacies})
                       </Chip>
                     )}
                     {nearbyPlaces.banks > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconBuildingBank size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.banks")} ({nearbyPlaces.banks})
+                        {t("rent.banks")} ({nearbyPlaces.banks})
                       </Chip>
                     )}
                     {nearbyPlaces.gyms > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconBarbell size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.gyms")} ({nearbyPlaces.gyms})
+                        {t("rent.gyms")} ({nearbyPlaces.gyms})
                       </Chip>
                     )}
                     {nearbyPlaces.bikeRoads > 0 && (
                       <Chip size="sm" variant="flat" startContent={<IconBike size={14} />} className="bg-white dark:bg-gray-700">
-                        {t("buy.bikeRoads")} ({nearbyPlaces.bikeRoads})
+                        {t("rent.bikeRoads")} ({nearbyPlaces.bikeRoads})
                       </Chip>
                     )}
                   </div>
@@ -1352,7 +1434,7 @@ export default function PropertyDetails() {
             {/* Схожі пропозиції - карусель з кнопками */}
             <div className="mt-8">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                {t("buy.similarProperties")}
+                {t("rent.similarProperties")}
               </h3>
               <div className="relative">
                 {/* Кнопки навігації */}
@@ -1384,7 +1466,7 @@ export default function PropertyDetails() {
                     {similarProperties.slice(0, 12).map((similarProperty) => (
                       <Link
                         key={similarProperty.id}
-                        href={`/buy/${similarProperty.id}`}
+                        href={`/rent/${similarProperty.id}`}
                         className="block w-[280px] flex-shrink-0"
                       >
                         <Card className="shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700 h-full">
@@ -1430,7 +1512,7 @@ export default function PropertyDetails() {
             <Card className="shadow-lg border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/30">
               <CardBody className="p-8 text-center">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  {t("buy.subscribeToNewOffers")}
+                  {t("rent.subscribeToNewOffers")}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                   <Button
@@ -1442,7 +1524,7 @@ export default function PropertyDetails() {
                       setIsSubscribeModalOpen(true);
                     }}
                   >
-                    {t("buy.subscribeViaEmail")}
+                    {t("rent.subscribeViaEmail")}
                   </Button>
                   <Button
                     size="lg"
@@ -1453,7 +1535,7 @@ export default function PropertyDetails() {
                       setIsSubscribeModalOpen(true);
                     }}
                   >
-                    {t("buy.subscribeViaTelegram")}
+                    {t("rent.subscribeViaTelegram")}
                   </Button>
                 </div>
               </CardBody>
@@ -1465,7 +1547,7 @@ export default function PropertyDetails() {
             <div className="lg:sticky lg:top-24">
               <Card className="shadow-lg border border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-3 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
-                  <h2 className="text-xl font-bold">{t("buy.contactInfo")}</h2>
+                  <h2 className="text-xl font-bold">{t("rent.contactInfo")}</h2>
                 </CardHeader>
                 <CardBody className="p-6 space-y-4">
                   {property.responsibleAgent && (
@@ -1473,7 +1555,7 @@ export default function PropertyDetails() {
                       <div className="flex items-center gap-3">
                         <Avatar size="lg" name={property.responsibleAgent} className="bg-gradient-to-r from-blue-600 to-blue-400 text-white" />
                         <div>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">{t("buy.responsibleAgent")}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">{t("rent.responsibleAgent")}</p>
                           <p className="font-bold text-gray-900 dark:text-white">{property.responsibleAgent}</p>
                         </div>
                       </div>
@@ -1489,7 +1571,7 @@ export default function PropertyDetails() {
                       startContent={<IconPhone size={20} />}
                       onPress={() => setIsCallModalOpen(true)}
                     >
-                      {t("buy.callAgent")}
+                      {t("rent.callAgent")}
                     </Button>
 
                     <Button
@@ -1499,7 +1581,7 @@ export default function PropertyDetails() {
                       startContent={<IconMail size={20} />}
                       onPress={() => setIsEmailModalOpen(true)}
                     >
-                      {t("buy.writeEmail")}
+                      {t("rent.writeEmail")}
                     </Button>
 
                     <Button
@@ -1509,7 +1591,7 @@ export default function PropertyDetails() {
                       startContent={<IconCalendar size={20} />}
                       onPress={() => setIsBookingModalOpen(true)}
                     >
-                      {t("buy.bookViewing")}
+                      {t("rent.bookViewing")}
                     </Button>
 
                     <Button
@@ -1518,7 +1600,7 @@ export default function PropertyDetails() {
                       className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
                       onPress={() => setIsOfferModalOpen(true)}
                     >
-                      {t("buy.makeOffer")}
+                      {t("rent.makeOffer")}
                     </Button>
 
                     <div className="grid grid-cols-2 gap-3 pt-2">
