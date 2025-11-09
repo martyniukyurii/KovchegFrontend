@@ -23,6 +23,13 @@ interface Property {
   is_active: boolean;
   is_featured: boolean;
   created_at: string;
+  created_by?: {
+    admin_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+  };
 }
 
 export default function AdminDashboard() {
