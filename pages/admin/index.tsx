@@ -143,7 +143,8 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/admin/auth', {
+      console.log('📤 Login form: Sending request to /api/admin/auth-simple');
+      const response = await fetch('/api/admin/auth-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,17 +152,36 @@ export default function AdminLogin() {
         body: JSON.stringify({ login, password }),
       });
 
-      const data = await response.json();
+      console.log('📥 Login form: Response status:', response.status);
+
+      const text = await response.text();
+      console.log('📄 Login form: Response text:', text);
+      
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('❌ JSON parse error:', parseError);
+        setError(`Помилка сервера: ${response.status}`);
+        return;
+      }
 
       if (response.ok) {
+        console.log('✅ Login successful! Data:', data);
+        
         localStorage.setItem('admin_authenticated', 'true');
         localStorage.setItem('admin_token', data.token);
         localStorage.setItem('admin_info', JSON.stringify(data.admin));
-        router.push('/admin/dashboard');
+        
+        console.log('🔄 Redirecting to dashboard...');
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard';
+        }, 100);
       } else {
         setError(data.message || 'Невірний логін або пароль');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Помилка з\'єднання з сервером');
     } finally {
       setLoading(false);
