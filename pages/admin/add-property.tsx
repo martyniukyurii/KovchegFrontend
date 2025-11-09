@@ -488,7 +488,7 @@ export default function AddProperty() {
                   <p className="text-xs text-gray-400 mt-2">
                     {coordinatesFound ? (
                       <span className="text-green-400">
-                        ✓ Координати: {formData.location.coordinates?.lat?.toFixed(4)}, {formData.location.coordinates?.lng?.toFixed(4)}
+                        ✓ Координати: {(formData.location.coordinates as any)?.lat?.toFixed(4)}, {(formData.location.coordinates as any)?.lng?.toFixed(4)}
                       </span>
                     ) : (
                       'Координати не обов\'язкові, але потрібні для відображення на карті'
