@@ -1,13 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient, ObjectId } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
+const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+async function importProperties() {
+  console.log('🚀 Починаю імпорт нерухомості...\n');
 
   try {
     const client = await MongoClient.connect(MONGODB_URI);
@@ -20,8 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const tetyana = await adminsCollection.findOne({ first_name: 'Тетяна', last_name: 'Петрусєва' });
 
     if (!maksym) {
+      console.error('❌ Максим Голбан не знайдений в базі');
       await client.close();
-      return res.status(404).json({ message: 'Максим Голбан не знайдений в базі' });
+      return;
+    }
+
+    console.log('✅ Знайдено Максима Голбана:', maksym.first_name, maksym.email);
+    if (tetyana) {
+      console.log('✅ Знайдено Тетяну Петрусєву:', tetyana.first_name, tetyana.email);
     }
 
     const properties = [
@@ -187,7 +190,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: '3-кімнатна квартира в центрі міста',
+        title: '3-кімнатна квартира в центрі міста (92 м²)',
         description: 'Простора 3-кімнатна квартира в центрі міста, біля ресторану Вікторія Делюкс. Хороше планування.',
         property_type: 'apartment',
         transaction_type: 'sale',
@@ -218,7 +221,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: '3-кімнатна квартира в центрі міста',
+        title: '3-кімнатна квартира в центрі міста (87 м²)',
         description: 'Простора 3-кімнатна квартира в центрі міста, біля ресторану Вікторія Делюкс. Хороше планування.',
         property_type: 'apartment',
         transaction_type: 'sale',
@@ -249,7 +252,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: '3-кімнатна квартира в центрі міста',
+        title: '3-кімнатна квартира в центрі міста (90 м²)',
         description: 'Простора 3-кімнатна квартира в центрі міста, біля ресторану Вікторія Делюкс. Хороше планування.',
         property_type: 'apartment',
         transaction_type: 'sale',
@@ -280,7 +283,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: 'Квартира в центрі міста',
+        title: 'Квартира в центрі міста (73 м²)',
         description: 'Квартира в центрі міста, біля ресторану Вікторія Делюкс.',
         property_type: 'apartment',
         transaction_type: 'sale',
@@ -311,7 +314,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: 'Офісне приміщення',
+        title: 'Офісне приміщення (60 м²)',
         description: 'Здається в оренду приміщення в торгово-офісному центрі «Toloka». Приміщення просторе, світле та має зручне планування. Підійде для офісу, студії або невеликого бізнесу.',
         property_type: 'commercial',
         transaction_type: 'rent',
@@ -342,7 +345,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         source: 'admin'
       },
       {
-        title: 'Офісне приміщення',
+        title: 'Офісне приміщення (77 м²)',
         description: 'Здається в оренду приміщення в торгово-офісному центрі «Toloka». Приміщення просторе, світле та має зручне планування. Підійде для офісу, студії або невеликого бізнесу.',
         property_type: 'commercial',
         transaction_type: 'rent',
@@ -405,24 +408,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     ];
 
+    console.log(`\n📦 Підготовлено ${properties.length} об'єктів для імпорту\n`);
+
     const result = await propertiesCollection.insertMany(properties);
     
-    await client.close();
-
-    return res.status(200).json({
-      success: true,
-      message: `Успішно імпортовано ${result.insertedCount} об'єктів нерухомості`,
-      insertedCount: result.insertedCount,
-      insertedIds: result.insertedIds,
+    console.log(`✅ Успішно імпортовано ${result.insertedCount} об'єктів нерухомості!\n`);
+    
+    console.log('📋 ID імпортованих об\'єктів:');
+    Object.values(result.insertedIds).forEach((id, index) => {
+      console.log(`   ${index + 1}. ${id}`);
     });
+
+    await client.close();
+    console.log('\n🎉 Імпорт завершено успішно!');
 
   } catch (error) {
-    console.error('Import error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Помилка імпорту',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    console.error('❌ Помилка імпорту:', error);
   }
 }
+
+importProperties();
+
 
