@@ -261,7 +261,8 @@ export default function ManageAgents() {
                             if (allSelected) {
                               setSelectedProperties(selectedProperties.filter(id => !agentPropertyIds.includes(id)));
                             } else {
-                              setSelectedProperties([...new Set([...selectedProperties, ...agentPropertyIds])]);
+                              const uniqueIds = Array.from(new Set([...selectedProperties, ...agentPropertyIds]));
+                              setSelectedProperties(uniqueIds);
                             }
                           }}
                           className="text-sm text-blue-400 hover:text-blue-300"
