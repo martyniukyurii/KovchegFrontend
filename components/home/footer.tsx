@@ -66,6 +66,24 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center text-white/80 hover:text-white transition-colors">
+                <Phone className="w-4 h-4 mr-2" />
+                <a 
+                  href="tel:+380503380528"
+                  className="hover:text-white transition-colors"
+                >
+                  +38 (050) 338-05-28
+                </a>
+              </li>
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
+                <Phone className="w-4 h-4 mr-2" />
+                <a 
+                  href="tel:+380688505555"
+                  className="hover:text-white transition-colors"
+                >
+                  +38 (068) 850-55-55
+                </a>
+              </li>
+              <li className="flex items-center text-white/80 hover:text-white transition-colors">
                 <Mail className="w-4 h-4 mr-2" />
                 <a 
                   href={`mailto:${t('footer.email')}`}
