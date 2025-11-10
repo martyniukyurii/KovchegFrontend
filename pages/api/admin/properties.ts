@@ -9,12 +9,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // GET - отримати всі властивості (включаючи архівні)
     if (req.method === 'GET') {
-      const { showAll } = req.query;
+      const { showAll, admin_id, role } = req.query;
       
-      let query = {};
+      let query: any = {};
+      
+      // Фільтр для активних/архівних
       if (showAll !== 'true') {
-        query = { is_active: true };
+        query.is_active = true;
       }
+      
+      // Якщо це рієлтор (agent), показуємо тільки його нерухомість
+      if (role === 'agent' && admin_id) {
+        query['created_by.admin_id'] = admin_id;
+      }
+      // Якщо owner - показуємо все (без додаткових фільтрів)
 
       const properties = await collection
         .find(query)

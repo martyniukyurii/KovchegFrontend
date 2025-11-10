@@ -22,6 +22,8 @@ interface Property {
   status: string;
   is_active: boolean;
   is_featured: boolean;
+  views_count?: number;
+  last_viewed_at?: string;
   created_at: string;
   created_by?: {
     admin_id: string;
@@ -39,6 +41,7 @@ export default function AdminDashboard() {
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState<'all' | 'sale' | 'rent'>('all');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [adminInfo, setAdminInfo] = useState<any>(null);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('admin_authenticated');
@@ -47,13 +50,29 @@ export default function AdminDashboard() {
       return;
     }
 
+    // Отримуємо інформацію про адміна
+    const adminInfoStr = localStorage.getItem('admin_info');
+    if (adminInfoStr) {
+      setAdminInfo(JSON.parse(adminInfoStr));
+    }
+
     fetchProperties();
   }, [showAll, router]);
 
   const fetchProperties = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/properties?showAll=${showAll}`);
+      const adminInfoStr = localStorage.getItem('admin_info');
+      const admin = adminInfoStr ? JSON.parse(adminInfoStr) : null;
+      
+      let url = `/api/admin/properties?showAll=${showAll}`;
+      
+      // Додаємо параметри для фільтрації за роллю
+      if (admin) {
+        url += `&admin_id=${admin.id}&role=${admin.role}`;
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
       
       if (data.success) {
@@ -161,6 +180,26 @@ export default function AdminDashboard() {
                 >
                   + Додати нерухомість
                 </button>
+                <button
+                  onClick={() => router.push('/admin/clients')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                >
+                  👥 Клієнти
+                </button>
+                <button
+                  onClick={() => router.push('/admin/deals')}
+                  className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                >
+                  🤝 Угоди
+                </button>
+                {adminInfo && adminInfo.role === 'owner' && (
+                  <button
+                    onClick={() => router.push('/admin/manage-agents')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  >
+                    🏢 Керування рієлторами
+                  </button>
+                )}
                 <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
@@ -331,6 +370,9 @@ export default function AdminDashboard() {
                         <span>📍 {property.location.city}</span>
                         <span>📏 {property.area} м²</span>
                         {property.rooms > 0 && <span>🛏️ {property.rooms} кімнат</span>}
+                        <span className="ml-auto text-blue-400 font-medium">
+                          👁️ {property.views_count || 0} переглядів
+                        </span>
                       </div>
 
                       {/* Інформація про рієлтора */}

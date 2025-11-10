@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
+const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
 const DB_NAME = 'kovcheg_db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('🔍 Searching for Telegram ID:', telegram_id);
       admin = await adminsCollection.findOne({ 
         telegram_id: parseInt(telegram_id),
-        role: { $in: ['admin', 'agent'] }
+        role: { $in: ['admin', 'agent', 'owner'] }
       });
 
       console.log('👤 Admin found:', admin ? 'YES' : 'NO');
@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('🔍 Searching for login:', login);
       admin = await adminsCollection.findOne({ 
         login: login,
-        role: { $in: ['admin', 'agent'] }
+        role: { $in: ['admin', 'agent', 'owner'] }
       });
 
       if (!admin) {

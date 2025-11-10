@@ -273,6 +273,11 @@ export default function PropertyDetails() {
             setSelectedCurrency(transformedProperty.currency);
             setOfferPrice(transformedProperty.price);
             
+            // Реєструємо перегляд
+            fetch(`/api/properties/${id}/view`, {
+              method: 'POST',
+            }).catch(err => console.error('View tracking error:', err));
+            
             // Завантажити дані про місця поблизу
             if (transformedProperty.coordinates) {
               fetchNearbyPlaces(transformedProperty.coordinates);

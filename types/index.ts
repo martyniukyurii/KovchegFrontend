@@ -8,6 +8,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export type PropertyType = "apartment" | "house" | "commercial" | "land";
 export type TransactionType = "sale" | "rent";
 export type PropertyStatus = "active" | "inactive" | "sold";
+export type AreaUnit = "m2" | "sotka" | "hectare";
 
 // Інтерфейс для координат
 export interface Coordinates {
@@ -34,11 +35,18 @@ export interface Property {
     currency: string;
   };
   area: number;
+  area_unit?: AreaUnit;
   rooms?: number;
+  floor?: number;
+  totalFloors?: number;
+  bathrooms?: number;
+  cadastral_number?: string;
   location: PropertyLocation;
   features?: string[];
   images?: string[];
   likes_count?: number;
+  views_count?: number;
+  last_viewed_at?: string;
   status: PropertyStatus;
   is_featured?: boolean;
   owner_id: string;

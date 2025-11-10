@@ -16,7 +16,12 @@ export default function AddProperty() {
       currency: 'USD',
     },
     area: 0,
+    area_unit: 'm2' as 'm2' | 'sotka' | 'hectare',
     rooms: 0,
+    floor: 0,
+    totalFloors: 0,
+    bathrooms: 0,
+    cadastral_number: '',
     location: {
       city: 'Чернівці',
       address: '',
@@ -390,21 +395,38 @@ export default function AddProperty() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Площа (м²) *
+                      Площа *
                     </label>
-                    <input
-                      type="number"
-                      name="area"
-                      value={formData.area}
-                      onChange={handleInputChange}
-                      onFocus={(e) => {
-                        if (e.target.value === '0') {
-                          e.target.value = '';
-                        }
-                      }}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        name="area"
+                        value={formData.area}
+                        onChange={handleInputChange}
+                        onFocus={(e) => {
+                          if (e.target.value === '0') {
+                            e.target.value = '';
+                          }
+                        }}
+                        className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                      <select
+                        name="area_unit"
+                        value={formData.area_unit}
+                        onChange={handleInputChange}
+                        className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="m2">м²</option>
+                        <option value="sotka">сотка</option>
+                        <option value="hectare">га</option>
+                      </select>
+                    </div>
+                    {formData.property_type === 'land' && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        💡 Для земельних ділянок рекомендуємо сотки або гектари
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -425,6 +447,83 @@ export default function AddProperty() {
                     />
                   </div>
                 </div>
+
+                {/* Apartment/House specific fields */}
+                {(formData.property_type === 'apartment' || formData.property_type === 'house') && (
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Поверх
+                      </label>
+                      <input
+                        type="number"
+                        name="floor"
+                        value={formData.floor}
+                        onChange={handleInputChange}
+                        onFocus={(e) => {
+                          if (e.target.value === '0') {
+                            e.target.value = '';
+                          }
+                        }}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Поверховість будинку
+                      </label>
+                      <input
+                        type="number"
+                        name="totalFloors"
+                        value={formData.totalFloors}
+                        onChange={handleInputChange}
+                        onFocus={(e) => {
+                          if (e.target.value === '0') {
+                            e.target.value = '';
+                          }
+                        }}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Кількість санвузлів
+                      </label>
+                      <input
+                        type="number"
+                        name="bathrooms"
+                        value={formData.bathrooms}
+                        onChange={handleInputChange}
+                        onFocus={(e) => {
+                          if (e.target.value === '0') {
+                            e.target.value = '';
+                          }
+                        }}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Land specific field */}
+                {formData.property_type === 'land' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Кадастровий номер
+                    </label>
+                    <input
+                      type="text"
+                      name="cadastral_number"
+                      value={formData.cadastral_number}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="1234567890:12:345:6789"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      💡 Якщо вказано кадастровий номер, адреса не обов'язкова
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Location */}
@@ -451,7 +550,7 @@ export default function AddProperty() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Адреса *
+                      Адреса {formData.property_type === 'land' && formData.cadastral_number ? '' : '*'}
                     </label>
                     <input
                       type="text"
@@ -459,9 +558,14 @@ export default function AddProperty() {
                       value={formData.location.address}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
+                      required={!(formData.property_type === 'land' && formData.cadastral_number)}
                       placeholder="вул. Головна, 25"
                     />
+                    {formData.property_type === 'land' && formData.cadastral_number && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Не обов'язково, якщо вказано кадастровий номер
+                      </p>
+                    )}
                   </div>
                 </div>
 

@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
+import bcrypt from 'bcryptjs';
 
 // Захардкоджене підключення до MongoDB
 const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
@@ -43,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (telegram_id) {
       admin = await adminsCollection.findOne({ 
         telegram_id: parseInt(telegram_id),
-        role: { $in: ['admin', 'agent'] }
+        role: { $in: ['admin', 'agent', 'owner'] }
       });
 
       if (!admin) {
@@ -54,11 +55,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
     }
-    // Варіант 2: Вхід через логін і пароль (без bcrypt поки що)
+    // Варіант 2: Вхід через логін і пароль
     else if (login && password) {
       admin = await adminsCollection.findOne({ 
         login: login,
-        role: { $in: ['admin', 'agent'] }
+        role: { $in: ['admin', 'agent', 'owner'] }
       });
 
       if (!admin) {
@@ -69,12 +70,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      // Тимчасово без перевірки пароля
+      // Перевірка пароля
       if (!admin.password) {
         await client.close();
         return res.status(401).json({
           success: false,
           message: 'Для цього акаунта пароль не встановлено. Використовуйте вхід через Telegram',
+        });
+      }
+
+      // Порівнюємо пароль
+      const isPasswordValid = await bcrypt.compare(password, admin.password);
+      
+      if (!isPasswordValid) {
+        await client.close();
+        return res.status(401).json({
+          success: false,
+          message: 'Невірний логін або пароль',
         });
       }
     } else {
