@@ -192,14 +192,22 @@ export default function AdminDashboard() {
                 >
                   🤝 Угоди
                 </button>
-                {adminInfo && adminInfo.role === 'owner' && (
-                  <button
-                    onClick={() => router.push('/admin/manage-agents')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-                  >
-                    🏢 Керування рієлторами
-                  </button>
-                )}
+          {adminInfo && adminInfo.role === 'owner' && (
+            <>
+              <button
+                onClick={() => router.push('/admin/manage-agents')}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                🏢 Керування рієлторами
+              </button>
+              <button
+                onClick={() => router.push('/admin/manage-realtors')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              >
+                👤 Профілі рієлторів
+              </button>
+            </>
+          )}
                 <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
@@ -388,7 +396,14 @@ export default function AdminDashboard() {
                             )}
                           </p>
                           {property.created_by.email && (
-                            <p className="text-xs text-gray-400 mt-1">{property.created_by.email}</p>
+                            <p className="text-xs text-gray-400 mt-1">📧 {property.created_by.email}</p>
+                          )}
+                          {(property as any).realtor_phone && (
+                            <p className="text-xs text-green-400 mt-1 font-medium">
+                              📞 <a href={`tel:${(property as any).realtor_phone}`} className="hover:text-green-300">
+                                {(property as any).realtor_phone}
+                              </a>
+                            </p>
                           )}
                         </div>
                       )}

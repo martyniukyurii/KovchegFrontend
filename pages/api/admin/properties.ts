@@ -18,16 +18,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         query.is_active = true;
       }
       
-      // Якщо це рієлтор (agent), показуємо тільки його нерухомість
-      if (role === 'agent' && admin_id) {
+      // Якщо це НЕ owner, показуємо тільки нерухомість цього адміна/рієлтора
+      if (role && role !== 'owner' && admin_id) {
         query['created_by.admin_id'] = admin_id;
       }
       // Якщо owner - показуємо все (без додаткових фільтрів)
 
-      const properties = await collection
+      let properties = await collection
         .find(query)
         .sort({ created_at: -1 })
         .toArray();
+
+      // Витягуємо телефони рієлторів з колекції admins
+      const adminsCollection = db.collection('admins');
+      const adminIds = properties
+        .map(p => p.created_by?.admin_id)
+        .filter(Boolean)
+        .map(id => new ObjectId(id));
+
+      const admins = await adminsCollection
+        .find({ _id: { $in: adminIds } })
+        .project({ _id: 1, phone: 1 })
+        .toArray();
+
+      const adminPhoneMap = new Map(
+        admins.map(a => [a._id.toString(), a.phone])
+      );
+
+      // Додаємо телефон до кожної нерухомості
+      properties = properties.map(property => ({
+        ...property,
+        realtor_phone: property.created_by?.admin_id 
+          ? adminPhoneMap.get(property.created_by.admin_id) || null
+          : null,
+      }));
 
       return res.status(200).json({
         success: true,

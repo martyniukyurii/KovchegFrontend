@@ -33,6 +33,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
+    // Витягуємо телефон рієлтора з колекції admins
+    let realtorPhone = null;
+    if (property.created_by?.admin_id) {
+      const adminsCollection = db.collection('admins');
+      const admin = await adminsCollection.findOne(
+        { _id: new ObjectId(property.created_by.admin_id) },
+        { projection: { phone: 1 } }
+      );
+      realtorPhone = admin?.phone || null;
+    }
+
     // Перевіряємо валідні координати
     const coords = property.location?.coordinates;
     let validCoordinates = null;
@@ -67,6 +78,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       images: validImages,
       features: property.features || [],
       coordinates: validCoordinates,
+      created_by: property.created_by || null,
+      realtor_phone: realtorPhone,
       createdAt: property.created_at,
       updatedAt: property.updated_at,
     };

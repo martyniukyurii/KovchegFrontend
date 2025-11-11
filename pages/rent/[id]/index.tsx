@@ -85,6 +85,8 @@ interface Property {
   images: string[];
   tags: string[];
   responsibleAgent?: string;
+  realtorPhone?: string; // Телефон рієлтора
+  realtorName?: string; // Ім'я рієлтора
   coordinates?: { lat: number; lng: number };
   panoeeUrl?: string; // URL для 3D туру
   utilities?: number; // Комунальні послуги
@@ -264,6 +266,10 @@ export default function PropertyDetails() {
               // Додаємо інформацію про рієлтора
               responsibleAgent: prop.created_by 
                 ? `${prop.created_by.first_name} ${prop.created_by.last_name}`.trim() 
+                : undefined,
+              realtorPhone: prop.realtor_phone || undefined,
+              realtorName: prop.created_by 
+                ? `${prop.created_by.first_name} ${prop.created_by.last_name || ''}`.trim() 
                 : undefined,
               createdAt: prop.createdAt ? new Date(prop.createdAt) : undefined,
               updatedAt: prop.updatedAt ? new Date(prop.updatedAt) : undefined,
@@ -689,7 +695,7 @@ export default function PropertyDetails() {
             <div className="space-y-4">
               <p className="text-gray-600 dark:text-gray-400">Контактний номер телефону:</p>
               <Snippet symbol="" variant="bordered" className="w-full">
-                {t("footer.phone")}
+                {property?.realtorPhone || t("footer.phone")}
               </Snippet>
         </div>
           </ModalBody>
@@ -700,7 +706,7 @@ export default function PropertyDetails() {
             <Button
               className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-500 hover:to-blue-300 text-white shadow-lg"
               as="a"
-              href={`tel:${t("footer.phone")}`}
+              href={`tel:${property?.realtorPhone || t("footer.phone")}`}
             >
               Зателефонувати
             </Button>
@@ -740,7 +746,7 @@ export default function PropertyDetails() {
           <ModalBody>
             <div className="space-y-4">
               <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
-              <Input type="tel" label={t("footer.phone")} placeholder="+380" />
+              <Input type="tel" label={property?.realtorPhone || t("footer.phone")} placeholder="+380" />
               <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
               <DatePicker label={t("rent.selectDate")} />
               <Textarea label={t("rent.yourMessage")} placeholder={t("rent.messagePlaceholder")} />
@@ -796,7 +802,7 @@ export default function PropertyDetails() {
                 onChange={(e) => setOfferPrice(Number(e.target.value))}
               />
               <Input label={t("rent.yourName")} placeholder="Введіть ваше ім'я" />
-              <Input type="tel" label={t("footer.phone")} placeholder="+380" />
+              <Input type="tel" label={property?.realtorPhone || t("footer.phone")} placeholder="+380" />
               <Input type="email" label={t("rent.yourEmail")} placeholder="example@email.com" />
               <Textarea label={t("rent.yourMessage")} placeholder={t("rent.messagePlaceholder")} />
             </div>
@@ -1292,10 +1298,10 @@ export default function PropertyDetails() {
                     <div className="text-center text-sm text-gray-600 dark:text-gray-400">
                       {t("rent.orCallUs")}{" "}
                       <a
-                        href={`tel:${t("footer.phone")}`}
+                        href={`tel:${property?.realtorPhone || t("footer.phone")}`}
                         className="text-blue-600 hover:text-blue-700 underline font-medium"
                       >
-                        {t("footer.phone")}
+                        {property?.realtorPhone || t("footer.phone")}
                       </a>
                     </div>
                   </div>
@@ -1361,10 +1367,10 @@ export default function PropertyDetails() {
                     <div className="text-center text-sm text-gray-600 dark:text-gray-400">
                       {t("rent.orCallUs")}{" "}
                       <a
-                        href={`tel:${t("footer.phone")}`}
+                        href={`tel:${property?.realtorPhone || t("footer.phone")}`}
                         className="text-blue-600 hover:text-blue-700 underline font-medium"
                       >
-                        {t("footer.phone")}
+                        {property?.realtorPhone || t("footer.phone")}
                       </a>
                         </div>
                         </div>

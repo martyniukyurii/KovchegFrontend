@@ -137,7 +137,8 @@ export const Navbar = () => {
                 />
               </div>
             </MenuItem>
-            <MenuItem
+            {/* Тимчасово приховано - сторінка агентів */}
+            {/* <MenuItem
               setActive={setActive}
               active={active}
               item={t("nav.agents")}
@@ -169,7 +170,7 @@ export const Navbar = () => {
                   description={t("submenu.agents.training.description")}
                 />
               </div>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               setActive={setActive}
               active={active}
@@ -338,8 +339,8 @@ export const Navbar = () => {
               </div>
             </AccordionItem>
 
-            {/* Агенти */}
-            <AccordionItem key="agents" aria-label={t("nav.agents")} title={t("nav.agents")}>
+            {/* Тимчасово приховано - сторінка агентів */}
+            {/* <AccordionItem key="agents" aria-label={t("nav.agents")} title={t("nav.agents")}>
               <div className="flex flex-col gap-2 pl-4">
                 <Link
                   href="/agents?section=list"
@@ -370,7 +371,7 @@ export const Navbar = () => {
                   {t("submenu.agents.training.title")}
                 </Link>
               </div>
-            </AccordionItem>
+            </AccordionItem> */}
 
             {/* Про нас */}
             <AccordionItem key="about" aria-label={t("nav.about")} title={t("nav.about")}>
