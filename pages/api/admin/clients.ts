@@ -20,7 +20,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Якщо це рієлтор (НЕ owner), показуємо тільки його клієнтів
       if (role === 'agent' && agent_id) {
-        query['created_by.admin_id'] = agent_id;
+        query.$or = [
+          { 'created_by.admin_id': agent_id },
+          { created_by: { $exists: false } } // Старі записи без created_by НЕ показуємо
+        ];
+        // Видаляємо $or і залишаємо тільки перший варіант - показуємо ТІЛЬКИ його клієнтів
+        query = {
+          ...query,
+          'created_by.admin_id': agent_id
+        };
+        delete query.$or;
       }
       // Якщо owner - показуємо всіх (query залишається порожнім або тільки з типом)
 
