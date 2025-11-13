@@ -1,8 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient } from 'mongodb';
-
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
-const DB_NAME = 'kovcheg_db';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -10,8 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const adminsCollection = db.collection('admins');
 
     // Отримуємо всіх агентів та адмінів (але не owners)
@@ -28,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       .toArray();
 
-    await client.close();
 
     return res.status(200).json({
       success: true,

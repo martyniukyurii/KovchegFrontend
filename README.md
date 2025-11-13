@@ -34,11 +34,20 @@ npm install --legacy-peer-deps
 
 ### 2. Налаштування змінних середовища
 
-Створіть файл `.env.local`:
+Створіть файл `.env.local` на основі `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+Заповніть ваші реальні значення:
 
 ```env
-MONGODB_URI=mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/
+MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/
+MONGODB_DB=kovcheg_db
 ```
+
+**⚠️ ВАЖЛИВО:** Ніколи не публікуйте `.env.local` в Git!
 
 ### 3. Запуск
 

@@ -265,12 +265,12 @@ export default function AddProperty() {
     <DefaultLayout>
       <div className="min-h-screen bg-gray-900 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gray-800 rounded-lg shadow-lg p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-white">Додати нерухомість</h1>
+          <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Додати нерухомість</h1>
               <button
                 onClick={() => router.push('/admin/dashboard')}
-                className="text-gray-400 hover:text-white transition"
+                className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base w-full sm:w-auto"
               >
                 ← Назад
               </button>

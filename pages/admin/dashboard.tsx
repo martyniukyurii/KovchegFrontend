@@ -165,44 +165,50 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-            <div className="flex justify-between items-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-6">
+            <div className="flex flex-col gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                   Адміністративна панель
                 </h1>
-                <p className="text-gray-400">Управління нерухомістю</p>
+                <p className="text-gray-400 text-sm sm:text-base">Управління нерухомістю</p>
               </div>
-              <div className="flex gap-4">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
                 <button
                   onClick={() => router.push('/admin/add-property')}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
                 >
                   + Додати нерухомість
                 </button>
                 <button
                   onClick={() => router.push('/admin/clients')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
                 >
                   👥 Клієнти
                 </button>
                 <button
                   onClick={() => router.push('/admin/deals')}
-                  className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
                 >
                   🤝 Угоди
+                </button>
+                <button
+                  onClick={() => router.push('/admin/calendar')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
+                >
+                  📅 Календар
                 </button>
           {adminInfo && adminInfo.role === 'owner' && (
             <>
               <button
                 onClick={() => router.push('/admin/manage-agents')}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
               >
                 🏢 Керування рієлторами
               </button>
               <button
                 onClick={() => router.push('/admin/manage-realtors')}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base"
               >
                 👤 Профілі рієлторів
               </button>
@@ -210,7 +216,7 @@ export default function AdminDashboard() {
           )}
                 <button
                   onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 sm:px-6 rounded-lg transition text-sm sm:text-base col-span-2 sm:col-span-1"
                 >
                   Вийти
                 </button>

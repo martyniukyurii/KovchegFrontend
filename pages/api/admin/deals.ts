@@ -1,13 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient, ObjectId } from 'mongodb';
-
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
-const DB_NAME = 'kovcheg_db';
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const collection = db.collection('deals');
 
     // GET - отримати всі угоди
@@ -21,17 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         query.status = status;
       }
       
-      // Якщо це рієлтор, показуємо тільки його угоди
+      // Якщо це рієлтор (НЕ owner), показуємо тільки його угоди
       if (role === 'agent' && agent_id) {
-        query.agent_id = agent_id;
+        query['created_by.admin_id'] = agent_id;
       }
+      // Якщо owner - показуємо всі (query залишається порожнім або тільки зі статусом)
 
       const deals = await collection
         .find(query)
         .sort({ created_at: -1 })
         .toArray();
 
-      await client.close();
 
       return res.status(200).json({
         success: true,
@@ -50,7 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const result = await collection.insertOne(dealData);
 
-      await client.close();
 
       return res.status(201).json({
         success: true,
@@ -64,7 +60,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { _id, ...updateData } = req.body;
 
       if (!_id) {
-        await client.close();
         return res.status(400).json({
           success: false,
           message: 'ID угоди обов\'язковий',
@@ -81,7 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       );
 
-      await client.close();
 
       if (result.matchedCount === 0) {
         return res.status(404).json({
@@ -101,7 +95,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { id } = req.query;
 
       if (!id || typeof id !== 'string') {
-        await client.close();
         return res.status(400).json({
           success: false,
           message: 'ID угоди обов\'язковий',
@@ -110,7 +103,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const result = await collection.deleteOne({ _id: new ObjectId(id) });
 
-      await client.close();
 
       if (result.deletedCount === 0) {
         return res.status(404).json({
@@ -125,7 +117,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    await client.close();
     return res.status(405).json({ message: 'Method not allowed' });
   } catch (error) {
     console.error('Deals API error:', error);

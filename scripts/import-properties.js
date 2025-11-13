@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
+const MONGODB_URI = process.env.MONGODB_URI || '';
 const DB_NAME = 'kovcheg_db';
 
 async function importProperties() {

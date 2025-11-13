@@ -57,8 +57,10 @@ npx vercel logs kovchegfrontend-r00wyxjpe-martyniukyuriis-projects.vercel.app --
 
 **Якщо немає** - додайте:
 ```
-MONGODB_URI = mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/
+MONGODB_URI = mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/
 ```
+
+**⚠️ ВАЖЛИВО:** Використовуйте ваші реальні дані підключення!
 
 ### Крок 3: Перевірте структуру API файлів
 

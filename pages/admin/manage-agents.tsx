@@ -166,17 +166,17 @@ export default function ManageAgents() {
       <div className="min-h-screen bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-            <div className="flex justify-between items-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-6">
+            <div className="flex flex-col gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                   👥 Керування рієлторами
                 </h1>
-                <p className="text-gray-400">Перенесення нерухомості між рієлторами</p>
+                <p className="text-gray-400 text-sm sm:text-base">Перенесення нерухомості між рієлторами</p>
               </div>
               <button
                 onClick={() => router.push('/admin/dashboard')}
-                className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition"
+                className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base w-full sm:w-auto"
               >
                 ← Назад
               </button>

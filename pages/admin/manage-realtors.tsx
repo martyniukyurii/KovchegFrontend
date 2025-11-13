@@ -173,14 +173,16 @@ export default function ManageRealtorsPage() {
     <DefaultLayout>
       <div className="min-h-screen bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">Управління профілями рієлторів</h1>
-            <button
-              onClick={() => router.push('/admin/dashboard')}
-              className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-            >
-              ← Назад
-            </button>
+          <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-6">
+            <div className="flex flex-col gap-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Управління профілями рієлторів</h1>
+              <button
+                onClick={() => router.push('/admin/dashboard')}
+                className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base w-full sm:w-auto"
+              >
+                ← Назад
+              </button>
+            </div>
           </div>
 
           <div className="bg-gray-800 rounded-lg shadow-lg p-6">

@@ -1,10 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
-
-// Захардкоджене підключення до MongoDB
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
-const DB_NAME = 'kovcheg_db';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -34,8 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { login, password, telegram_id } = req.body;
 
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const adminsCollection = db.collection('admins');
 
     let admin;
@@ -48,7 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       if (!admin) {
-        await client.close();
         return res.status(401).json({
           success: false,
           message: 'Telegram акаунт не знайдено або немає прав доступу',
@@ -63,7 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       if (!admin) {
-        await client.close();
         return res.status(401).json({
           success: false,
           message: 'Невірний логін або пароль',
@@ -72,7 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Перевірка пароля
       if (!admin.password) {
-        await client.close();
         return res.status(401).json({
           success: false,
           message: 'Для цього акаунта пароль не встановлено. Використовуйте вхід через Telegram',
@@ -83,21 +75,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const isPasswordValid = await bcrypt.compare(password, admin.password);
       
       if (!isPasswordValid) {
-        await client.close();
         return res.status(401).json({
           success: false,
           message: 'Невірний логін або пароль',
         });
       }
     } else {
-      await client.close();
       return res.status(400).json({
         success: false,
         message: 'Необхідно вказати логін і пароль або Telegram ID',
       });
     }
 
-    await client.close();
 
     // Генеруємо токен
     const token = Buffer.from(`${admin._id}:${Date.now()}`).toString('base64');

@@ -14,8 +14,13 @@ interface Client {
   budget_max?: number;
   preferred_property_types?: string[];
   preferred_locations?: string[];
-  agent_id: string;
-  agent_name: string;
+  created_by?: {
+    admin_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -91,8 +96,14 @@ export default function ClientsPage() {
       
       const clientData = {
         ...formData,
-        agent_id: admin?.id || '',
-        agent_name: `${admin?.first_name || ''} ${admin?.last_name || ''}`.trim(),
+        // Додаємо інформацію про рієлтора (як у нерухомості)
+        created_by: admin ? {
+          admin_id: admin.id,
+          first_name: admin.first_name,
+          last_name: admin.last_name || '',
+          email: admin.email || '',
+          role: admin.role,
+        } : undefined,
         ...(editingClient && { _id: editingClient._id }),
       };
 
@@ -176,28 +187,28 @@ export default function ClientsPage() {
       <div className="min-h-screen bg-gray-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-            <div className="flex justify-between items-center">
+          <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-6">
+            <div className="flex flex-col gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                   👥 Клієнти
                 </h1>
-                <p className="text-gray-400">Управління покупцями та продавцями</p>
+                <p className="text-gray-400 text-sm sm:text-base">Управління покупцями та продавцями</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <button
                   onClick={() => {
                     resetForm();
                     setEditingClient(null);
                     setShowModal(true);
                   }}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base flex-1 sm:flex-initial"
                 >
                   + Додати клієнта
                 </button>
                 <button
                   onClick={() => router.push('/admin/dashboard')}
-                  className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base flex-1 sm:flex-initial"
                 >
                   ← Назад
                 </button>
@@ -292,10 +303,14 @@ export default function ClientsPage() {
                             </p>
                           </div>
                         )}
-                        <div>
-                          <p className="text-gray-400">👤 Рієлтор:</p>
-                          <p className="text-white font-medium">{client.agent_name}</p>
-                        </div>
+                        {client.created_by && (
+                          <div>
+                            <p className="text-gray-400">👤 Рієлтор:</p>
+                            <p className="text-white font-medium">
+                              {client.created_by.first_name} {client.created_by.last_name}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {client.notes && (

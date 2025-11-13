@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient, ObjectId } from 'mongodb';
-
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
-const DB_NAME = 'kovcheg_db';
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -19,8 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const collection = db.collection('deals');
 
     const newEvent = {
@@ -36,7 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     );
 
-    await client.close();
 
     if (result.matchedCount === 0) {
       return res.status(404).json({

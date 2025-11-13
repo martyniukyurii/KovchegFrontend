@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { MongoClient, ObjectId } from 'mongodb';
-
-const MONGODB_URI = 'mongodb+srv://yuramartin1993:ZgKbgBGVXm2Wi2Xf@cluster0.gitezea.mongodb.net/';
-const DB_NAME = 'kovcheg_db';
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'PUT') {
@@ -16,8 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ success: false, message: 'Admin ID та ім\'я обов\'язкові' });
     }
 
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const adminsCollection = db.collection('admins');
 
     const updateData: any = {
@@ -34,7 +31,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       { $set: updateData }
     );
 
-    await client.close();
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
