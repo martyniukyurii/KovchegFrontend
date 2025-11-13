@@ -20,16 +20,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Якщо це рієлтор (НЕ owner), показуємо тільки його клієнтів
       if (role === 'agent' && agent_id) {
-        query.$or = [
-          { 'created_by.admin_id': agent_id },
-          { created_by: { $exists: false } } // Старі записи без created_by НЕ показуємо
-        ];
-        // Видаляємо $or і залишаємо тільки перший варіант - показуємо ТІЛЬКИ його клієнтів
-        query = {
-          ...query,
-          'created_by.admin_id': agent_id
-        };
-        delete query.$or;
+        query['created_by.admin_id'] = agent_id;
+        console.log('🔍 [API] Filtering clients for agent:', { agent_id, role, query });
+      } else {
+        console.log('🔍 [API] Showing all clients (owner or no filter):', { role, agent_id });
       }
       // Якщо owner - показуємо всіх (query залишається порожнім або тільки з типом)
 
@@ -37,6 +31,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .find(query)
         .sort({ created_at: -1 })
         .toArray();
+      
+      console.log('📦 [API] Found clients:', { 
+        total: clients.length, 
+        sample: clients.slice(0, 2).map(c => ({ 
+          name: c.first_name, 
+          created_by_id: c.created_by?.admin_id || 'НЕМАЄ' 
+        }))
+      });
 
       // Connection pool - не закриваємо, використовується повторно
 

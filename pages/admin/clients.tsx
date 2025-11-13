@@ -72,10 +72,19 @@ export default function ClientsPage() {
       
       if (admin) {
         url += `?agent_id=${admin.id}&role=${admin.role}`;
+        console.log('🔍 Fetching clients:', { agent_id: admin.id, role: admin.role, url });
       }
       
       const response = await fetch(url);
       const data = await response.json();
+      
+      console.log('📦 Clients response:', { 
+        count: data.data?.length, 
+        sample: data.data?.slice(0, 2).map((c: any) => ({ 
+          name: c.first_name, 
+          created_by: c.created_by 
+        }))
+      });
       
       if (data.success) {
         setClients(data.data);
